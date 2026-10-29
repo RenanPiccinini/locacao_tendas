@@ -61,6 +61,13 @@ class PedidoController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        // Se o valor_total vier formatado com máscara (ex: 1.500,50 ou 500,00), converte para float
+        if ($request->filled('valor_total')) {
+            $limpo = str_replace('.', '', $request->input('valor_total'));
+            $limpo = str_replace(',', '.', $limpo);
+            $request->merge(['valor_total' => (float)$limpo]);
+        }
+
         $validated = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'montador_id' => 'nullable|exists:users,id',
@@ -212,7 +219,7 @@ class PedidoController extends Controller
 
     public function iniciarInstalacao(Pedido $pedido): RedirectResponse
     {
-        $os = $pedido->osInstalacao();
+        $os = $pedido->osInstalacao;
         if ($os) {
             $os->update([
                 'status' => 'em_andamento',
@@ -240,7 +247,7 @@ class PedidoController extends Controller
             }
         }
 
-        $osInstalacao = $pedido->osInstalacao();
+        $osInstalacao = $pedido->osInstalacao;
         if ($osInstalacao) {
             $fotosAntigas = $osInstalacao->fotos ?? [];
             $fotosFinais = array_merge($fotosAntigas, $caminhosFotos);
@@ -284,7 +291,7 @@ class PedidoController extends Controller
 
     public function iniciarRetirada(Pedido $pedido): RedirectResponse
     {
-        $osRetirada = $pedido->osRetirada();
+        $osRetirada = $pedido->osRetirada;
         if ($osRetirada) {
             $osRetirada->update([
                 'status' => 'em_andamento',
@@ -301,7 +308,7 @@ class PedidoController extends Controller
     {
         DB::beginTransaction();
         try {
-            $osRetirada = $pedido->osRetirada();
+            $osRetirada = $pedido->osRetirada;
             if ($osRetirada) {
                 $osRetirada->update([
                     'status' => 'concluida',

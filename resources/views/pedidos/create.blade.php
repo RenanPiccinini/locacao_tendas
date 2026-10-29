@@ -125,7 +125,18 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-gray-200 pt-6">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Valor Total da Locação (R$)</label>
-                        <input type="number" step="0.01" name="valor_total" value="{{ old('valor_total') }}" placeholder="0,00" class="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 font-semibold text-sm">
+                                R$
+                            </span>
+                            <input type="text" 
+                                   id="valor_total_mascara" 
+                                   name="valor_total" 
+                                   value="{{ old('valor_total') }}" 
+                                   placeholder="0,00" 
+                                   class="w-full pl-11 pr-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm font-semibold text-gray-900">
+                        </div>
+                        <p class="text-[11px] text-gray-400 mt-1">Digite apenas os números, a formatação em Real é automática.</p>
                     </div>
 
                     <div>
@@ -151,4 +162,35 @@
             </form>
         </div>
     </div>
+
+    <!-- Máscara de Moeda em Tempo Real (Real Brasileiro R$) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const campoValor = document.getElementById('valor_total_mascara');
+            if (!campoValor) return;
+
+            function formatarMoeda(valor) {
+                // Remove tudo que não for dígito
+                let limpo = valor.replace(/\D/g, '');
+                if (!limpo) return '';
+                
+                // Converte para decimal
+                let numero = (parseInt(limpo, 10) / 100).toFixed(2);
+                
+                // Formata com separador de milhar e decimal brasileiro
+                let partes = numero.split('.');
+                partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                return partes.join(',');
+            }
+
+            campoValor.addEventListener('input', function (e) {
+                this.value = formatarMoeda(this.value);
+            });
+
+            // Se já tiver valor carregado
+            if (campoValor.value) {
+                campoValor.value = formatarMoeda(campoValor.value);
+            }
+        });
+    </script>
 </x-app-layout>
