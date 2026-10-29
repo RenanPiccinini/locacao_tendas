@@ -34,7 +34,8 @@
 
             <!-- Tabela de Montadores -->
             <div class="bg-white rounded-xl shadow-xs border border-gray-200 overflow-hidden">
-                <table class="w-full text-left text-sm text-gray-600">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-gray-600 min-w-[640px]">
                     <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-700 border-b border-gray-200">
                         <tr>
                             <th class="px-6 py-4">Montador</th>
@@ -90,6 +91,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
 
                 @if($montadores->hasPages())
                     <div class="p-4 border-t border-gray-100">
@@ -101,3 +103,4 @@
         </div>
     </div>
 </x-app-layout>
+

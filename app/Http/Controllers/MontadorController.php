@@ -122,3 +122,4 @@ class MontadorController extends Controller
             ->with('success', 'Montador removido com sucesso!');
     }
 }
+

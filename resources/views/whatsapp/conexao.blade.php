@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="font-bold text-2xl text-gray-800 leading-tight">
                     Conexão com WhatsApp (Evolution API)
                 </h2>
                 <p class="text-sm text-gray-500">Conecte sua instância da Hostinger para envio automático de Ordens de Serviço e lembretes</p>
             </div>
-            <a href="https://evolution.piccinidigitalsolutions.com.br/manager/" target="_blank" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition flex items-center gap-1.5">
+            <a href="https://evolution.piccininidigitalsolutions.com.br/manager/" target="_blank" class="w-fit px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition flex items-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 Painel Evolution Hostinger
             </a>

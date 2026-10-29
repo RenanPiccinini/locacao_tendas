@@ -51,7 +51,7 @@
             <!-- Tabela de Pedidos -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-gray-600">
+                    <table class="w-full text-left text-sm text-gray-600 min-w-[760px]">
                         <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-700 border-b border-gray-100">
                             <tr>
                                 <th class="px-6 py-4">ID</th>

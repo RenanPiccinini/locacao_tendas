@@ -15,7 +15,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Tamanho / Dimensões *</label>
                     <input type="text" name="tamanho" placeholder="Ex: 5x5m, 10x10m, 3x3m Sanfonada" required class="w-full border-gray-300 rounded-lg text-sm">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Quantidade Total no Estoque *</label>
                         <input type="number" name="quantidade_total" value="1" min="1" required class="w-full border-gray-300 rounded-lg text-sm">

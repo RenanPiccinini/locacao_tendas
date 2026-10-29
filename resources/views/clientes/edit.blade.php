@@ -28,8 +28,8 @@
                         <input type="text" name="cpf_cnpj" value="{{ old('cpf_cnpj', $cliente->cpf_cnpj) }}" class="w-full border-gray-300 rounded-lg text-sm">
                     </div>
                 </div>
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="col-span-2">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="sm:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Endereço Principal *</label>
                         <input type="text" name="endereco" value="{{ old('endereco', $cliente->endereco) }}" required class="w-full border-gray-300 rounded-lg text-sm">
                     </div>

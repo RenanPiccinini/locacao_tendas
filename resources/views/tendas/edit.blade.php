@@ -16,7 +16,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Tamanho / Dimensões *</label>
                     <input type="text" name="tamanho" value="{{ old('tamanho', $tenda->tamanho) }}" required class="w-full border-gray-300 rounded-lg text-sm">
                 </div>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Quantidade Total *</label>
                         <input type="number" name="quantidade_total" value="{{ old('quantidade_total', $tenda->quantidade_total) }}" min="1" required class="w-full border-gray-300 rounded-lg text-sm">
