@@ -23,7 +23,6 @@
                     <div>
                         <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Instância Configurada</span>
                         <h3 class="text-xl font-bold text-gray-900 mt-0.5">{{ $instance }}</h3>
-                        <p class="text-xs text-gray-500 mt-1">Servidor VPS: <code class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ $apiUrl }}</code></p>
                     </div>
 
                     <div id="status-container" class="flex items-center gap-3">
@@ -78,18 +77,7 @@
                 </div>
             </div>
 
-            <!-- Guia de Configuração .env -->
-            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                <h4 class="font-bold text-gray-900 text-sm mb-2">💡 Dica de Configuração do .env</h4>
-                <p class="text-xs text-gray-600 mb-3">
-                    Certifique-se de que a variável <code>EVOLUTION_API_KEY</code> esteja com a chave correta da sua VPS Hostinger.
-                </p>
-                <div class="bg-gray-900 text-gray-200 p-3 rounded-lg text-xs font-mono overflow-x-auto">
-                    EVOLUTION_API_URL=https://evolution.piccinidigitalsolutions.com.br<br>
-                    EVOLUTION_API_KEY=Sua_Chave_De_Api_Aqui<br>
-                    EVOLUTION_INSTANCE=PDS
-                </div>
-            </div>
+
 
         </div>
     </div>
