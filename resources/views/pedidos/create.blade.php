@@ -13,7 +13,19 @@
 
     <div class="py-6">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <form action="{{ route('pedidos.store') }}" method="POST" class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-100 space-y-6">
+
+            @if($errors->any())
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-lg shadow-xs">
+                    <div class="font-bold mb-1">Atenção! Verifique os seguintes campos:</div>
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                        @foreach($errors->all() as $erro)
+                            <li>{{ $erro }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('pedidos.store') }}" method="POST" class="bg-white p-6 sm:p-8 rounded-xl shadow-xs border border-gray-200 space-y-6">
                 @csrf
 
                 <!-- Cliente e Montador -->
@@ -83,23 +95,26 @@
 
                 <!-- Seleção de Tendas do Estoque -->
                 <div class="border-t border-gray-200 pt-6">
-                    <h3 class="font-bold text-gray-800 text-base mb-3">Tendas para a Locação</h3>
-                    <p class="text-xs text-gray-500 mb-4">Selecione uma ou mais tendas e informe a quantidade:</p>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-bold text-gray-800 text-base">Tendas para a Locação *</h3>
+                        <span class="text-xs text-blue-600 font-semibold">Marque pelo menos uma tenda</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-4">Marque a caixa de seleção da tenda desejada e informe a quantidade:</p>
 
                     <div class="space-y-3">
-                        @foreach($tendas as $index => $tenda)
-                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition">
+                        @foreach($tendas as $tenda)
+                            <div class="flex items-center justify-between p-3.5 border border-gray-200 rounded-lg hover:border-blue-400 bg-gray-50/50 transition">
                                 <div class="flex items-center gap-3">
-                                    <input type="checkbox" id="tenda_{{ $tenda->id }}" name="tendas[{{ $index }}][id]" value="{{ $tenda->id }}" class="rounded text-blue-600 focus:ring-blue-500">
-                                    <label for="tenda_{{ $tenda->id }}" class="text-sm cursor-pointer">
+                                    <input type="checkbox" id="tenda_{{ $tenda->id }}" name="tendas_selecionadas[]" value="{{ $tenda->id }}" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                    <label for="tenda_{{ $tenda->id }}" class="text-sm cursor-pointer select-none">
                                         <span class="font-bold text-gray-900">{{ $tenda->nome }}</span>
                                         <span class="text-xs text-gray-500 ml-2">Dimensões: {{ $tenda->tamanho }}</span>
-                                        <span class="text-xs text-emerald-600 ml-2 font-semibold">({{ $tenda->quantidade_disponivel }} disponíveis no estoque)</span>
+                                        <span class="text-xs text-emerald-600 ml-2 font-semibold">({{ $tenda->quantidade_disponivel }} disp. no estoque)</span>
                                     </label>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xs text-gray-500">Qtd:</span>
-                                    <input type="number" name="tendas[{{ $index }}][quantidade]" value="1" min="1" max="{{ $tenda->quantidade_disponivel }}" class="w-20 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm text-center">
+                                    <span class="text-xs font-medium text-gray-600">Quantidade:</span>
+                                    <input type="number" name="quantidades[{{ $tenda->id }}]" value="1" min="1" max="{{ max(1, $tenda->quantidade_disponivel) }}" class="w-20 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm text-center font-bold">
                                 </div>
                             </div>
                         @endforeach
@@ -121,15 +136,15 @@
 
                 <!-- Opção de Gerar OS na Hora -->
                 <div class="p-4 bg-blue-50 rounded-lg border border-blue-100 flex items-center gap-3">
-                    <input type="checkbox" id="gerar_os_agora" name="gerar_os_agora" value="1" checked class="rounded text-blue-600 focus:ring-blue-500">
-                    <label for="gerar_os_agora" class="text-sm font-medium text-blue-900 cursor-pointer">
-                        <strong>Gerar Ordem de Serviço automaticamente</strong> e já notificar o montador no WhatsApp agora mesmo
+                    <input type="checkbox" id="gerar_os_agora" name="gerar_os_agora" value="1" checked class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                    <label for="gerar_os_agora" class="text-sm font-medium text-blue-900 cursor-pointer select-none">
+                        <strong>Gerar Ordem de Serviço automaticamente</strong> e já notificar o montador no WhatsApp
                     </label>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
                     <a href="{{ route('pedidos.index') }}" class="px-5 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition text-sm">Cancelar</a>
-                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition text-sm">
+                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm transition text-sm">
                         Salvar Pedido
                     </button>
                 </div>
@@ -137,4 +152,3 @@
         </div>
     </div>
 </x-app-layout>
-

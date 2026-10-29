@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -28,7 +29,6 @@ class PedidoController extends Controller
     {
         $query = Pedido::with(['cliente', 'montador', 'tendas', 'ordensServico'])->latest();
 
-        // Se o usuário logado for montador, vê apenas os dele
         if (auth()->user()->isMontador()) {
             $query->where('montador_id', auth()->id());
         }
@@ -73,10 +73,14 @@ class PedidoController extends Controller
             'cep_instalacao' => 'nullable|string|max:20',
             'valor_total' => 'nullable|numeric|min:0',
             'observacoes' => 'nullable|string',
-            'tendas' => 'required|array|min:1',
-            'tendas.*.id' => 'required|exists:tendas,id',
-            'tendas.*.quantidade' => 'required|integer|min:1',
-            'gerar_os_agora' => 'nullable|boolean',
+            'tendas_selecionadas' => 'required|array|min:1',
+            'tendas_selecionadas.*' => 'exists:tendas,id',
+            'quantidades' => 'nullable|array',
+            'gerar_os_agora' => 'nullable',
+        ], [
+            'tendas_selecionadas.required' => 'Por favor, selecione ao menos uma tenda da lista.',
+            'cliente_id.required' => 'Selecione um cliente cadastrado.',
+            'data_retirada.after_or_equal' => 'A data de retirada deve ser igual ou posterior à data de instalação.',
         ]);
 
         DB::beginTransaction();
@@ -97,17 +101,19 @@ class PedidoController extends Controller
             ]);
 
             // Associa tendas e deduz do estoque disponível
-            foreach ($validated['tendas'] as $item) {
-                $pedido->tendas()->attach($item['id'], ['quantidade' => $item['quantidade']]);
-                
-                $tenda = Tenda::find($item['id']);
+            $quantidades = $request->input('quantidades', []);
+            foreach ($validated['tendas_selecionadas'] as $tendaId) {
+                $qtd = isset($quantidades[$tendaId]) ? max(1, intval($quantidades[$tendaId])) : 1;
+                $pedido->tendas()->attach($tendaId, ['quantidade' => $qtd]);
+
+                $tenda = Tenda::find($tendaId);
                 if ($tenda) {
-                    $tenda->decrement('quantidade_disponivel', min($tenda->quantidade_disponivel, $item['quantidade']));
+                    $tenda->decrement('quantidade_disponivel', min($tenda->quantidade_disponivel, $qtd));
                 }
             }
 
-            // Se marcado para gerar OS automaticamente ou se tiver botão acionado
-            if ($request->boolean('gerar_os_agora')) {
+            // Se marcado para gerar OS automaticamente
+            if ($request->filled('gerar_os_agora')) {
                 $this->processarGerarOs($pedido);
             }
 
@@ -115,15 +121,15 @@ class PedidoController extends Controller
 
             return redirect()->route('pedidos.show', $pedido)
                 ->with('success', 'Pedido criado com sucesso!');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Erro ao salvar pedido: ' . $e->getMessage());
             return back()->withInput()->with('error', 'Erro ao salvar pedido: ' . $e->getMessage());
         }
     }
 
     public function show(Pedido $pedido): View
     {
-        // Se montador, verificar autorização
         if (auth()->user()->isMontador() && $pedido->montador_id !== auth()->id()) {
             abort(403, 'Acesso não autorizado.');
         }
@@ -165,7 +171,6 @@ class PedidoController extends Controller
 
     public function destroy(Pedido $pedido): RedirectResponse
     {
-        // Devolve tendas ao estoque se o pedido for cancelado/excluído
         if (!in_array($pedido->status, ['concluido', 'cancelado'])) {
             foreach ($pedido->tendas as $tenda) {
                 $tenda->increment('quantidade_disponivel', $tenda->pivot->quantidade);
@@ -176,9 +181,6 @@ class PedidoController extends Controller
         return redirect()->route('pedidos.index')->with('success', 'Pedido excluído com sucesso!');
     }
 
-    /**
-     * Ação: Gerar Ordem de Serviço de Instalação e Notificar Montador no WhatsApp
-     */
     public function gerarOs(Pedido $pedido): RedirectResponse
     {
         $this->processarGerarOs($pedido);
@@ -208,9 +210,6 @@ class PedidoController extends Controller
         $this->notificarMontadorNovaOs($pedido, $os);
     }
 
-    /**
-     * Montador clica no botão "Estou em processo de instalação"
-     */
     public function iniciarInstalacao(Pedido $pedido): RedirectResponse
     {
         $os = $pedido->osInstalacao();
@@ -226,14 +225,10 @@ class PedidoController extends Controller
         return back()->with('success', 'Status atualizado: Em processo de instalação!');
     }
 
-    /**
-     * Montador clica em "Finalizar Instalação", anexa fotos e observações
-     * Sistema passa status para "Aguardando Retirada" e gera a nova OS de retorno automaticamente
-     */
     public function finalizarInstalacao(Request $request, Pedido $pedido): RedirectResponse
     {
         $request->validate([
-            'fotos.*' => 'nullable|image|max:10240', // até 10MB cada
+            'fotos.*' => 'nullable|image|max:10240',
             'observacoes_montador' => 'nullable|string',
         ]);
 
@@ -271,10 +266,9 @@ class PedidoController extends Controller
             $osRetirada = $osRetiradaExistente;
         }
 
-        // Altera status do pedido para 'aguardando_retirada'
         $pedido->update(['status' => 'aguardando_retirada']);
 
-        // Notifica montador sobre a data prevista de retirada
+        // Notifica montador sobre a retirada
         if ($pedido->montador && $pedido->montador->whatsapp) {
             $dataRetirada = Carbon::parse($pedido->data_retirada)->format('d/m/Y');
             $msg = "✅ *Instalação Concluída!*\n\n"
@@ -288,9 +282,6 @@ class PedidoController extends Controller
         return back()->with('success', 'Instalação finalizada com sucesso! OS de Retirada gerada automaticamente.');
     }
 
-    /**
-     * Montador avisa que está em processo de retirada
-     */
     public function iniciarRetirada(Pedido $pedido): RedirectResponse
     {
         $osRetirada = $pedido->osRetirada();
@@ -306,10 +297,6 @@ class PedidoController extends Controller
         return back()->with('success', 'Status atualizado: Em processo de retirada!');
     }
 
-    /**
-     * Montador clica no botão "Confirmar Retirada"
-     * Sistema finaliza pedido, fecha OS de retirada e devolve tendas ao estoque automaticamente
-     */
     public function confirmarRetirada(Pedido $pedido): RedirectResponse
     {
         DB::beginTransaction();
@@ -322,18 +309,16 @@ class PedidoController extends Controller
                 ]);
             }
 
-            // Devolve as tendas ao estoque automaticamente!
+            // Devolve as tendas ao estoque
             foreach ($pedido->tendas as $tenda) {
                 $qtdRetirada = $tenda->pivot->quantidade;
                 $tenda->increment('quantidade_disponivel', $qtdRetirada);
             }
 
-            // Conclui pedido
             $pedido->update(['status' => 'concluido']);
 
             DB::commit();
 
-            // Notifica via WhatsApp
             if ($pedido->montador && $pedido->montador->whatsapp) {
                 $msg = "🎉 *Retirada Concluída!*\n\n"
                      . "Pedido #{$pedido->id} concluído com sucesso.\n"
@@ -342,7 +327,7 @@ class PedidoController extends Controller
             }
 
             return back()->with('success', 'Retirada confirmada com sucesso! As tendas voltaram para o estoque automaticamente.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             return back()->with('error', 'Erro ao confirmar retirada: ' . $e->getMessage());
         }
@@ -375,4 +360,3 @@ class PedidoController extends Controller
         $this->whatsapp->enviarMensagem($pedido->montador->whatsapp, $msg);
     }
 }
-
