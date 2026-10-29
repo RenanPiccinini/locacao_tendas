@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rotas exclusivas para Administradores
     Route::middleware('admin')->group(function () {
+        Route::resource('montadores', \App\Http\Controllers\MontadorController::class);
         Route::resource('tendas', TendaController::class);
         Route::resource('clientes', ClienteController::class);
 
