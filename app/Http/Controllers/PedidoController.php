@@ -122,12 +122,15 @@ class PedidoController extends Controller
             // Se marcado para gerar OS automaticamente
             if ($request->filled('gerar_os_agora')) {
                 $this->processarGerarOs($pedido);
+            } else {
+                // Notifica montador sobre o novo pedido criado mesmo sem gerar OS ainda
+                $this->notificarMontadorNovoPedido($pedido);
             }
 
             DB::commit();
 
             return redirect()->route('pedidos.show', $pedido)
-                ->with('success', 'Pedido criado com sucesso!');
+                ->with('success', 'Pedido criado com sucesso e notificação enviada ao montador!');
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Erro ao salvar pedido: ' . $e->getMessage());
@@ -340,29 +343,65 @@ class PedidoController extends Controller
         }
     }
 
-    protected function notificarMontadorNovaOs(Pedido $pedido, OrdemServico $os): void
+    protected function notificarMontadorNovoPedido(Pedido $pedido): void
     {
+        $pedido->loadMissing(['montador', 'cliente', 'tendas']);
+
         if (!$pedido->montador || empty($pedido->montador->whatsapp)) {
             return;
         }
 
         $dataInst = Carbon::parse($pedido->data_instalacao)->format('d/m/Y');
         $horaInst = $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : 'A combinar';
+        $dataRet = Carbon::parse($pedido->data_retirada)->format('d/m/Y');
+        $horaRet = $pedido->hora_retirada ? substr($pedido->hora_retirada, 0, 5) : 'A combinar';
 
         $tendasLista = '';
         foreach ($pedido->tendas as $t) {
             $tendasLista .= "• {$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})\n";
         }
 
-        $msg = "🚨 *NOVA ORDEM DE SERVIÇO: {$os->numero_os}*\n\n"
-             . "Olá {$pedido->montador->name}, você foi designado para uma nova montagem:\n\n"
+        $msg = "📋 *NOVO PEDIDO DE MONTAGEM AGENDADO! (#{$pedido->id})*\n\n"
+             . "Olá *{$pedido->montador->name}*, você foi escalado para um novo pedido de locação:\n\n"
+             . "👤 *Cliente:* {$pedido->cliente->nome}\n"
+             . "📞 *Contato:* {$pedido->cliente->telefone}\n"
+             . "📅 *Instalação:* {$dataInst} às {$horaInst}\n"
+             . "🔄 *Retirada:* {$dataRet} às {$horaRet}\n"
+             . "📍 *Endereço:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n\n"
+             . "⛺ *Tendas a serem instaladas:*\n{$tendasLista}\n"
+             . "📝 *Observações:* " . ($pedido->observacoes ?: 'Nenhuma observação informada.') . "\n\n"
+             . "Acesse o sistema no seu celular para acompanhar e emitir sua Ordem de Serviço!";
+
+        $this->whatsapp->enviarMensagem($pedido->montador->whatsapp, $msg);
+    }
+
+    protected function notificarMontadorNovaOs(Pedido $pedido, OrdemServico $os): void
+    {
+        $pedido->loadMissing(['montador', 'cliente', 'tendas']);
+
+        if (!$pedido->montador || empty($pedido->montador->whatsapp)) {
+            return;
+        }
+
+        $dataInst = Carbon::parse($pedido->data_instalacao)->format('d/m/Y');
+        $horaInst = $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : 'A combinar';
+        $dataRet = Carbon::parse($pedido->data_retirada)->format('d/m/Y');
+
+        $tendasLista = '';
+        foreach ($pedido->tendas as $t) {
+            $tendasLista .= "• {$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})\n";
+        }
+
+        $msg = "🚨 *ORDEM DE SERVIÇO EMITIDA: {$os->numero_os}*\n\n"
+             . "Olá *{$pedido->montador->name}*, a O.S. referente ao Pedido #{$pedido->id} já está liberada:\n\n"
              . "👤 *Cliente:* {$pedido->cliente->nome}\n"
              . "📞 *Telefone:* {$pedido->cliente->telefone}\n"
-             . "📅 *Data de Instalação:* {$dataInst} às {$horaInst}\n"
-             . "📍 *Endereço:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n\n"
+             . "📅 *Data de Montagem:* {$dataInst} às {$horaInst}\n"
+             . "🔄 *Data Prevista de Retirada:* {$dataRet}\n"
+             . "📍 *Local:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n\n"
              . "⛺ *Tendas a montar:*\n{$tendasLista}\n"
-             . "📝 *Obs:* " . ($pedido->observacoes ?: 'Sem observações adicionais') . "\n\n"
-             . "Acesse o sistema pelo seu celular para iniciar o atendimento!";
+             . "📝 *Instruções de acesso:* " . ($pedido->observacoes ?: 'Sem observações adicionais') . "\n\n"
+             . "📲 Acesse o sistema pelo celular para clicar em *'Em Processo de Instalação'* assim que iniciar!";
 
         $this->whatsapp->enviarMensagem($pedido->montador->whatsapp, $msg);
     }
