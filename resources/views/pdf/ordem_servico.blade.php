@@ -97,7 +97,8 @@
                 <td class="os-number">
                     ORDEM DE SERVIÇO<br>
                     <span>{{ $os->numero_os }}</span><br>
-                    <span class="badge">{{ $os->tipo === 'instalacao' ? 'MONTAGEM / INSTALAÇÃO' : 'DESMONTAGEM / RETIRADA' }}</span>
+                    <span class="badge">{{ mb_strtoupper($os->tipo_label) }}</span>
+                    <div style="font-size: 10px; margin-top: 3px; color: #475569;">Status: <strong>{{ $os->status_label }}</strong></div>
                 </td>
             </tr>
         </table>

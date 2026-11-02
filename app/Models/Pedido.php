@@ -51,7 +51,7 @@ class Pedido extends Model
 
     public function ordensServico(): HasMany
     {
-        return $this->hasMany(OrdemServico::class);
+        return $this->hasMany(OrdemServico::class)->latest();
     }
 
     public function osInstalacao()
@@ -62,6 +62,11 @@ class Pedido extends Model
     public function osRetirada()
     {
         return $this->hasOne(OrdemServico::class)->where('tipo', 'retirada')->latestOfMany();
+    }
+
+    public function osConclusao()
+    {
+        return $this->hasOne(OrdemServico::class)->where('tipo', 'conclusao')->latestOfMany();
     }
 
     public function getStatusLabelAttribute(): string

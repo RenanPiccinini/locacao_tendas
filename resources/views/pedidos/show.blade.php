@@ -14,23 +14,22 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('pedidos.index') }}" class="px-4 py-2 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#0a4835] text-gray-700 dark:text-emerald-100 text-xs font-semibold rounded-lg transition border border-transparent dark:border-emerald-700/40">
+                <a href="{{ route('pedidos.index') }}" class="px-3.5 py-1.5 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#0a4835] text-gray-700 dark:text-emerald-100 text-xs font-semibold rounded-lg transition border border-transparent dark:border-emerald-700/40">
                     &larr; Voltar
                 </a>
 
-                @if($pedido->osInstalacao)
-                    <a href="{{ route('os.pdf', $pedido->osInstalacao) }}" target="_blank" class="px-3 py-2 bg-white dark:bg-[#031d14] border border-gray-300 dark:border-[#083d2c] hover:bg-gray-50 dark:hover:bg-[#063325] text-gray-700 dark:text-emerald-100 text-xs font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        PDF O.S. Instalação
+                @foreach($pedido->ordensServico as $osHeader)
+                    <a href="{{ route('os.pdf', $osHeader) }}" target="_blank" class="px-2.5 py-1.5 bg-white dark:bg-[#031d14] border border-gray-200 dark:border-[#083d2c] hover:bg-gray-50 dark:hover:bg-[#063325] text-gray-800 dark:text-emerald-100 text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1.5" title="{{ $osHeader->tipo_label }} (Status: {{ $osHeader->status_label }})">
+                        <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="font-bold">{{ $osHeader->numero_os }}</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded font-bold {{ $osHeader->tipo_badge_color }}">{{ $osHeader->tipo_label }}</span>
                     </a>
-                @endif
+                @endforeach
 
-                @if($pedido->osRetirada)
-                    <a href="{{ route('os.pdf', $pedido->osRetirada) }}" target="_blank" class="px-3 py-2 bg-white dark:bg-[#031d14] border border-gray-300 dark:border-[#083d2c] hover:bg-gray-50 dark:hover:bg-[#063325] text-gray-700 dark:text-emerald-100 text-xs font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        PDF O.S. Retirada
-                    </a>
-                @endif
+                <button type="button" onclick="document.getElementById('modal-gerar-nova-os').classList.remove('hidden')" class="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg shadow-xs transition flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    + Gerar O.S.
+                </button>
             </div>
         </div>
     </x-slot>
@@ -117,7 +116,107 @@
                             🎉 Ciclo Completo! Tendas reintegradas ao estoque.
                         </span>
                     @endif
+
+                    <button type="button" onclick="document.getElementById('modal-gerar-nova-os').classList.remove('hidden')" class="px-4 py-2.5 bg-emerald-800/80 hover:bg-emerald-800 text-white font-semibold rounded-lg shadow-xs transition text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        + Gerar Nova O.S. (Adicional)
+                    </button>
                 </div>
+            </div>
+
+            <!-- Seção de Ordens de Serviço do Pedido -->
+            <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] transition-colors space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-gray-100 dark:border-[#083d2c] pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-600/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                                Ordens de Serviço deste Pedido
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300">
+                                    {{ $pedido->ordensServico->count() }} O.S. geradas
+                                </span>
+                            </h3>
+                            <p class="text-xs text-gray-500 dark:text-emerald-300/70">Todas as ordens de serviço deste pedido ficam disponíveis abaixo para consulta em PDF, download e envio ao WhatsApp:</p>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="document.getElementById('modal-gerar-nova-os').classList.remove('hidden')" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition shadow-xs flex items-center gap-1.5 w-fit">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        + Gerar Nova O.S.
+                    </button>
+                </div>
+
+                @if($pedido->ordensServico->isEmpty())
+                    <div class="py-6 text-center text-gray-400 dark:text-emerald-400/60 text-sm">
+                        Nenhuma Ordem de Serviço gerada para este pedido ainda.
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($pedido->ordensServico as $os)
+                            <div class="p-4 rounded-xl border border-gray-200 dark:border-[#083d2c] bg-gray-50/70 dark:bg-[#021811] flex flex-col justify-between gap-3 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-600 transition">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <a href="{{ route('os.pdf', $os) }}" target="_blank" class="font-mono font-bold text-emerald-700 dark:text-amber-400 hover:underline text-sm flex items-center gap-1.5">
+                                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            {{ $os->numero_os }}
+                                        </a>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold {{ $os->status_badge_color }}">
+                                            {{ $os->status_label }}
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold {{ $os->tipo_badge_color }}">
+                                            {{ $os->tipo_label }}
+                                        </span>
+                                    </div>
+
+                                    <div class="text-xs text-gray-500 dark:text-emerald-300/70 space-y-1 pt-1">
+                                        <div class="flex justify-between">
+                                            <span>Emissão:</span>
+                                            <strong class="text-gray-700 dark:text-white">{{ $os->created_at->format('d/m/Y H:i') }}</strong>
+                                        </div>
+                                        @if($os->concluido_em)
+                                            <div class="flex justify-between text-emerald-600 dark:text-emerald-400">
+                                                <span>Concluído:</span>
+                                                <strong>{{ $os->concluido_em->format('d/m/Y H:i') }}</strong>
+                                            </div>
+                                        @endif
+                                        <div class="flex justify-between">
+                                            <span>Montador:</span>
+                                            <strong class="text-gray-700 dark:text-white">{{ $pedido->montador ? $pedido->montador->name : 'Não informado' }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-2 border-t border-gray-200 dark:border-[#083d2c] flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-1.5">
+                                        <a href="{{ route('os.pdf', $os) }}" target="_blank" class="px-2.5 py-1 bg-white dark:bg-[#031d14] hover:bg-gray-100 dark:hover:bg-[#063325] text-gray-700 dark:text-emerald-200 border border-gray-200 dark:border-[#083d2c] rounded-md text-xs font-semibold transition flex items-center gap-1" title="Visualizar PDF">
+                                            <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            Ver PDF
+                                        </a>
+
+                                        <a href="{{ route('os.download', $os) }}" class="p-1 bg-white dark:bg-[#031d14] hover:bg-gray-100 dark:hover:bg-[#063325] text-gray-700 dark:text-emerald-200 border border-gray-200 dark:border-[#083d2c] rounded-md text-xs font-semibold transition" title="Baixar PDF">
+                                            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                        </a>
+                                    </div>
+
+                                    @if($pedido->montador && $pedido->montador->whatsapp)
+                                        <form action="{{ route('os.enviar-whatsapp', $os) }}" method="POST" data-confirm="Deseja reenviar a <strong>{{ $os->numero_os }} ({{ $os->tipo_label }})</strong> para o WhatsApp do montador {{ $pedido->montador->name }}?" data-confirm-title="Reenviar O.S. via WhatsApp" data-confirm-btn="Sim, Enviar" data-confirm-type="success">
+                                            @csrf
+                                            <button type="submit" class="px-2.5 py-1 bg-emerald-600/10 hover:bg-emerald-600 text-emerald-700 hover:text-white dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-700 border border-emerald-300/50 dark:border-emerald-700/60 rounded-md text-xs font-semibold transition flex items-center gap-1" title="Enviar para WhatsApp do Montador">
+                                                <svg class="w-3.5 h-3.5 text-emerald-500 hover:text-white shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                                WhatsApp
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             <!-- Dados do Pedido e Cliente -->
@@ -443,6 +542,45 @@
                     <button type="button" onclick="document.getElementById('modal-finalizar-instalacao').classList.add('hidden')" class="px-4 py-2 bg-gray-100 dark:bg-[#063325] text-gray-700 dark:text-emerald-200 font-semibold rounded-lg text-sm">Cancelar</button>
                     <button type="submit" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-sm shadow">
                         Confirmar Conclusão & Gerar O.S. Retorno
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal Gerar Nova Ordem de Serviço -->
+    <div id="modal-gerar-nova-os" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-[#031d14] rounded-xl max-w-md w-full p-6 shadow-2xl relative border border-gray-200 dark:border-[#083d2c]">
+            <button onclick="document.getElementById('modal-gerar-nova-os').classList.add('hidden')" class="absolute top-3 right-3 text-gray-400 dark:text-emerald-400 hover:text-gray-600 dark:hover:text-white text-xl font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Gerar Nova Ordem de Serviço
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-emerald-300/70 mb-4">Gere uma nova O.S. a mais para este pedido. Ela receberá uma numeração exclusiva e ficará disponível no histórico deste pedido.</p>
+
+            <form action="{{ route('pedidos.gerar-os', $pedido) }}" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Tipo da O.S. (Finalidade) *</label>
+                    <select name="tipo" class="w-full border-gray-300 dark:border-emerald-700/60 dark:bg-[#02140e] dark:text-white focus:border-amber-400 focus:ring-amber-400/20 rounded-lg text-sm">
+                        <option value="instalacao" {{ in_array($pedido->status, ['pendente', 'os_gerada', 'em_instalacao']) ? 'selected' : '' }}>Montagem / Instalação (OSI)</option>
+                        <option value="retirada" {{ in_array($pedido->status, ['aguardando_retirada', 'em_retirada']) ? 'selected' : '' }}>Desmontagem / Retirada (OSR)</option>
+                        <option value="conclusao" {{ $pedido->status === 'concluido' ? 'selected' : '' }}>Conclusão / Devolução ao Estoque (OSC)</option>
+                        <option value="manutencao">Manutenção / Vistoria Técnica (OSM)</option>
+                    </select>
+                </div>
+
+                <div class="p-3 bg-gray-50 dark:bg-[#02140e] rounded-lg border border-gray-100 dark:border-[#083d2c] text-xs text-gray-600 dark:text-emerald-300/70 space-y-1">
+                    <div>Pedido: <strong>#{{ $pedido->id }} - {{ $pedido->cliente->nome }}</strong></div>
+                    <div>Montador: <strong>{{ $pedido->montador ? $pedido->montador->name : 'Nenhum' }}</strong></div>
+                    @if($pedido->montador && $pedido->montador->whatsapp)
+                        <div class="text-emerald-600 dark:text-emerald-400 font-medium">✓ O montador receberá um aviso automático no WhatsApp.</div>
+                    @endif
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('modal-gerar-nova-os').classList.add('hidden')" class="px-4 py-2 bg-gray-100 dark:bg-[#063325] text-gray-700 dark:text-emerald-200 font-semibold rounded-lg text-sm">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-sm shadow">
+                        Gerar Ordem de Serviço
                     </button>
                 </div>
             </form>

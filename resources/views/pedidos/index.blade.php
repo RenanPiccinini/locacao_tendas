@@ -140,6 +140,15 @@
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $pedido->status_color }}">
                                             {{ $pedido->status_label }}
                                         </span>
+                                        @if($pedido->ordensServico->isNotEmpty())
+                                            <div class="flex flex-wrap gap-1 mt-1.5">
+                                                @foreach($pedido->ordensServico as $osItem)
+                                                    <a href="{{ route('os.pdf', $osItem) }}" target="_blank" title="{{ $osItem->tipo_label }} (Status: {{ $osItem->status_label }})" class="text-[10px] px-1.5 py-0.5 rounded font-mono font-bold bg-gray-100 dark:bg-[#021811] text-gray-700 dark:text-emerald-300 hover:text-emerald-600 dark:hover:text-amber-400 border border-gray-200 dark:border-emerald-700/40 transition">
+                                                        {{ $osItem->numero_os }}
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex items-center justify-end gap-2">

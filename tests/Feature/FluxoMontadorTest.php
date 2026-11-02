@@ -110,12 +110,34 @@ class FluxoMontadorTest extends TestCase
         $this->assertEquals('retirada', $osRetirada->tipo);
 
         // 6. Montador clica em retirar / confirma retirada
-        // Tendas devem voltar automaticamente para o estoque e status fica concluido
+        // Tendas devem voltar automaticamente para o estoque, status fica concluido e gera OS de Conclusao
         $this->actingAs($montador)->post(route('pedidos.confirmar-retirada', $pedido));
 
         $this->assertEquals('concluido', $pedido->fresh()->status);
         $this->assertEquals('concluida', $osRetirada->fresh()->status);
         $this->assertEquals(5, $tenda->fresh()->quantidade_disponivel); // Estoque devolvido!
+
+        // Verifica que gerou também a OS de Conclusão respectiva ao status concluído
+        $osConclusao = $pedido->fresh()->osConclusao;
+        $this->assertNotNull($osConclusao);
+        $this->assertEquals('conclusao', $osConclusao->tipo);
+        $this->assertEquals('concluida', $osConclusao->status);
+
+        // Verifica que todas as 3 ordens de serviço ficam disponíveis no pedido
+        $this->assertCount(3, $pedido->fresh()->ordensServico);
+
+        // 7. Testa gerar uma O.S. a mais manualmente respectiva ao pedido e status
+        $this->actingAs($admin)->post(route('pedidos.gerar-os', $pedido), [
+            'tipo' => 'manutencao',
+        ]);
+        $this->assertCount(4, $pedido->fresh()->ordensServico);
+
+        // 8. Testa reenvio de O.S. via WhatsApp e download em PDF
+        $resWpp = $this->actingAs($admin)->post(route('os.enviar-whatsapp', $osInstalacao));
+        $resWpp->assertSessionHas('success');
+
+        $resDown = $this->actingAs($admin)->get(route('os.download', $osInstalacao));
+        $resDown->assertStatus(200);
     }
 
     public function test_comandos_lembrete_whatsapp_executam_com_sucesso(): void

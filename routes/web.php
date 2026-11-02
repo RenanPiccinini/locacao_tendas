@@ -28,8 +28,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('pedidos/{pedido}/iniciar-retirada', [PedidoController::class, 'iniciarRetirada'])->name('pedidos.iniciar-retirada');
     Route::post('pedidos/{pedido}/confirmar-retirada', [PedidoController::class, 'confirmarRetirada'])->name('pedidos.confirmar-retirada');
 
-    // Ordens de Serviço (Visualização em PDF)
+    // Ordens de Serviço (Visualização e Download em PDF, e Reenvio WhatsApp)
     Route::get('ordens-servico/{ordemServico}/pdf', [OrdemServicoController::class, 'pdf'])->name('os.pdf');
+    Route::get('ordens-servico/{ordemServico}/download', [OrdemServicoController::class, 'download'])->name('os.download');
+    Route::post('ordens-servico/{ordemServico}/enviar-whatsapp', [OrdemServicoController::class, 'enviarWhatsapp'])->name('os.enviar-whatsapp');
 
     // Calendário (Montador vê os dele, Admin vê todos)
     Route::get('calendario', [CalendarioController::class, 'index'])->name('calendario.index');
@@ -98,6 +100,24 @@ Route::get('cron/storage-link', function () {
         ], 500);
     }
 })->name('cron.storage-link');
+
+// Endpoint para executar migrações de banco na Hostinger via Web se necessário
+Route::get('cron/migrate', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Migrações do banco de dados executadas com sucesso!',
+            'output' => trim(\Illuminate\Support\Facades\Artisan::output()),
+            'timestamp' => now('America/Sao_Paulo')->toIso8601String(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+})->name('cron.migrate');
 
 // Rotas de entrega direta de arquivos do storage (fotos de instalação, contratos e anexos)
 // Garante funcionamento imediato na Hostinger sem depender de symlink ou permissões de servidor
