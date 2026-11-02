@@ -207,27 +207,182 @@
             <!-- Fotos Anexadas pelo Montador (se houver) -->
             @php
                 $osInstalacao = $pedido->osInstalacao;
+                $fotosList = is_array($osInstalacao?->fotos) ? $osInstalacao->fotos : [];
+                $fotosUrls = array_map(function($path) {
+                    return route('storage.file', ['path' => $path]);
+                }, $fotosList);
             @endphp
-            @if($osInstalacao && !empty($osInstalacao->fotos))
-                <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] transition-colors">
-                    <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Fotos da Instalação / Conclusão
-                    </h3>
+            @if($osInstalacao && count($fotosList) > 0)
+                <div x-data="{
+                    openLightbox: false,
+                    currentIndex: 0,
+                    photos: @js($fotosUrls),
+                    openPhoto(index) {
+                        this.currentIndex = index;
+                        this.openLightbox = true;
+                        document.body.classList.add('overflow-hidden');
+                    },
+                    closeLightbox() {
+                        this.openLightbox = false;
+                        document.body.classList.remove('overflow-hidden');
+                    },
+                    nextPhoto() {
+                        if (this.photos.length > 0) {
+                            this.currentIndex = (this.currentIndex + 1) % this.photos.length;
+                        }
+                    },
+                    prevPhoto() {
+                        if (this.photos.length > 0) {
+                            this.currentIndex = (this.currentIndex - 1 + this.photos.length) % this.photos.length;
+                        }
+                    }
+                }"
+                @keydown.escape.window="closeLightbox()"
+                @keydown.arrow-right.window="if (openLightbox) nextPhoto()"
+                @keydown.arrow-left.window="if (openLightbox) prevPhoto()"
+                class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] transition-colors">
+                    
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Fotos da Instalação / Conclusão ({{ count($fotosList) }})
+                        </h3>
+                        <span class="text-xs text-gray-400 dark:text-emerald-400/60 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            Clique em qualquer foto para ampliar na tela
+                        </span>
+                    </div>
 
                     @if($osInstalacao->observacoes_montador)
-                        <div class="mb-4 p-3 bg-gray-50 dark:bg-[#02140e] rounded text-sm text-gray-700 dark:text-emerald-100 border-l-4 border-emerald-500">
-                            <strong>Obs do montador:</strong> {{ $osInstalacao->observacoes_montador }}
+                        <div class="mb-4 p-3 bg-gray-50 dark:bg-[#02140e] rounded-lg text-sm text-gray-700 dark:text-emerald-100 border-l-4 border-emerald-500 shadow-sm">
+                            <strong class="text-emerald-700 dark:text-amber-400">Obs do montador:</strong> {{ $osInstalacao->observacoes_montador }}
                         </div>
                     @endif
 
+                    <!-- Grade de Fotos com Efeito Hover e Clique para Ampliar -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        @foreach($osInstalacao->fotos as $foto)
-                            <a href="{{ Storage::url($foto) }}" target="_blank" class="block aspect-video bg-gray-100 dark:bg-[#02140e] rounded-lg overflow-hidden border border-gray-200 dark:border-[#083d2c] hover:opacity-90 shadow-sm transition">
-                                <img src="{{ Storage::url($foto) }}" alt="Foto instalação" class="w-full h-full object-cover">
-                            </a>
+                        @foreach($fotosList as $idx => $foto)
+                            @php
+                                $fotoUrl = route('storage.file', ['path' => $foto]);
+                                $fallbackUrl = Storage::url($foto);
+                            @endphp
+                            <div class="group relative aspect-video bg-gray-100 dark:bg-[#02140e] rounded-xl overflow-hidden border border-gray-200 dark:border-[#083d2c] shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
+                                 @click="openPhoto({{ $idx }})">
+                                <img src="{{ $fotoUrl }}" 
+                                     alt="Foto instalação #{{ $idx + 1 }}" 
+                                     loading="lazy"
+                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                     onerror="if (this.src !== '{{ $fallbackUrl }}') { this.src = '{{ $fallbackUrl }}'; } else { this.onerror=null; this.parentElement.classList.add('flex', 'items-center', 'justify-center', 'text-gray-400'); this.parentElement.innerHTML='<div class=\'p-3 text-center text-xs\'><svg class=\'w-6 h-6 mx-auto mb-1 text-gray-400\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\'></svg>Foto indisponível</div>'; }">
+                                
+                                <!-- Overlay Hover com Lupa e Texto -->
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center p-2 text-center pointer-events-none">
+                                    <span class="p-2 bg-emerald-600/90 text-white rounded-full shadow-lg transform -translate-y-1 group-hover:translate-y-0 transition-transform">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
+                                    </span>
+                                    <span class="text-[11px] font-semibold text-white mt-1.5 drop-shadow">Clique para ampliar</span>
+                                </div>
+
+                                <!-- Badge com Índice -->
+                                <span class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full pointer-events-none">
+                                    #{{ $idx + 1 }}
+                                </span>
+                            </div>
                         @endforeach
                     </div>
+
+                    <!-- Modal Lightbox em Tela Cheia para Fotos Ampliadas -->
+                    <template x-teleport="body">
+                        <div x-show="openLightbox" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100"
+                             x-transition:leave-end="opacity-0"
+                             class="fixed inset-0 z-[100] flex flex-col justify-between bg-black/95 backdrop-blur-md select-none"
+                             style="display: none;"
+                             @click.self="closeLightbox()">
+                            
+                            <!-- Barra Superior do Lightbox -->
+                            <div class="w-full p-4 flex items-center justify-between text-white border-b border-white/10 bg-black/50 backdrop-blur-sm z-20">
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold tracking-wide shadow">
+                                        Foto <span x-text="currentIndex + 1"></span> de <span x-text="photos.length"></span>
+                                    </span>
+                                    <span class="text-sm font-semibold text-gray-200 hidden sm:inline">
+                                        Instalação - Pedido #{{ $pedido->id }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <!-- Botão Abrir Original em Nova Aba -->
+                                    <a :href="photos[currentIndex]" target="_blank" title="Abrir imagem original em tela cheia" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 border border-white/10">
+                                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        <span class="hidden sm:inline">Abrir Original</span>
+                                    </a>
+
+                                    <!-- Botão Fechar -->
+                                    <button type="button" @click="closeLightbox()" title="Fechar (Esc)" class="w-9 h-9 rounded-lg bg-white/10 hover:bg-red-600 text-white flex items-center justify-center transition font-bold text-xl border border-white/10">
+                                        &times;
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Área Central com a Imagem Ampliada e Setas -->
+                            <div class="relative flex-1 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
+                                <!-- Seta Anterior -->
+                                <button x-show="photos.length > 1" 
+                                        type="button" 
+                                        @click.stop="prevPhoto()" 
+                                        title="Foto anterior (Seta esquerda)"
+                                        class="absolute left-3 sm:left-6 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-emerald-600 text-white flex items-center justify-center transition border border-white/20 shadow-2xl backdrop-blur-sm">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
+
+                                <!-- Imagem Ampliada com Container Responsivo -->
+                                <div class="relative max-w-full max-h-[75vh] sm:max-h-[80vh] flex items-center justify-center" @click.stop>
+                                    <img :src="photos[currentIndex]" 
+                                         alt="Foto ampliada da montagem"
+                                         class="max-w-full max-h-[75vh] sm:max-h-[80vh] object-contain rounded-xl shadow-2xl border border-white/10 transition-all duration-200">
+                                </div>
+
+                                <!-- Seta Próxima -->
+                                <button x-show="photos.length > 1" 
+                                        type="button" 
+                                        @click.stop="nextPhoto()" 
+                                        title="Próxima foto (Seta direita)"
+                                        class="absolute right-3 sm:right-6 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-emerald-600 text-white flex items-center justify-center transition border border-white/20 shadow-2xl backdrop-blur-sm">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
+
+                            <!-- Barra Inferior do Lightbox (Observação e Miniaturas) -->
+                            <div class="w-full p-3 bg-black/60 backdrop-blur-sm border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 z-20">
+                                @if($osInstalacao->observacoes_montador)
+                                    <div class="text-xs text-emerald-200 max-w-xl truncate px-2">
+                                        <strong class="text-amber-400">Obs do montador:</strong> {{ $osInstalacao->observacoes_montador }}
+                                    </div>
+                                @else
+                                    <div class="text-xs text-gray-400 px-2">
+                                        Dica: Navegue com as setas ← → do teclado ou deslize para os lados.
+                                    </div>
+                                @endif
+
+                                <!-- Miniaturas do Carrossel inferior -->
+                                <div x-show="photos.length > 1" class="flex items-center gap-2 overflow-x-auto py-1 max-w-full px-2">
+                                    <template x-for="(fotoUrl, idx) in photos" :key="idx">
+                                        <button type="button" 
+                                                @click="currentIndex = idx" 
+                                                class="w-12 h-10 rounded-md overflow-hidden border-2 transition shrink-0"
+                                                :class="currentIndex === idx ? 'border-amber-400 ring-2 ring-amber-400/50 scale-105' : 'border-white/30 opacity-60 hover:opacity-100'">
+                                            <img :src="fotoUrl" alt="Miniatura" class="w-full h-full object-cover">
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+
+                        </div>
+                    </template>
                 </div>
             @endif
 

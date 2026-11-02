@@ -81,4 +81,31 @@ Route::get('cron/lembretes-whatsapp', function (\Illuminate\Http\Request $reques
     ]);
 })->name('cron.lembretes');
 
+// Endpoint para criação ou verificação do link simbólico de storage na Hostinger via Web
+Route::get('cron/storage-link', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        return response()->json([
+            'success' => true,
+            'message' => 'Symlink do storage criado/verificado com sucesso!',
+            'output' => trim(\Illuminate\Support\Facades\Artisan::output()),
+            'timestamp' => now('America/Sao_Paulo')->toIso8601String(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+})->name('cron.storage-link');
+
+// Rotas de entrega direta de arquivos do storage (fotos de instalação, contratos e anexos)
+// Garante funcionamento imediato na Hostinger sem depender de symlink ou permissões de servidor
+Route::get('storage-file/{path}', [PedidoController::class, 'servirArquivoStorage'])
+    ->where('path', '.*')
+    ->name('storage.file');
+
+Route::get('storage/{path}', [PedidoController::class, 'servirArquivoStorage'])
+    ->where('path', '.*');
+
 require __DIR__.'/auth.php';

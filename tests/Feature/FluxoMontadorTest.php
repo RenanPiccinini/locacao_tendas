@@ -90,6 +90,13 @@ class FluxoMontadorTest extends TestCase
         $this->assertCount(1, $osInstalacao->fresh()->fotos);
         $this->assertEquals('Tenda ancorada no gramado.', $osInstalacao->fresh()->observacoes_montador);
 
+        // Verifica renderização da tela de pedido com fotos e lightbox
+        $responseShow = $this->actingAs($admin)->get(route('pedidos.show', $pedido));
+        $responseShow->assertStatus(200);
+        $responseShow->assertSee('Fotos da Instalação / Conclusão');
+        $responseShow->assertSee('openLightbox');
+        $responseShow->assertSee('Clique em qualquer foto para ampliar na tela');
+
         // 5. Montador finaliza a instalação
         // Deve mudar status para "aguardando_retirada" e gerar nova OS de Retorno automaticamente
         $this->actingAs($montador)->post(route('pedidos.finalizar-instalacao', $pedido), [
@@ -115,6 +122,31 @@ class FluxoMontadorTest extends TestCase
     {
         $this->artisan('lembretes:whatsapp', ['--tipo' => 'semana'])->assertExitCode(0);
         $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia'])->assertExitCode(0);
+    }
+
+    public function test_servir_arquivo_storage_e_exibicao_fotos_com_lightbox(): void
+    {
+        Storage::fake('public');
+
+        // Cria arquivo fake no storage public
+        Storage::disk('public')->put('fotos_instalacao/foto_teste.jpg', 'conteudo-imagem-binario');
+
+        // Testa entrega via rota storage-file
+        $response1 = $this->get(route('storage.file', ['path' => 'fotos_instalacao/foto_teste.jpg']));
+        $response1->assertStatus(200);
+
+        // Testa entrega via rota /storage/{path}
+        $response2 = $this->get('/storage/fotos_instalacao/foto_teste.jpg');
+        $response2->assertStatus(200);
+
+        // Testa proteção contra path traversal
+        $responseTraversal = $this->get('/storage-file/../../../etc/passwd');
+        $this->assertContains($responseTraversal->status(), [403, 404]);
+
+        // Testa endpoint de storage-link
+        $responseLink = $this->get(route('cron.storage-link'));
+        $responseLink->assertStatus(200);
+        $responseLink->assertJson(['success' => true]);
     }
 }
 

@@ -461,4 +461,66 @@ class PedidoController extends Controller
 
         $this->whatsapp->enviarMensagem($pedido->montador->whatsapp, $msg);
     }
+
+    /**
+     * Serve arquivos e fotos do storage de forma direta e segura,
+     * garantindo 100% de compatibilidade em ambientes de hospedagem compartilhada (Hostinger).
+     */
+    public function servirArquivoStorage(string $path)
+    {
+        // Proteção contra Directory Traversal
+        $path = str_replace(['../', '..\\', '..'], '', ltrim($path, '/'));
+
+        // Normalização de prefixos comuns
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, 8);
+        }
+        if (str_starts_with($path, 'public/')) {
+            $path = substr($path, 7);
+        }
+
+        // 1. Procura no disco 'public' oficial do Laravel Storage
+        if (Storage::disk('public')->exists($path)) {
+            $fullPath = Storage::disk('public')->path($path);
+            if (file_exists($fullPath) && is_file($fullPath)) {
+                return response()->file($fullPath, [
+                    'Cache-Control' => 'public, max-age=86400',
+                ]);
+            }
+        }
+
+        // 2. Procura diretamente em storage/app/public/{path}
+        $appPublicPath = storage_path('app/public/' . $path);
+        if (file_exists($appPublicPath) && is_file($appPublicPath)) {
+            return response()->file($appPublicPath, [
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+
+        // 3. Procura diretamente em storage/app/{path}
+        $appPath = storage_path('app/' . $path);
+        if (file_exists($appPath) && is_file($appPath)) {
+            return response()->file($appPath, [
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+
+        // 4. Procura diretamente em public/storage/{path}
+        $pubStorage = public_path('storage/' . $path);
+        if (file_exists($pubStorage) && is_file($pubStorage)) {
+            return response()->file($pubStorage, [
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+
+        // 5. Procura diretamente em public/{path}
+        $pubDirect = public_path($path);
+        if (file_exists($pubDirect) && is_file($pubDirect)) {
+            return response()->file($pubDirect, [
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+
+        abort(404, 'Arquivo não encontrado.');
+    }
 }
