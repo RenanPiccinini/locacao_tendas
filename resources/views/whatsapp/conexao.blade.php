@@ -77,8 +77,6 @@
                 </div>
             </div>
 
-
-
         </div>
     </div>
 
@@ -92,7 +90,45 @@
         const btnGerarQrcode = document.getElementById('btn-gerar-qrcode');
         const btnDesconectar = document.getElementById('btn-desconectar');
 
-        async function verificarStatus() {
+        let pollingInterval = null;
+        let isChecking = false;
+        let estavaAguardandoConexao = false;
+
+        function definirEstadoConectado() {
+            badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+            badgeStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 me-2"></span> Conectado';
+            painelConectado.classList.remove('hidden');
+            painelDesconectado.classList.add('hidden');
+        }
+
+        function definirEstadoDesconectado() {
+            badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-800';
+            badgeStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500 me-2"></span> Desconectado';
+            painelConectado.classList.add('hidden');
+            painelDesconectado.classList.remove('hidden');
+        }
+
+        function iniciarPolling() {
+            if (pollingInterval) return;
+            pollingInterval = setInterval(async () => {
+                if (isChecking) return;
+                isChecking = true;
+                try {
+                    await verificarStatus(false);
+                } finally {
+                    isChecking = false;
+                }
+            }, 3000);
+        }
+
+        function pararPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        async function verificarStatus(isInitial = false) {
             try {
                 const res = await fetch('{{ route("whatsapp.status") }}');
                 const data = await res.json();
@@ -100,16 +136,21 @@
                 const state = data?.instance?.state || data?.state || 'close';
 
                 if (state === 'open' || state === 'connected') {
-                    badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
-                    badgeStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 me-2"></span> Conectado';
-                    painelConectado.classList.remove('hidden');
-                    painelDesconectado.classList.add('hidden');
+                    pararPolling();
+                    definirEstadoConectado();
+
+                    if (estavaAguardandoConexao) {
+                        estavaAguardandoConexao = false;
+                        window.location.reload();
+                        return;
+                    }
                 } else {
-                    badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-800';
-                    badgeStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500 me-2"></span> Desconectado';
-                    painelConectado.classList.add('hidden');
-                    painelDesconectado.classList.remove('hidden');
-                    carregarQrCode();
+                    estavaAguardandoConexao = true;
+                    definirEstadoDesconectado();
+                    if (isInitial) {
+                        carregarQrCode();
+                    }
+                    iniciarPolling();
                 }
             } catch (e) {
                 badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
@@ -141,26 +182,44 @@
             }
         }
 
-        if (btnAtualizar) btnAtualizar.addEventListener('click', verificarStatus);
-        if (btnGerarQrcode) btnGerarQrcode.addEventListener('click', carregarQrCode);
+        if (btnAtualizar) {
+            btnAtualizar.addEventListener('click', () => {
+                badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-gray-100 text-gray-700';
+                badgeStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-400 me-2 animate-pulse"></span> Consultando status...';
+                verificarStatus(false);
+            });
+        }
+
+        if (btnGerarQrcode) {
+            btnGerarQrcode.addEventListener('click', () => {
+                carregarQrCode();
+                iniciarPolling();
+            });
+        }
 
         if (btnDesconectar) {
             btnDesconectar.addEventListener('click', async () => {
                 if (confirm('Deseja realmente desconectar a sessão do WhatsApp?')) {
-                    await fetch('{{ route("whatsapp.desconectar") }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    verificarStatus();
+                    badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
+                    badgeStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500 me-2 animate-pulse"></span> Desconectando...';
+
+                    try {
+                        await fetch('{{ route("whatsapp.desconectar") }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Erro ao desconectar:', e);
+                    }
+                    verificarStatus(true);
                 }
             });
         }
 
         // Executa ao abrir
-        verificarStatus();
+        verificarStatus(true);
     </script>
 </x-app-layout>
-
