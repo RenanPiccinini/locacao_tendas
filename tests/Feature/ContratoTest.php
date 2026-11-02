@@ -125,3 +125,4 @@ class ContratoTest extends TestCase
         $responseAfter->assertSee('Ver Contrato');
     }
 }
+

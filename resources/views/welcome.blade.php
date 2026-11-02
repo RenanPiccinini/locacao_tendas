@@ -69,7 +69,7 @@
 <body class="bg-[#021811] text-slate-100 selection:bg-amber-500 selection:text-slate-950 overflow-x-hidden">
 
     <!-- Header Fixo Moderno -->
-    <header class="fixed top-0 left-0 right-0 z-40 glass-nav">
+    <header class="fixed top-0 left-0 right-0 z-40 glass-nav" x-data="{ mobileNav: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
             <!-- Logo Oficial Tendas Eldorado -->
@@ -95,7 +95,7 @@
                 <a href="#faq" class="hover:text-amber-400 transition">Dúvidas</a>
             </nav>
 
-            <!-- Ações Rápidas: Instagram + WhatsApp + Login -->
+            <!-- Ações Rápidas: Instagram + WhatsApp + Login + Botão Mobile -->
             <div class="flex items-center gap-2 sm:gap-3">
                 <!-- Botão Ver Instagram -->
                 <a href="https://www.instagram.com/tendaseldorado/" 
@@ -121,16 +121,80 @@
                 </a>
 
                 @auth
-                    <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition flex items-center gap-1.5">
+                    <a href="{{ route('dashboard') }}" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition flex items-center gap-1.5">
                         <span>Painel</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="px-3.5 py-2 rounded-xl bg-[#04281e] hover:bg-[#073c2e] border border-emerald-700/60 text-emerald-200 hover:text-white font-bold text-xs transition">
+                    <a href="{{ route('login') }}" class="px-3 py-2 rounded-xl bg-[#04281e] hover:bg-[#073c2e] border border-emerald-700/60 text-emerald-200 hover:text-white font-bold text-xs transition">
                         Área Restrita
                     </a>
                 @endauth
+
+                <!-- Botão Hamburger Mobile (Aparece em telas < lg) -->
+                <button @click="mobileNav = !mobileNav" 
+                        type="button" 
+                        aria-label="Menu principal" 
+                        class="lg:hidden p-2 rounded-xl text-emerald-300 hover:text-white hover:bg-emerald-800/40 border border-emerald-700/50 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path x-show="!mobileNav" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path x-show="mobileNav" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
+        </div>
+
+        <!-- Menu Dropdown Mobile do Site -->
+        <div x-show="mobileNav" 
+             x-cloak 
+             @click.away="mobileNav = false"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             class="lg:hidden bg-[#021811]/98 border-b border-emerald-700/50 px-4 py-5 shadow-2xl backdrop-blur-xl">
+            <nav class="flex flex-col space-y-2">
+                <a href="#estruturas" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
+                    <span class="text-amber-400">⛺</span> Estruturas & Medidas
+                </a>
+                <a href="#locacao-mensal" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
+                    <span class="text-amber-400">📅</span> Locação Mensal & Diária
+                </a>
+                <a href="#fotos-reais" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
+                    <span class="text-amber-400">📸</span> Fotos Reais das Montagens
+                </a>
+                <a href="#instagram" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
+                    <span class="text-pink-400">📸</span> Instagram Oficial @tendaseldorado
+                </a>
+                <a href="#diferenciais" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
+                    <span class="text-amber-400">🌟</span> Vantagens & Laudos de Segurança
+                </a>
+                <a href="#faq" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
+                    <span class="text-amber-400">❓</span> Perguntas Frequentes (FAQ)
+                </a>
+
+                <div class="pt-3 border-t border-emerald-800/50 flex flex-col gap-2.5">
+                    <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento." 
+                       target="_blank" 
+                       class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-extrabold text-sm text-center flex items-center justify-center gap-2 shadow-md">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+                        </svg>
+                        <span>WhatsApp: (17) 99155-5335</span>
+                    </a>
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm text-center">
+                            Acessar Painel Gerenciador
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="w-full py-2 px-4 rounded-xl bg-[#04281e] text-emerald-200 border border-emerald-700/60 font-bold text-xs text-center">
+                            Área Restrita (Acesso ao Sistema)
+                        </a>
+                    @endauth
+                </div>
+            </nav>
         </div>
     </header>
 

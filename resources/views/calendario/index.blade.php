@@ -103,7 +103,11 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 locale: 'pt-br',
                 initialView: 'dayGridMonth',
-                headerToolbar: {
+                headerToolbar: window.innerWidth < 768 ? {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'dayGridMonth,listMonth'
+                } : {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,listMonth'

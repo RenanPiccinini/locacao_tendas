@@ -52,14 +52,14 @@
                 <!-- Barra Superior -->
                 @include('layouts.topbar')
 
-                <!-- Botão "Baixar App" (PWA) - Aparece SOMENTE em celular -->
-                <div id="pwa-install-banner" class="lg:hidden bg-gradient-to-r from-[#031d14] to-[#063f2e] border-b border-amber-400/30 text-white p-3 shadow-md">
-                    <div class="flex items-center justify-between gap-2">
+                <!-- Botão "Baixar App" (PWA) - Aparece SOMENTE quando acessado em celular -->
+                <div id="pwa-install-banner" class="hidden md:hidden lg:hidden bg-gradient-to-r from-[#031d14] to-[#063f2e] border-b border-amber-400/30 text-white p-3 shadow-md transition-all">
+                    <div class="flex items-center justify-between gap-2 max-w-7xl mx-auto">
                         <div class="flex items-center gap-2">
-                            <img src="/images/logo.png" alt="Tendas Eldorado" class="w-6 h-6 rounded-full border border-amber-400 object-cover shrink-0">
+                            <img src="{{ asset('images/logo.png') }}" alt="Tendas Eldorado" class="w-6 h-6 rounded-full border border-amber-400 object-cover shrink-0">
                             <span class="text-xs font-medium text-emerald-100">Instale o app da Tendas Eldorado no celular!</span>
                         </div>
-                        <button id="btn-instalar-app" type="button" class="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold rounded shadow shrink-0 transition">
+                        <button id="btn-instalar-app" type="button" class="px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-black rounded-lg shadow-sm shrink-0 transition">
                             Baixar App
                         </button>
                     </div>
@@ -138,17 +138,33 @@
             const pwaBanner = document.getElementById('pwa-install-banner');
             const modalIos = document.getElementById('modal-ios-pwa');
 
-            const isIos = () => /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+            // Detecção precisa de celular (smartphones apenas)
+            const isCelular = () => {
+                const ua = (navigator.userAgent || navigator.vendor || window.opera || '').toLowerCase();
+                const isMobileUA = /android.*mobile|iphone|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua);
+                const isSmallTouch = window.innerWidth <= 640 && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+                return isMobileUA || isSmallTouch;
+            };
+
+            const isIos = () => /iphone|ipod/.test(navigator.userAgent.toLowerCase());
             const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
 
-            if (isInStandaloneMode()) {
-                if (pwaBanner) pwaBanner.style.display = 'none';
+            // Se for computador, desktop ou já estiver instalado, remove o banner e NUNCA exibe
+            if (!isCelular() || isInStandaloneMode()) {
+                if (pwaBanner) pwaBanner.remove();
+            } else {
+                // É celular e ainda não instalado:
+                if (pwaBanner) pwaBanner.classList.remove('hidden');
             }
 
             window.addEventListener('beforeinstallprompt', (e) => {
+                if (!isCelular() || isInStandaloneMode()) {
+                    e.preventDefault();
+                    return;
+                }
                 e.preventDefault();
                 deferredPrompt = e;
-                if (pwaBanner) pwaBanner.style.display = 'block';
+                if (pwaBanner) pwaBanner.classList.remove('hidden');
             });
 
             if (btnInstalar) {
