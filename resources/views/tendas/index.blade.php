@@ -158,7 +158,7 @@
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2">
                                         <a href="{{ route('tendas.edit', $tenda) }}" class="text-xs text-emerald-700 dark:text-amber-400 hover:underline font-semibold">Editar</a>
-                                        <form action="{{ route('tendas.destroy', $tenda) }}" method="POST" class="inline" onsubmit="return confirm('Excluir esta tenda do estoque?');">
+                                        <form action="{{ route('tendas.destroy', $tenda) }}" method="POST" class="inline" data-confirm="Deseja realmente excluir a tenda <strong>{{ $tenda->nome }}</strong> do estoque?" data-confirm-title="Excluir Tenda" data-confirm-btn="Sim, Excluir" data-confirm-type="danger">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-xs text-red-600 dark:text-red-400 hover:underline font-semibold">Excluir</button>

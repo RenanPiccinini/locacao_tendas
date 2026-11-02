@@ -288,27 +288,42 @@
 
         if (btnDesconectar) {
             btnDesconectar.addEventListener('click', async () => {
-                if (confirm('Deseja realmente desconectar e DELETAR a instância {{ $instance }} na Evolution API?\n\n(Atenção: Apenas a instância {{ $instance }} será excluída, nenhuma outra será afetada).')) {
-                    badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
-                    badgeStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500 me-2 animate-pulse"></span> Desconectando e removendo instância...';
-
-                    try {
-                        const res = await fetch('{{ route("whatsapp.desconectar") }}', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json'
-                            }
-                        });
-                        const data = await res.json();
-                        if (data?.message) {
-                            alert(data.message);
-                        }
-                    } catch (e) {
-                        console.error('Erro ao desconectar:', e);
+                const confirmou = await window.appConfirm(
+                    'Desconectar e Excluir Instância',
+                    'Deseja realmente desconectar e <strong>DELETAR</strong> a instância <strong>{{ $instance }}</strong> na Evolution API?<br><br><span class="text-xs text-amber-500 font-semibold">⚠️ Atenção: Apenas a instância {{ $instance }} será excluída, nenhuma outra será afetada.</span>',
+                    {
+                        type: 'danger',
+                        confirmText: 'Sim, Desconectar e Deletar',
+                        cancelText: 'Cancelar'
                     }
-                    verificarStatus(true);
+                );
+
+                if (!confirmou) return;
+
+                badgeStatus.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300';
+                badgeStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500 me-2 animate-pulse"></span> Desconectando e removendo instância...';
+
+                try {
+                    const res = await fetch('{{ route("whatsapp.desconectar") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const data = await res.json();
+                    if (data?.message) {
+                        await window.appAlert(
+                            data.success ? 'Instância Desconectada' : 'Aviso',
+                            data.message,
+                            data.success ? 'success' : 'warning'
+                        );
+                    }
+                } catch (e) {
+                    console.error('Erro ao desconectar:', e);
+                    await window.appAlert('Erro', 'Ocorreu um erro ao tentar desconectar a instância.', 'danger');
                 }
+                verificarStatus(true);
             });
         }
 

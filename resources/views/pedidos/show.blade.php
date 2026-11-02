@@ -92,7 +92,7 @@
                             </button>
                         </form>
 
-                        <form action="{{ route('pedidos.confirmar-retirada', $pedido) }}" method="POST" onsubmit="return confirm('Confirma que as tendas foram retiradas? Elas voltarão automaticamente para o estoque disponível.');">
+                        <form action="{{ route('pedidos.confirmar-retirada', $pedido) }}" method="POST" data-confirm="Confirma que as tendas foram retiradas no local?<br><span class='text-xs text-emerald-500 font-medium'>Elas retornarão automaticamente ao estoque como disponíveis.</span>" data-confirm-title="Confirmar Retirada" data-confirm-btn="Sim, Confirmar Retirada" data-confirm-type="success">
                             @csrf
                             <button type="submit" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -103,7 +103,7 @@
 
                     {{-- Status: EM RETIRADA --}}
                     @if($pedido->status === 'em_retirada')
-                        <form action="{{ route('pedidos.confirmar-retirada', $pedido) }}" method="POST" onsubmit="return confirm('Confirma que as tendas foram retiradas? Elas voltarão automaticamente para o estoque disponível.');">
+                        <form action="{{ route('pedidos.confirmar-retirada', $pedido) }}" method="POST" data-confirm="Confirma que as tendas foram retiradas no local?<br><span class='text-xs text-emerald-500 font-medium'>Elas retornarão automaticamente ao estoque como disponíveis.</span>" data-confirm-title="Confirmar Retirada" data-confirm-btn="Sim, Confirmar Retirada" data-confirm-type="success">
                             @csrf
                             <button type="submit" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>

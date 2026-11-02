@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\ContratoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrdemServicoController;
 use App\Http\Controllers\PedidoController;
@@ -44,6 +45,9 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('montadores', \App\Http\Controllers\MontadorController::class);
         Route::resource('tendas', TendaController::class);
         Route::resource('clientes', ClienteController::class);
+        Route::post('clientes/{cliente}/gerar-contrato', [ContratoController::class, 'gerar'])->name('clientes.contrato.gerar');
+        Route::get('clientes/{cliente}/contrato', [ContratoController::class, 'ver'])->name('clientes.contrato.ver');
+        Route::get('clientes/{cliente}/contrato/download', [ContratoController::class, 'download'])->name('clientes.contrato.download');
 
         // WhatsApp Conexão (Evolution API)
         Route::get('whatsapp/conexao', [WhatsappController::class, 'conexao'])->name('whatsapp.conexao');

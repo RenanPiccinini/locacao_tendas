@@ -163,10 +163,168 @@
                     } else if (isIos()) {
                         if (modalIos) modalIos.classList.remove('hidden');
                     } else {
-                        alert('Para instalar este app, acione o menu do seu navegador (três pontinhos) e toque em "Adicionar à tela inicial" ou "Instalar aplicativo".');
+                        window.appAlert('Instalar Aplicativo', 'Para instalar este app, acione o menu do seu navegador (três pontinhos) e toque em "Adicionar à tela inicial" ou "Instalar aplicativo".', 'info');
                     }
                 });
             }
+        </script>
+
+        <!-- Modal Global Elegante do Sistema (Substitui completamente alerts e confirms nativos) -->
+        <div id="global-app-modal" class="fixed inset-0 z-[999] hidden items-center justify-center p-4 bg-black/75 backdrop-blur-xs transition-opacity duration-200">
+            <div id="global-app-modal-card" class="relative w-full max-w-md bg-white dark:bg-[#031d14] rounded-2xl shadow-2xl border border-gray-200 dark:border-[#083d2c] p-6 text-center transform transition-all scale-95 duration-200">
+                <!-- Ícone Dinâmico -->
+                <div id="global-modal-icon-container" class="mx-auto w-14 h-14 rounded-full flex items-center justify-center shadow-lg mb-4">
+                </div>
+
+                <!-- Título -->
+                <h3 id="global-modal-title" class="text-lg font-bold text-gray-900 dark:text-white"></h3>
+
+                <!-- Mensagem (suporta HTML seguro) -->
+                <div id="global-modal-message" class="text-sm text-gray-600 dark:text-emerald-100/80 mt-2 leading-relaxed"></div>
+
+                <!-- Botões de Ação -->
+                <div class="mt-6 flex items-center justify-center gap-3">
+                    <button id="global-modal-btn-cancel" type="button" class="px-5 py-2.5 rounded-xl border border-gray-300 dark:border-[#083d2c] bg-gray-100 dark:bg-[#04291c] text-gray-700 dark:text-emerald-200 hover:bg-gray-200 dark:hover:bg-[#073827] font-semibold text-sm transition">
+                        Cancelar
+                    </button>
+                    <button id="global-modal-btn-confirm" type="button" class="px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Script de Controle do Modal Global -->
+        <script>
+            window.appModal = function({
+                title = 'Aviso do Sistema',
+                message = '',
+                type = 'info', // 'warning', 'danger', 'success', 'info'
+                confirmText = 'OK',
+                cancelText = 'Cancelar',
+                showCancel = false
+            }) {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('global-app-modal');
+                    const card = document.getElementById('global-app-modal-card');
+                    const titleEl = document.getElementById('global-modal-title');
+                    const msgEl = document.getElementById('global-modal-message');
+                    const iconContainer = document.getElementById('global-modal-icon-container');
+                    const btnConfirm = document.getElementById('global-modal-btn-confirm');
+                    const btnCancel = document.getElementById('global-modal-btn-cancel');
+
+                    if (!modal) {
+                        resolve(true);
+                        return;
+                    }
+
+                    titleEl.innerHTML = title;
+                    msgEl.innerHTML = message;
+                    btnConfirm.innerHTML = confirmText;
+                    btnCancel.innerHTML = cancelText;
+
+                    if (showCancel) {
+                        btnCancel.classList.remove('hidden');
+                    } else {
+                        btnCancel.classList.add('hidden');
+                    }
+
+                    // Configura ícone e estilos dos botões conforme o tipo
+                    if (type === 'danger') {
+                        iconContainer.className = 'mx-auto w-14 h-14 rounded-full flex items-center justify-center shadow-lg mb-4 bg-red-500/20 text-red-500 dark:bg-red-400/20 dark:text-red-400 border border-red-500/30';
+                        iconContainer.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
+                        btnConfirm.className = 'px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-bold text-sm shadow-md shadow-red-900/20 transition';
+                    } else if (type === 'warning') {
+                        iconContainer.className = 'mx-auto w-14 h-14 rounded-full flex items-center justify-center shadow-lg mb-4 bg-amber-500/20 text-amber-500 dark:bg-amber-400/20 dark:text-amber-400 border border-amber-500/30';
+                        iconContainer.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+                        btnConfirm.className = 'px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold text-sm shadow-md transition';
+                    } else if (type === 'success') {
+                        iconContainer.className = 'mx-auto w-14 h-14 rounded-full flex items-center justify-center shadow-lg mb-4 bg-emerald-500/20 text-emerald-500 dark:bg-emerald-400/20 dark:text-emerald-400 border border-emerald-500/30';
+                        iconContainer.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                        btnConfirm.className = 'px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 border border-amber-400/40 text-amber-300 font-bold text-sm shadow-md transition';
+                    } else {
+                        iconContainer.className = 'mx-auto w-14 h-14 rounded-full flex items-center justify-center shadow-lg mb-4 bg-emerald-500/10 text-emerald-600 dark:text-amber-400 border border-emerald-500/20';
+                        iconContainer.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                        btnConfirm.className = 'px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 border border-amber-400/40 text-amber-300 font-bold text-sm shadow-md transition';
+                    }
+
+                    // Exibe o modal com animação
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    setTimeout(() => {
+                        card.classList.remove('scale-95');
+                        card.classList.add('scale-100');
+                    }, 10);
+
+                    function fechar(resultado) {
+                        card.classList.remove('scale-100');
+                        card.classList.add('scale-95');
+                        setTimeout(() => {
+                            modal.classList.remove('flex');
+                            modal.classList.add('hidden');
+                            btnConfirm.onclick = null;
+                            btnCancel.onclick = null;
+                            modal.onclick = null;
+                            resolve(resultado);
+                        }, 150);
+                    }
+
+                    btnConfirm.onclick = () => fechar(true);
+                    btnCancel.onclick = () => fechar(false);
+                    modal.onclick = (e) => {
+                        if (e.target === modal) fechar(false);
+                    };
+                });
+            };
+
+            window.appAlert = function(title, message, type = 'info') {
+                return window.appModal({
+                    title,
+                    message,
+                    type,
+                    confirmText: 'Entendido',
+                    showCancel: false
+                });
+            };
+
+            window.appConfirm = function(title, message, options = {}) {
+                return window.appModal({
+                    title,
+                    message,
+                    type: options.type || 'warning',
+                    confirmText: options.confirmText || 'Confirmar',
+                    cancelText: options.cancelText || 'Cancelar',
+                    showCancel: true,
+                    ...options
+                });
+            };
+
+            // Sobrescreve alert nativo para garantir que nunca mais apareça popup feio do navegador
+            window.alert = function(msg) {
+                window.appAlert('Aviso do Sistema', msg, 'info');
+            };
+
+            // Interceptador global para formulários que usam confirmação data-confirm
+            document.addEventListener('submit', async function(e) {
+                const form = e.target;
+                if (form && form.hasAttribute('data-confirm')) {
+                    e.preventDefault();
+                    const mensagem = form.getAttribute('data-confirm');
+                    const titulo = form.getAttribute('data-confirm-title') || 'Confirmar Ação';
+                    const tipo = form.getAttribute('data-confirm-type') || 'danger';
+                    const botao = form.getAttribute('data-confirm-btn') || 'Sim, Confirmar';
+
+                    const confirmou = await window.appConfirm(titulo, mensagem, {
+                        type: tipo,
+                        confirmText: botao
+                    });
+
+                    if (confirmou) {
+                        form.removeAttribute('data-confirm');
+                        form.submit();
+                    }
+                }
+            });
         </script>
     </body>
 </html>
