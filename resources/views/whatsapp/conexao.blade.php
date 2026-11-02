@@ -77,6 +77,75 @@
                 </div>
             </div>
 
+            <!-- Card de Lembretes Automáticos e Cron Jobs da Hostinger -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-base flex items-center gap-2">
+                            <span class="text-xl">⏰</span>
+                            Lembretes Automáticos aos Montadores (WhatsApp)
+                        </h4>
+                        <p class="text-xs text-gray-500 mt-0.5">Disparos programados executados automaticamente pelo sistema</p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" id="btn-teste-semana" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-lg transition border border-indigo-200 flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                            Testar Lembrete Semanal
+                        </button>
+
+                        <button type="button" id="btn-teste-dia" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-lg transition border border-emerald-200 flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                            Testar Lembrete Diário (Hoje)
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resultado-teste-cron" class="hidden p-3 rounded-lg text-xs font-mono bg-gray-900 text-emerald-400 overflow-x-auto"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="p-3.5 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="font-bold text-gray-800 text-sm mb-1 flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                            Toda Segunda-feira às 08h00
+                        </div>
+                        <p class="text-gray-600">
+                            Dispara para cada montador a <strong>agenda completa da semana</strong> contendo todas as montagens e retiradas agendadas de segunda a domingo.
+                        </p>
+                    </div>
+
+                    <div class="p-3.5 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="font-bold text-gray-800 text-sm mb-1 flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                            Todos os dias às 07h00
+                        </div>
+                        <p class="text-gray-600">
+                            Dispara no dia de cada montagem e retirada um <strong>aviso matinal</strong> lembrando o montador do cliente, endereço, horário e tendas.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Guia de Configuração Hostinger -->
+                <div class="mt-2 pt-3 border-t border-gray-100">
+                    <details class="text-xs text-gray-600">
+                        <summary class="font-bold text-gray-800 cursor-pointer hover:text-blue-600 flex items-center gap-1.5 select-none">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Como configurar o Cron Job no painel da Hostinger (Clique para ver)
+                        </summary>
+                        <div class="mt-3 p-3.5 bg-slate-900 text-slate-200 rounded-lg space-y-2">
+                            <p>No <strong>hPanel da Hostinger &gt; Cron Jobs</strong>, crie a tarefa a cada minuto (<code>* * * * *</code>) com o comando:</p>
+                            <code class="block p-2 bg-black/60 rounded text-emerald-400 font-mono select-all">
+                                cd /home/u639274314/domains/locacao-tendas.piccininidigitalsolutions.com.br/public_html &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1
+                            </code>
+                            <p class="text-gray-400">Ou utilize a URL do Web Cron:</p>
+                            <code class="block p-2 bg-black/60 rounded text-blue-300 font-mono select-all">
+                                curl -s -L "https://locacao-tendas.piccininidigitalsolutions.com.br/cron/scheduler" &gt;/dev/null 2&gt;&amp;1
+                            </code>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -217,6 +286,46 @@
                     verificarStatus(true);
                 }
             });
+        }
+
+        // Teste de disparo de lembretes manuais
+        const btnTesteSemana = document.getElementById('btn-teste-semana');
+        const btnTesteDia = document.getElementById('btn-teste-dia');
+        const boxResultadoCron = document.getElementById('resultado-teste-cron');
+
+        async function dispararTesteLembrete(tipo, botao) {
+            const textoOriginal = botao.innerHTML;
+            botao.disabled = true;
+            botao.innerHTML = '<span class="animate-pulse">Disparando...</span>';
+
+            try {
+                const res = await fetch('{{ route("whatsapp.testar-lembrete") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tipo: tipo })
+                });
+
+                const data = await res.json();
+                boxResultadoCron.classList.remove('hidden');
+                boxResultadoCron.innerHTML = `<strong>[Retorno ${tipo.toUpperCase()}]:</strong>\n${data.output || 'Executado com sucesso!'}`;
+            } catch (e) {
+                boxResultadoCron.classList.remove('hidden');
+                boxResultadoCron.innerHTML = `<span class="text-red-400">Erro ao executar disparo: ${e.message}</span>`;
+            } finally {
+                botao.disabled = false;
+                botao.innerHTML = textoOriginal;
+            }
+        }
+
+        if (btnTesteSemana) {
+            btnTesteSemana.addEventListener('click', () => dispararTesteLembrete('semana', btnTesteSemana));
+        }
+
+        if (btnTesteDia) {
+            btnTesteDia.addEventListener('click', () => dispararTesteLembrete('dia', btnTesteDia));
         }
 
         // Executa ao abrir

@@ -40,5 +40,18 @@ class WhatsappController extends Controller
         $sucesso = $this->whatsapp->desconectar();
         return response()->json(['success' => $sucesso]);
     }
+
+    public function testarLembrete(Request $request): JsonResponse
+    {
+        $tipo = $request->input('tipo', 'dia');
+        \Illuminate\Support\Facades\Artisan::call('lembretes:whatsapp', ['--tipo' => $tipo]);
+        $output = \Illuminate\Support\Facades\Artisan::output();
+
+        return response()->json([
+            'success' => true,
+            'tipo' => $tipo,
+            'output' => trim($output) ?: 'Comando executado com sucesso!',
+        ]);
+    }
 }
 

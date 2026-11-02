@@ -137,18 +137,17 @@ class PedidoController extends Controller
                 }
             }
 
-            // Se marcado para gerar OS automaticamente
-            if ($request->filled('gerar_os_agora')) {
+            // Se o montador foi informado (ou se marcado para gerar OS), gera a OS automaticamente e notifica no WhatsApp
+            if (!empty($validated['montador_id'])) {
                 $this->processarGerarOs($pedido);
-            } else {
-                // Notifica montador sobre o novo pedido criado mesmo sem gerar OS ainda
-                $this->notificarMontadorNovoPedido($pedido);
+            } elseif ($request->filled('gerar_os_agora')) {
+                $this->processarGerarOs($pedido);
             }
 
             DB::commit();
 
             return redirect()->route('pedidos.show', $pedido)
-                ->with('success', 'Pedido criado com sucesso e notificação enviada ao montador!');
+                ->with('success', 'Pedido criado com sucesso! Ordem de Serviço gerada e montador notificado no WhatsApp.');
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Erro ao salvar pedido: ' . $e->getMessage());
@@ -178,6 +177,8 @@ class PedidoController extends Controller
 
     public function update(Request $request, Pedido $pedido): RedirectResponse
     {
+        $montadorAnterior = $pedido->montador_id;
+
         $validated = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'montador_id' => 'nullable|exists:users,id',
@@ -193,6 +194,11 @@ class PedidoController extends Controller
         ]);
 
         $pedido->update($validated);
+
+        // Se designou ou alterou o montador, gera a OS (caso ainda não exista) e notifica no WhatsApp
+        if (!empty($validated['montador_id']) && $validated['montador_id'] != $montadorAnterior) {
+            $this->processarGerarOs($pedido);
+        }
 
         return redirect()->route('pedidos.show', $pedido)->with('success', 'Pedido atualizado com sucesso!');
     }
@@ -251,6 +257,38 @@ class PedidoController extends Controller
         $pedido->update(['status' => 'em_instalacao']);
 
         return back()->with('success', 'Status atualizado: Em processo de instalação!');
+    }
+
+    public function anexarFotos(Request $request, Pedido $pedido): RedirectResponse
+    {
+        $request->validate([
+            'fotos' => 'required|array|min:1',
+            'fotos.*' => 'image|max:10240',
+            'observacoes_montador' => 'nullable|string',
+        ], [
+            'fotos.required' => 'Por favor, selecione ou tire ao menos uma foto.',
+        ]);
+
+        $caminhosFotos = [];
+        if ($request->hasFile('fotos')) {
+            foreach ($request->file('fotos') as $foto) {
+                $path = $foto->store('fotos_instalacao', 'public');
+                $caminhosFotos[] = $path;
+            }
+        }
+
+        $osInstalacao = $pedido->osInstalacao;
+        if ($osInstalacao) {
+            $fotosAntigas = $osInstalacao->fotos ?? [];
+            $fotosFinais = array_merge($fotosAntigas, $caminhosFotos);
+
+            $osInstalacao->update([
+                'fotos' => $fotosFinais,
+                'observacoes_montador' => $request->observacoes_montador ?: $osInstalacao->observacoes_montador,
+            ]);
+        }
+
+        return back()->with('success', 'Fotos da instalação anexadas com sucesso!');
     }
 
     public function finalizarInstalacao(Request $request, Pedido $pedido): RedirectResponse

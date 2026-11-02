@@ -69,11 +69,16 @@
                         </form>
                     @endif
 
-                    {{-- Status: EM INSTALAÇÃO (Abrir modal ou formulário de finalizar e anexar fotos) --}}
+                    {{-- Status: EM INSTALAÇÃO (Montador pode tirar/anexar fotos e concluir a montagem) --}}
                     @if($pedido->status === 'em_instalacao')
+                        <button type="button" onclick="document.getElementById('modal-anexar-fotos').classList.remove('hidden')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            📸 Tirar / Anexar Fotos
+                        </button>
+
                         <button type="button" onclick="document.getElementById('modal-finalizar-instalacao').classList.remove('hidden')" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            Finalizar Instalação (Anexar Fotos)
+                            ✅ Concluir Montagem
                         </button>
                     @endif
 
@@ -229,6 +234,36 @@
         </div>
     </div>
 
+    <!-- Modal Anexar Fotos Durante Instalação -->
+    <div id="modal-anexar-fotos" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button onclick="document.getElementById('modal-anexar-fotos').classList.add('hidden')" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">📸 Anexar Fotos da Montagem</h3>
+            <p class="text-xs text-gray-500 mb-4">Tire fotos pelo celular para registrar o local ou o andamento da montagem.</p>
+
+            <form action="{{ route('pedidos.anexar-fotos', $pedido) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tirar ou Selecionar Fotos *</label>
+                    <input type="file" name="fotos[]" multiple accept="image/*" capture="environment" required class="w-full border-gray-300 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="text-[11px] text-gray-400 mt-1">Ao tocar no celular, a câmera abre para fotografar na hora.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Observações da Montagem (Opcional)</label>
+                    <textarea name="observacoes_montador" rows="2" placeholder="Ex: Tenda ancorada com estacas e pesos adicionais..." class="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('modal-anexar-fotos').classList.add('hidden')" class="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg text-sm">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow">
+                        Salvar Fotos
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Finalizar Instalação (com upload de fotos) -->
     <div id="modal-finalizar-instalacao" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl relative">
@@ -239,9 +274,9 @@
             <form action="{{ route('pedidos.finalizar-instalacao', $pedido) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Anexar Fotos da Tenda Montada</label>
-                    <input type="file" name="fotos[]" multiple accept="image/*" class="w-full border-gray-300 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                    <p class="text-xs text-gray-400 mt-1">Você pode selecionar várias fotos de uma vez diretamente do celular.</p>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Anexar Fotos Finais da Tenda Montada</label>
+                    <input type="file" name="fotos[]" multiple accept="image/*" capture="environment" class="w-full border-gray-300 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="text-xs text-gray-400 mt-1">Você pode selecionar várias fotos ou tirar com a câmera do celular.</p>
                 </div>
 
                 <div>
@@ -252,7 +287,7 @@
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="document.getElementById('modal-finalizar-instalacao').classList.add('hidden')" class="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg text-sm">Cancelar</button>
                     <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-sm shadow">
-                        Confirmar Conclusão
+                        Confirmar Conclusão & Gerar O.S. Retorno
                     </button>
                 </div>
             </form>
