@@ -36,3 +36,4 @@ class CronTest extends TestCase
         $responseSemana->assertJson(['success' => true, 'tipo' => 'semana']);
     }
 }
+

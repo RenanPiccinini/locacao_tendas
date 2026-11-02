@@ -117,3 +117,4 @@ class FluxoMontadorTest extends TestCase
         $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia'])->assertExitCode(0);
     }
 }
+

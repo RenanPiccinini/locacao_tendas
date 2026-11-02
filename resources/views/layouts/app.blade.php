@@ -9,18 +9,23 @@
 
         <!-- PWA Manifest & Meta Tags -->
         <link rel="manifest" href="/manifest.json">
-        <meta name="theme-color" content="#2563eb">
+        <meta name="theme-color" content="#021811">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="Tendas">
-        <link rel="apple-touch-icon" href="/icons/icon-192.png">
+        <meta name="apple-mobile-web-app-title" content="Tendas Eldorado">
+        <link rel="apple-touch-icon" href="/images/logo.png">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Scripts & Styles com fallback de segurança -->
+        @if(file_exists(public_path('build/manifest.json')))
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @else
+            <script src="https://cdn.tailwindcss.com"></script>
+            <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        @endif
     </head>
     <body class="font-sans antialiased bg-slate-50 text-gray-900">
         <!-- Layout com Sidebar na Esquerda -->
@@ -34,15 +39,13 @@
                 @include('layouts.topbar')
 
                 <!-- Botão "Baixar App" (PWA) - Aparece SOMENTE em celular -->
-                <div id="pwa-install-banner" class="lg:hidden bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 shadow-md">
+                <div id="pwa-install-banner" class="lg:hidden bg-gradient-to-r from-[#031d14] to-[#063f2e] border-b border-amber-400/30 text-white p-3 shadow-md">
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
-                            <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                            <span class="text-xs font-medium">Instale no celular para uso direto em campo!</span>
+                            <img src="/images/logo.png" alt="Tendas Eldorado" class="w-6 h-6 rounded-full border border-amber-400 object-cover shrink-0">
+                            <span class="text-xs font-medium text-emerald-100">Instale o app da Tendas Eldorado no celular!</span>
                         </div>
-                        <button id="btn-instalar-app" type="button" class="px-3 py-1 bg-white text-blue-700 text-xs font-bold rounded shadow hover:bg-gray-100 shrink-0">
+                        <button id="btn-instalar-app" type="button" class="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold rounded shadow shrink-0 transition">
                             Baixar App
                         </button>
                     </div>

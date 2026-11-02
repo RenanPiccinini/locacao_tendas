@@ -9,31 +9,38 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                <a href="{{ route('dashboard') }}" class="font-bold text-lg text-blue-700 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11m16-11v11" />
-                    </svg>
-                    <span>Locação Tendas</span>
+                <a href="{{ route('dashboard') }}" class="font-bold text-lg text-emerald-800 flex items-center gap-2">
+                    <img src="{{ asset('images/logo.png') }}" alt="Tendas Eldorado" class="w-8 h-8 rounded-full border border-amber-400 object-cover">
+                    <span>Tendas <span class="text-amber-600 font-extrabold">Eldorado</span></span>
                 </a>
             </div>
 
             <!-- Título / Espaçador Desktop -->
-            <div class="hidden lg:block">
-                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <div class="hidden lg:flex items-center gap-2">
+                <span class="text-xs font-bold text-emerald-900 uppercase tracking-wider">
                     Sistema Operacional de Locações & Montagens
                 </span>
+                <span class="text-gray-300">|</span>
+                <span class="text-xs font-semibold text-amber-600">Tendas Eldorado</span>
             </div>
 
             <!-- Lado Direito: Perfil / Ações Rápidas -->
             <div class="flex items-center gap-3">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ Auth::user()->isAdmin() ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800' }}">
+                <a href="https://www.instagram.com/tendaseldorado/" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-pink-700 bg-pink-50 hover:bg-pink-100 border border-pink-200 transition" title="Ver Instagram Oficial">
+                    <svg class="w-3.5 h-3.5 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    <span>Instagram</span>
+                </a>
+
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ Auth::user()->isAdmin() ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300' }}">
                     {{ Auth::user()->isAdmin() ? 'Administrador' : 'Montador' }}
                 </span>
 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-lg text-gray-600 bg-white hover:text-gray-900 hover:bg-gray-50 focus:outline-none transition">
-                            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs me-2">
+                            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center font-bold text-xs me-2">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
                             <div class="hidden sm:block text-left">
@@ -48,6 +55,10 @@
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
                             Meu Perfil
+                        </x-dropdown-link>
+
+                        <x-dropdown-link href="/" target="_blank">
+                            Ver Site Institucional
                         </x-dropdown-link>
 
                         <form method="POST" action="{{ route('logout') }}">
@@ -84,7 +95,7 @@
                  x-transition:leave="transition ease-in-out duration-300 transform" 
                  x-transition:leave-start="translate-x-0" 
                  x-transition:leave-end="-translate-x-full" 
-                 class="relative mr-16 flex w-full max-w-xs flex-1 bg-slate-900 text-white flex-col">
+                 class="relative mr-16 flex w-full max-w-xs flex-1 bg-[#031d14] text-white flex-col border-r border-[#083d2c]">
                 
                 <!-- Botão fechar drawer -->
                 <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
@@ -96,42 +107,52 @@
                 </div>
 
                 <!-- Conteúdo Mobile -->
-                <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
-                    <span class="font-bold text-lg text-white">Locação de Tendas</span>
+                <div class="h-20 flex items-center px-4 border-b border-[#083d2c] bg-[#02140e] gap-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Tendas Eldorado" class="w-10 h-10 rounded-full object-cover border-2 border-amber-400">
+                    <div>
+                        <div class="font-black text-white text-base">Tendas <span class="text-amber-400">Eldorado</span></div>
+                        <div class="text-[10px] text-emerald-400 font-semibold uppercase">Venda & Locação</div>
+                    </div>
                 </div>
 
-                <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+                <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                         Dashboard
                     </a>
-                    <a href="{{ route('pedidos.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('pedidos.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+                    <a href="{{ route('pedidos.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('pedidos.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                         Pedidos & O.S.
                     </a>
-                    <a href="{{ route('calendario.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('calendario.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+                    <a href="{{ route('calendario.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('calendario.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                         Calendário
                     </a>
 
                     @if(Auth::user()->isAdmin())
-                        <div class="pt-4 px-3 text-xs uppercase text-slate-500 font-bold">Admin</div>
-                        <a href="{{ route('montadores.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('montadores.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+                        <div class="pt-4 px-3 text-xs uppercase text-amber-400/90 font-bold">Admin</div>
+                        <a href="{{ route('montadores.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('montadores.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                             Montadores
                         </a>
-                        <a href="{{ route('tendas.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('tendas.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+                        <a href="{{ route('tendas.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('tendas.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                             Estoque de Tendas
                         </a>
-                        <a href="{{ route('clientes.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('clientes.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+                        <a href="{{ route('clientes.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('clientes.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                             Clientes
                         </a>
-                        <a href="{{ route('whatsapp.conexao') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('whatsapp.*') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+                        <a href="{{ route('whatsapp.conexao') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('whatsapp.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                             Conexão WhatsApp
                         </a>
                     @endif
+
+                    <div class="pt-4 border-t border-[#083d2c]">
+                        <a href="https://www.instagram.com/tendaseldorado/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-lg bg-pink-600/20 text-pink-300 hover:bg-pink-600/30 font-bold text-xs border border-pink-500/30 transition">
+                            <span>Instagram @tendaseldorado</span>
+                        </a>
+                    </div>
                 </nav>
 
-                <div class="p-4 border-t border-slate-800 bg-slate-950">
+                <div class="p-4 border-t border-[#083d2c] bg-[#02140e]">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="w-full py-2 bg-red-600/20 hover:bg-red-600/40 text-red-300 rounded-lg text-sm font-semibold transition">
+                        <button type="submit" class="w-full py-2 bg-red-600/20 hover:bg-red-600/30 text-red-300 rounded-lg text-sm font-semibold transition">
                             Sair do Sistema
                         </button>
                     </form>
@@ -141,4 +162,3 @@
         </div>
     </div>
 </header>
-
