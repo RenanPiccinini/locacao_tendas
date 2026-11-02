@@ -7,6 +7,7 @@ use App\Models\OrdemServico;
 use App\Models\Pedido;
 use App\Models\Tenda;
 use App\Models\User;
+use App\Services\DisponibilidadeService;
 use App\Services\WhatsappService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -25,7 +26,7 @@ class PedidoController extends Controller
         $this->whatsapp = $whatsapp;
     }
 
-    public function index(Request $request): View
+    public function index(Request $request, DisponibilidadeService $disponibilidadeService): View
     {
         $query = Pedido::with(['cliente', 'montador', 'tendas', 'ordensServico'])->latest();
 
@@ -45,9 +46,26 @@ class PedidoController extends Controller
             });
         }
 
-        $pedidos = $query->paginate(15);
+        if ($request->filled('data_inicio')) {
+            $dataInicio = $request->data_inicio;
+            $dataFim = $request->filled('data_fim') ? $request->data_fim : $dataInicio;
+            $query->where(function ($q) use ($dataInicio, $dataFim) {
+                $q->whereDate('data_instalacao', '<=', $dataFim)
+                  ->whereDate('data_retirada', '>=', $dataInicio);
+            });
+        }
 
-        return view('pedidos.index', compact('pedidos'));
+        $pedidos = $query->paginate(15)->withQueryString();
+
+        $dadosDisponibilidade = null;
+        if ($request->filled('data_inicio')) {
+            $dadosDisponibilidade = $disponibilidadeService->consultarDisponibilidade(
+                $request->data_inicio,
+                $request->data_fim
+            );
+        }
+
+        return view('pedidos.index', compact('pedidos', 'dadosDisponibilidade'));
     }
 
     public function create(): View

@@ -24,8 +24,8 @@
 
             <!-- Filtros -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
-                <form method="GET" action="{{ route('pedidos.index') }}" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <input type="text" name="busca" value="{{ request('busca') }}" placeholder="Buscar por cliente ou telefone..." class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm px-3 py-2 w-full sm:w-64">
+                <form method="GET" action="{{ route('pedidos.index') }}" class="flex flex-wrap items-center gap-3 w-full">
+                    <input type="text" name="busca" value="{{ request('busca') }}" placeholder="Buscar por cliente ou telefone..." class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm px-3 py-2 w-full sm:w-56">
 
                     <select name="status" class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm px-3 py-2">
                         <option value="">Todos os status</option>
@@ -38,15 +38,50 @@
                         <option value="concluido" {{ request('status') === 'concluido' ? 'selected' : '' }}>Concluído</option>
                     </select>
 
-                    <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-900 transition">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-semibold text-gray-500">De:</span>
+                        <input type="date" name="data_inicio" value="{{ request('data_inicio') }}" class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm px-3 py-2">
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-semibold text-gray-500">Até:</span>
+                        <input type="date" name="data_fim" value="{{ request('data_fim') }}" class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg text-sm px-3 py-2">
+                    </div>
+
+                    <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-900 transition flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                         Filtrar
                     </button>
 
-                    @if(request()->hasAny(['busca', 'status']))
+                    @if(request()->hasAny(['busca', 'status', 'data_inicio', 'data_fim']))
                         <a href="{{ route('pedidos.index') }}" class="text-sm text-gray-500 hover:text-gray-700 underline">Limpar</a>
                     @endif
                 </form>
             </div>
+
+            @if($dadosDisponibilidade)
+                <!-- Painel de Disponibilidade da Data Filtrada -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-xl shadow-xs">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-sm">Disponibilidade do Estoque para: {{ $dadosDisponibilidade['data_formatada'] }}</h4>
+                                <div class="flex flex-wrap items-center gap-3 text-xs mt-0.5">
+                                    <span class="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">{{ $dadosDisponibilidade['total_disponivel'] }} tendas disponíveis</span>
+                                    <span class="text-blue-700 font-bold bg-blue-100 px-2 py-0.5 rounded">{{ $dadosDisponibilidade['total_em_locacao'] }} tendas em locação</span>
+                                    <span class="text-purple-700 font-bold bg-purple-100 px-2 py-0.5 rounded">{{ $dadosDisponibilidade['total_pedidos'] }} pedidos ativos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{{ route('tendas.index', ['data_inicio' => request('data_inicio'), 'data_fim' => request('data_fim')]) }}" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition shadow-xs flex items-center gap-1.5 w-fit">
+                            Ver Detalhamento do Estoque &rarr;
+                        </a>
+                    </div>
+                </div>
+            @endif
 
             <!-- Tabela de Pedidos -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

@@ -3,16 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tenda;
+use App\Services\DisponibilidadeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TendaController extends Controller
 {
-    public function index(): View
+    protected DisponibilidadeService $disponibilidadeService;
+
+    public function __construct(DisponibilidadeService $disponibilidadeService)
     {
-        $tendas = Tenda::latest()->paginate(15);
-        return view('tendas.index', compact('tendas'));
+        $this->disponibilidadeService = $disponibilidadeService;
+    }
+
+    public function index(Request $request): View
+    {
+        $dataInicio = $request->query('data_inicio', date('Y-m-d'));
+        $dataFim = $request->query('data_fim', $dataInicio);
+
+        $dadosDisponibilidade = $this->disponibilidadeService->consultarDisponibilidade($dataInicio, $dataFim);
+        $tendas = $dadosDisponibilidade['tendas'];
+
+        return view('tendas.index', compact('tendas', 'dadosDisponibilidade'));
     }
 
     public function create(): View
@@ -64,4 +77,3 @@ class TendaController extends Controller
         return redirect()->route('tendas.index')->with('success', 'Tenda excluída do estoque!');
     }
 }
-

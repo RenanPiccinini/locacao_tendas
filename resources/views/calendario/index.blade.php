@@ -14,16 +14,25 @@
                 </p>
             </div>
 
-            <!-- Legenda -->
-            <div class="flex items-center gap-4 text-xs font-semibold">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-3.5 h-3.5 rounded-full bg-blue-600 inline-block"></span>
-                    <span>Instalação / Montagem</span>
+            <div class="flex flex-wrap items-center gap-4 text-xs font-semibold">
+                <!-- Legenda -->
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded-full bg-blue-600 inline-block"></span>
+                        <span>Instalação</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3.5 h-3.5 rounded-full bg-purple-600 inline-block"></span>
+                        <span>Retirada</span>
+                    </div>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <span class="w-3.5 h-3.5 rounded-full bg-purple-600 inline-block"></span>
-                    <span>Retirada / Desmontagem</span>
-                </div>
+
+                @if(Auth::user()->isAdmin())
+                    <a href="{{ route('tendas.index') }}" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs rounded-lg transition flex items-center gap-1.5 shadow-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        Consultar Disponibilidade do Estoque
+                    </a>
+                @endif
             </div>
         </div>
     </x-slot>
