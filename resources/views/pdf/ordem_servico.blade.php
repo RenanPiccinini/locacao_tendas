@@ -3,6 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Ordem de Serviço - {{ $os->numero_os }}</title>
+    @php
+        $corTema = match($os->tipo) {
+            'instalacao' => '#2563eb', // Azul
+            'retirada' => '#7c3aed',   // Roxo
+            'conclusao' => '#059669',  // Verde
+            'manutencao' => '#d97706', // Âmbar
+            default => '#1e3a8a',
+        };
+        $bgBadge = match($os->tipo) {
+            'instalacao' => '#dbeafe',
+            'retirada' => '#f3e8ff',
+            'conclusao' => '#d1fae5',
+            'manutencao' => '#fef3c7',
+            default => '#e2e8f0',
+        };
+        $textoBadge = match($os->tipo) {
+            'instalacao' => '#1e40af',
+            'retirada' => '#6b21a8',
+            'conclusao' => '#065f46',
+            'manutencao' => '#92400e',
+            default => '#1e293b',
+        };
+        $tituloItens = match($os->tipo) {
+            'instalacao' => '3. TENDAS E ITENS A INSTALAR NO LOCAL',
+            'retirada' => '3. TENDAS E ITENS A DESMONTAR E RECOLHER',
+            'conclusao' => '3. TENDAS DEVOLVIDAS E REINTEGRADAS AO ESTOQUE',
+            'manutencao' => '3. TENDAS E ITENS VISTORIADOS / EM MANUTENÇÃO',
+            default => '3. TENDAS E MATERIAIS',
+        };
+    @endphp
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
@@ -13,7 +43,7 @@
             padding: 20px;
         }
         .header {
-            border-bottom: 2px solid #2563eb;
+            border-bottom: 2px solid {{ $corTema }};
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
@@ -23,32 +53,43 @@
         .title {
             font-size: 20px;
             font-weight: bold;
-            color: #1e3a8a;
+            color: {{ $corTema }};
         }
         .os-number {
             font-size: 16px;
             font-weight: bold;
-            color: #2563eb;
+            color: {{ $corTema }};
             text-align: right;
         }
         .badge {
             display: inline-block;
             padding: 4px 8px;
-            background-color: #dbeafe;
-            color: #1e40af;
+            background-color: {{ $bgBadge }};
+            color: {{ $textoBadge }};
             font-weight: bold;
             border-radius: 4px;
             text-transform: uppercase;
+            font-size: 10px;
+        }
+        .badge-status {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 9px;
+            font-weight: bold;
+            border-radius: 3px;
+            text-transform: uppercase;
         }
         .section-title {
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
             padding: 6px 10px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             color: #0f172a;
             margin-top: 15px;
             margin-bottom: 8px;
-            border-left: 3px solid #2563eb;
+            border-left: 3px solid {{ $corTema }};
         }
         table.data-table {
             width: 100%;
@@ -65,7 +106,7 @@
             font-size: 11px;
         }
         .signature-box {
-            margin-top: 50px;
+            margin-top: 45px;
             width: 100%;
         }
         .signature-line {
@@ -76,12 +117,12 @@
             font-size: 11px;
         }
         .footer {
-            margin-top: 40px;
+            margin-top: 35px;
             text-align: center;
             font-size: 10px;
             color: #64748b;
             border-top: 1px solid #e2e8f0;
-            padding-top: 10px;
+            padding-top: 8px;
         }
     </style>
 </head>
@@ -91,21 +132,23 @@
         <table>
             <tr>
                 <td>
-                    <div class="title">LOCAÇÃO DE TENDAS</div>
-                    <div style="color: #64748b; font-size: 11px;">Sistema de Gestão & Montagem Operacional</div>
+                    <div class="title">TENDAS ELDORADO</div>
+                    <div style="color: #64748b; font-size: 11px; margin-top: 2px;">Sistema Operacional de Locações & Montagens</div>
                 </td>
                 <td class="os-number">
                     ORDEM DE SERVIÇO<br>
                     <span>{{ $os->numero_os }}</span><br>
                     <span class="badge">{{ mb_strtoupper($os->tipo_label) }}</span>
-                    <div style="font-size: 10px; margin-top: 3px; color: #475569;">Status: <strong>{{ $os->status_label }}</strong></div>
+                    <div style="font-size: 10px; margin-top: 4px; color: #475569;">
+                        Status: <span class="badge-status">{{ $os->status_label }}</span>
+                    </div>
                 </td>
             </tr>
         </table>
     </div>
 
     <!-- Dados do Cliente e Local -->
-    <div class="section-title">1. DADOS DO CLIENTE E LOCAL DE MONTAGEM</div>
+    <div class="section-title">1. DADOS DO CLIENTE E LOCAL DE ATENDIMENTO</div>
     <table class="data-table">
         <tr>
             <td style="width: 20%;"><strong>Cliente:</strong></td>
@@ -121,6 +164,12 @@
         <tr>
             <td><strong>Observações:</strong></td>
             <td colspan="3">{{ $pedido->observacoes }}</td>
+        </tr>
+        @endif
+        @if($os->observacoes_montador)
+        <tr>
+            <td><strong>Obs. do Montador:</strong></td>
+            <td colspan="3" style="color: {{ $corTema }};"><strong>{{ $os->observacoes_montador }}</strong></td>
         </tr>
         @endif
     </table>
@@ -140,10 +189,21 @@
             <td><strong>WhatsApp Montador:</strong></td>
             <td>{{ $pedido->montador->whatsapp ?? 'Não informado' }}</td>
         </tr>
+        <tr>
+            <td><strong>Emissão da O.S.:</strong></td>
+            <td>{{ $os->created_at->format('d/m/Y H:i') }}</td>
+            <td><strong>Status / Conclusão:</strong></td>
+            <td>
+                {{ $os->status_label }}
+                @if($os->concluido_em)
+                    (em {{ $os->concluido_em->format('d/m/Y H:i') }})
+                @endif
+            </td>
+        </tr>
     </table>
 
     <!-- Tendas e Materiais -->
-    <div class="section-title">3. TENDAS E ITENS A INSTALAR</div>
+    <div class="section-title">{{ $tituloItens }}</div>
     <table class="data-table">
         <thead>
             <tr>
@@ -165,13 +225,19 @@
         </tbody>
     </table>
 
-    <!-- Assinaturas -->
+    <!-- Assinaturas de Conferência -->
     <div class="signature-box">
         <table style="width: 100%;">
             <tr>
                 <td class="signature-line" style="float: left;">
                     <strong>{{ $pedido->cliente->nome }}</strong><br>
-                    Assinatura do Cliente / Recebedor
+                    @if($os->tipo === 'instalacao')
+                        Assinatura do Cliente / Recebimento da Montagem
+                    @elseif($os->tipo === 'retirada')
+                        Assinatura do Cliente / Liberação da Retirada
+                    @else
+                        Assinatura do Cliente / Encerramento do Pedido
+                    @endif
                 </td>
                 <td style="width: 10%;"></td>
                 <td class="signature-line" style="float: right;">
@@ -183,9 +249,8 @@
     </div>
 
     <div class="footer">
-        Documento gerado eletronicamente em {{ now()->format('d/m/Y H:i:s') }} - Sistema de Locação de Tendas
+        Documento gerado eletronicamente em {{ now()->format('d/m/Y H:i:s') }} - Sistema de Locação Tendas Eldorado | Pedido #{{ $pedido->id }}
     </div>
 
 </body>
 </html>
-
