@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h2 class="font-bold text-2xl text-gray-800 leading-tight">
+                <h2 class="font-bold text-2xl text-gray-800 dark:text-white leading-tight">
                     Painel Principal
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Bem-vindo(a), {{ Auth::user()->name }} ({{ Auth::user()->isAdmin() ? 'Administrador' : 'Montador' }})</p>
+                <p class="text-sm text-gray-500 dark:text-emerald-300/70 mt-1">Bem-vindo(a), {{ Auth::user()->name }} ({{ Auth::user()->isAdmin() ? 'Administrador' : 'Montador' }})</p>
             </div>
 
             <div class="flex items-center gap-2">
@@ -17,8 +17,8 @@
                         Novo Pedido
                     </a>
                 @endif
-                <a href="{{ route('calendario.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg shadow-sm text-sm transition">
-                    <svg class="w-4 h-4 me-1.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('calendario.index') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-[#031d14] border border-gray-300 dark:border-[#083d2c] hover:bg-gray-50 dark:hover:bg-[#063325] text-gray-700 dark:text-emerald-100 font-semibold rounded-lg shadow-sm text-sm transition">
+                    <svg class="w-4 h-4 me-1.5 text-emerald-700 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     Ver Calendário
@@ -32,36 +32,36 @@
 
             <!-- Cards Resumo -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div class="bg-white dark:bg-[#031d14] p-5 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] flex items-center justify-between transition-colors">
                     <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Locações Ativas</p>
-                        <h3 class="text-2xl font-black text-gray-900 mt-1">{{ $totalAtivos }}</h3>
+                        <p class="text-xs font-semibold text-gray-500 dark:text-emerald-300/70 uppercase tracking-wider">Locações Ativas</p>
+                        <h3 class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ $totalAtivos }}</h3>
                     </div>
-                    <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-lg">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
                 </div>
 
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div class="bg-white dark:bg-[#031d14] p-5 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] flex items-center justify-between transition-colors">
                     <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Montagens Hoje</p>
-                        <h3 class="text-2xl font-black text-blue-600 mt-1">{{ $montagensHoje }}</h3>
+                        <p class="text-xs font-semibold text-gray-500 dark:text-emerald-300/70 uppercase tracking-wider">Montagens Hoje</p>
+                        <h3 class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">{{ $montagensHoje }}</h3>
                     </div>
-                    <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
+                    <div class="p-3 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-lg">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
 
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div class="bg-white dark:bg-[#031d14] p-5 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] flex items-center justify-between transition-colors">
                     <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Retiradas Hoje</p>
-                        <h3 class="text-2xl font-black text-purple-600 mt-1">{{ $retiradasHoje }}</h3>
+                        <p class="text-xs font-semibold text-gray-500 dark:text-emerald-300/70 uppercase tracking-wider">Retiradas Hoje</p>
+                        <h3 class="text-2xl font-black text-purple-600 dark:text-purple-400 mt-1">{{ $retiradasHoje }}</h3>
                     </div>
-                    <div class="p-3 bg-purple-50 text-purple-600 rounded-lg">
+                    <div class="p-3 bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-lg">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
@@ -69,24 +69,24 @@
                 </div>
 
                 @if(Auth::user()->isAdmin())
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div class="bg-white dark:bg-[#031d14] p-5 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] flex items-center justify-between transition-colors">
                         <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Tendas no Estoque</p>
-                            <h3 class="text-2xl font-black text-emerald-600 mt-1">{{ $tendasDisponiveis }} disp.</h3>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-emerald-300/70 uppercase tracking-wider">Tendas no Estoque</p>
+                            <h3 class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">{{ $tendasDisponiveis }} disp.</h3>
                         </div>
-                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
+                        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-lg">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                             </svg>
                         </div>
                     </div>
                 @else
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div class="bg-white dark:bg-[#031d14] p-5 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] flex items-center justify-between transition-colors">
                         <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Aguardando Retirada</p>
-                            <h3 class="text-2xl font-black text-orange-600 mt-1">{{ $pedidosAguardandoRetirada }}</h3>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-emerald-300/70 uppercase tracking-wider">Aguardando Retirada</p>
+                            <h3 class="text-2xl font-black text-orange-600 dark:text-orange-400 mt-1">{{ $pedidosAguardandoRetirada }}</h3>
                         </div>
-                        <div class="p-3 bg-orange-50 text-orange-600 rounded-lg">
+                        <div class="p-3 bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 rounded-lg">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
@@ -96,18 +96,18 @@
             </div>
 
             <!-- Tabela Próximas Instalações -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div class="bg-white dark:bg-[#031d14] rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] overflow-hidden transition-colors">
+                <div class="p-5 border-b border-gray-100 dark:border-[#083d2c] flex items-center justify-between">
                     <div>
-                        <h3 class="font-bold text-lg text-gray-900">Próximas Instalações / Montagens</h3>
-                        <p class="text-sm text-gray-500">Acompanhe os pedidos com montagem agendada</p>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Próximas Instalações / Montagens</h3>
+                        <p class="text-sm text-gray-500 dark:text-emerald-300/70">Acompanhe os pedidos com montagem agendada</p>
                     </div>
-                    <a href="{{ route('pedidos.index') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-700">Ver todos &rarr;</a>
+                    <a href="{{ route('pedidos.index') }}" class="text-sm font-semibold text-emerald-600 dark:text-amber-400 hover:underline">Ver todos &rarr;</a>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-gray-600 min-w-[700px]">
-                        <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-700">
+                    <table class="w-full text-left text-sm text-gray-600 dark:text-emerald-100/90 min-w-[700px]">
+                        <thead class="bg-gray-50 dark:bg-[#02140e] text-xs uppercase font-semibold text-gray-700 dark:text-emerald-300 border-b border-gray-200 dark:border-[#083d2c]">
                             <tr>
                                 <th class="px-6 py-3">Pedido</th>
                                 <th class="px-6 py-3">Cliente</th>
@@ -118,17 +118,17 @@
                                 <th class="px-6 py-3 text-right">Ação</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody class="divide-y divide-gray-100 dark:divide-[#083d2c]">
                             @forelse($proximasInstalacoes as $p)
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4 font-bold text-gray-900">#{{ $p->id }}</td>
+                                <tr class="hover:bg-gray-50 dark:hover:bg-[#063325] transition">
+                                    <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">#{{ $p->id }}</td>
                                     <td class="px-6 py-4">
-                                        <div class="font-medium text-gray-900">{{ $p->cliente->nome }}</div>
-                                        <div class="text-xs text-gray-400">{{ $p->cliente->telefone }}</div>
+                                        <div class="font-medium text-gray-900 dark:text-white">{{ $p->cliente->nome }}</div>
+                                        <div class="text-xs text-gray-400 dark:text-emerald-400/60">{{ $p->cliente->telefone }}</div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="font-semibold text-gray-900">{{ $p->data_instalacao->format('d/m/Y') }}</div>
-                                        <div class="text-xs text-gray-500">{{ $p->hora_instalacao ? substr($p->hora_instalacao, 0, 5) : 'A combinar' }}</div>
+                                        <div class="font-semibold text-gray-900 dark:text-white">{{ $p->data_instalacao->format('d/m/Y') }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-emerald-300/70">{{ $p->hora_instalacao ? substr($p->hora_instalacao, 0, 5) : 'A combinar' }}</div>
                                     </td>
                                     <td class="px-6 py-4 max-w-xs truncate" title="{{ $p->endereco_instalacao }}">
                                         {{ $p->endereco_instalacao }}
@@ -142,14 +142,14 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <a href="{{ route('pedidos.show', $p) }}" class="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold rounded transition">
+                                        <a href="{{ route('pedidos.show', $p) }}" class="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#0a4835] text-gray-800 dark:text-emerald-100 text-xs font-semibold rounded transition border border-transparent dark:border-emerald-700/40">
                                             Ver Pedido
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-emerald-300/60">
                                         Nenhuma instalação futura agendada no momento.
                                     </td>
                                 </tr>

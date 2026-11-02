@@ -24,10 +24,24 @@
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
             <script src="https://cdn.tailwindcss.com"></script>
+            <script>
+                tailwind.config = {
+                    darkMode: 'class',
+                }
+            </script>
             <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
         @endif
+
+        <!-- Script de inicialização do Modo Escuro imediato (Zero FOUC) -->
+        <script>
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        </script>
     </head>
-    <body class="font-sans antialiased bg-slate-50 text-gray-900">
+    <body class="font-sans antialiased bg-slate-50 dark:bg-[#021811] text-gray-900 dark:text-slate-100 transition-colors duration-200">
         <!-- Layout com Sidebar na Esquerda -->
         <div class="min-h-screen flex">
             <!-- Sidebar Lateral Esquerda Fixa/Dedicada -->
@@ -53,7 +67,7 @@
 
                 <!-- Page Heading (se fornecido) -->
                 @isset($header)
-                    <div class="bg-white border-b border-gray-200 py-4 px-4 sm:px-6 lg:px-8">
+                    <div class="bg-white dark:bg-[#031d14] border-b border-gray-200 dark:border-[#083d2c] py-4 px-4 sm:px-6 lg:px-8 transition-colors">
                         {{ $header }}
                     </div>
                 @endisset

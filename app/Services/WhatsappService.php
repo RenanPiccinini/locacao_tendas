@@ -192,19 +192,44 @@ class WhatsappService
     }
 
     /**
-     * Logout / Desconectar instância
+     * Logout e Deleta a instância respectiva da Evolution API.
+     * CUIDADO ESTRITO: Deleta APENAS a instância desta aplicação ($this->instance).
      */
     public function desconectar(): bool
     {
+        $nomeInstancia = trim($this->instance);
+
+        if (empty($nomeInstancia)) {
+            Log::warning("Tentativa de desconectar/deletar instância WhatsApp sem nome configurado.");
+            return false;
+        }
+
         try {
-            $url = "{$this->baseUrl}/instance/logout/{$this->instance}";
+            Log::info("Iniciando exclusão exclusiva da instância respectiva [{$nomeInstancia}] na Evolution API");
+
+            // 1. Tenta logout prévio para encerrar o socket do Baileys
+            try {
+                $urlLogout = "{$this->baseUrl}/instance/logout/{$nomeInstancia}";
+                Http::withHeaders([
+                    'apikey' => $this->apiKey,
+                ])->timeout(5)->delete($urlLogout);
+            } catch (\Exception $eLogout) {
+                Log::info("Aviso logout prévio instância [{$nomeInstancia}]: " . $eLogout->getMessage());
+            }
+
+            // 2. Deleta estritamente a instância respectiva na Evolution API
+            $urlDelete = "{$this->baseUrl}/instance/delete/{$nomeInstancia}";
             $response = Http::withHeaders([
                 'apikey' => $this->apiKey,
-            ])->timeout(10)->delete($url);
+            ])->timeout(12)->delete($urlDelete);
 
-            return $response->successful();
+            $status = $response->status();
+            Log::info("Resultado da exclusão da instância [{$nomeInstancia}]: status {$status}");
+
+            // 200, 201 ou 404 (já deletada anteriormente) representam sucesso na remoção
+            return $response->successful() || $status === 404;
         } catch (\Exception $e) {
-            Log::error("Erro ao desconectar instância: " . $e->getMessage());
+            Log::error("Erro ao deletar instância [{$nomeInstancia}] da Evolution API: " . $e->getMessage());
             return false;
         }
     }

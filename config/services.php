@@ -38,7 +38,7 @@ return [
     'evolution' => [
         'url' => rtrim(env('EVOLUTION_API_URL', 'https://evolution.piccinidigitalsolutions.com.br'), '/'),
         'key' => env('EVOLUTION_API_KEY', ''),
-        'instance' => env('EVOLUTION_INSTANCE', 'PDS'),
+        'instance' => env('EVOLUTION_INSTANCE', 'TENDA'),
     ],
 
 ];

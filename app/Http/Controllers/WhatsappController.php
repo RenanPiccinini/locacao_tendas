@@ -37,8 +37,15 @@ class WhatsappController extends Controller
 
     public function desconectar(): JsonResponse
     {
+        $instancia = config('services.evolution.instance');
         $sucesso = $this->whatsapp->desconectar();
-        return response()->json(['success' => $sucesso]);
+        return response()->json([
+            'success' => $sucesso,
+            'instancia' => $instancia,
+            'message' => $sucesso 
+                ? "Instância [{$instancia}] desconectada e deletada com sucesso da Evolution API."
+                : "Não foi possível deletar a instância [{$instancia}]. Verifique os logs do servidor."
+        ]);
     }
 
     public function testarLembrete(Request $request): JsonResponse
