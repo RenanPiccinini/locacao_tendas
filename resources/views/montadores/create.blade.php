@@ -32,7 +32,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-600 dark:text-amber-400 font-bold text-xs">
                             +55
                         </span>
-                        <input type="text" name="whatsapp" value="{{ old('whatsapp') }}" required placeholder="17991555335" class="w-full pl-12 bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
+                        <input type="text" name="whatsapp" value="{{ old('whatsapp') }}" required placeholder="17991429132" class="w-full pl-12 bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                     </div>
                     <p class="text-[11px] text-gray-400 dark:text-emerald-400/60 mt-1">É para este número que o robô enviará as O.S., fotos e avisos semanais.</p>
                     <x-input-error :messages="$errors->get('whatsapp')" class="mt-1 text-xs text-red-500" />

@@ -110,14 +110,14 @@
                 </a>
 
                 <!-- Botão WhatsApp Header -->
-                <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento." 
+                <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento." 
                    target="_blank" 
                    rel="noopener noreferrer" 
                    class="hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-900/40 transition">
                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                         <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
                     </svg>
-                    <span>(17) 99155-5335</span>
+                    <span>(17) 99142-9132</span>
                 </a>
 
                 @auth
@@ -176,13 +176,13 @@
                 </a>
 
                 <div class="pt-3 border-t border-emerald-800/50 flex flex-col gap-2.5">
-                    <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento." 
+                    <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento." 
                        target="_blank" 
                        class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-extrabold text-sm text-center flex items-center justify-center gap-2 shadow-md">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                             <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
                         </svg>
-                        <span>WhatsApp: (17) 99155-5335</span>
+                        <span>WhatsApp: (17) 99142-9132</span>
                     </a>
                     @auth
                         <a href="{{ route('dashboard') }}" class="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm text-center">
@@ -225,7 +225,7 @@
                     <!-- Botões de Ação Principais -->
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
                         <!-- Botão WhatsApp Principal -->
-                        <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento+de+loca%C3%A7%C3%A3o." 
+                        <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento+de+loca%C3%A7%C3%A3o." 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            class="w-full sm:w-auto px-7 py-4 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-extrabold text-base shadow-xl shadow-emerald-950/60 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2.5">
@@ -289,9 +289,9 @@
                         <div class="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-[#021811]/90 backdrop-blur-md border border-emerald-600/40 flex items-center justify-between">
                             <div>
                                 <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">Atendimento Imediato</span>
-                                <h4 class="text-sm font-bold text-white">(17) 99155-5335 / (17) 3217-9349</h4>
+                                <h4 class="text-sm font-bold text-white">(17) 99142-9132 / (17) 3217-9349</h4>
                             </div>
-                            <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Gostaria+de+solicitar+um+or%C3%A7amento+pelo+WhatsApp." 
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+solicitar+um+or%C3%A7amento+pelo+WhatsApp." 
                                target="_blank" 
                                rel="noopener noreferrer" 
                                class="w-10 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg transition">
@@ -354,7 +354,7 @@
                     </div>
 
                     <div class="pt-2 flex flex-col sm:flex-row gap-3">
-                        <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Tenho+interesse+na+loca%C3%A7%C3%A3o+mensal+de+tendas+piramidais." 
+                        <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Tenho+interesse+na+loca%C3%A7%C3%A3o+mensal+de+tendas+piramidais." 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
@@ -404,7 +404,7 @@
                                 <span class="text-emerald-300">Capacidade média:</span>
                                 <span class="text-amber-400 font-bold">120 a 160 pessoas</span>
                             </div>
-                            <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+a+Tenda+Piramidal+10x10m." 
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+a+Tenda+Piramidal+10x10m." 
                                target="_blank" 
                                rel="noopener noreferrer" 
                                class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
@@ -437,7 +437,7 @@
                                 <span class="text-emerald-300">Configuração:</span>
                                 <span class="text-amber-400 font-bold">Sob Medida para o Local</span>
                             </div>
-                            <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+tendas+modulares+em+fileira." 
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+tendas+modulares+em+fileira." 
                                target="_blank" 
                                rel="noopener noreferrer" 
                                class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
@@ -470,7 +470,7 @@
                                 <span class="text-emerald-300">Montagem:</span>
                                 <span class="text-amber-400 font-bold">Rápida & Pontual</span>
                             </div>
-                            <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Gostaria+de+solicitar+or%C3%A7amento+para+evento." 
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+solicitar+or%C3%A7amento+para+evento." 
                                target="_blank" 
                                rel="noopener noreferrer" 
                                class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
@@ -580,7 +580,7 @@
                         <span>•</span>
                         <span class="flex items-center gap-1">📞 (17) 3217-9349</span>
                         <span>•</span>
-                        <span class="flex items-center gap-1">📱 (17) 99155-5335</span>
+                        <span class="flex items-center gap-1">📱 (17) 99142-9132</span>
                     </div>
 
                     <div class="pt-2">
@@ -705,7 +705,7 @@
 
                 <div class="p-6 rounded-2xl glass-card">
                     <h4 class="font-bold text-white text-base">Como faço para solicitar um orçamento agora?</h4>
-                    <p class="text-emerald-200/80 text-sm mt-2">Basta clicar no botão do WhatsApp no canto da tela ou chamar diretamente no número (17) 99155-5335 informando a data, local e a medida aproximada que deseja.</p>
+                    <p class="text-emerald-200/80 text-sm mt-2">Basta clicar no botão do WhatsApp no canto da tela ou chamar diretamente no número (17) 99142-9132 informando a data, local e a medida aproximada que deseja.</p>
                 </div>
             </div>
         </div>
@@ -719,12 +719,12 @@
             <p class="text-emerald-200/80 max-w-xl mx-auto text-sm sm:text-base">Entre em contato agora mesmo pelo WhatsApp ou telefone fixo e receba uma cotação rápida com as melhores condições.</p>
             
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento." 
+                <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento." 
                    target="_blank" 
                    rel="noopener noreferrer" 
                    class="inline-flex items-center gap-2 px-9 py-4 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-black text-base shadow-xl shadow-emerald-950/70 transition">
                     <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-                    <span>Falar no WhatsApp (17) 99155-5335</span>
+                    <span>Falar no WhatsApp (17) 99142-9132</span>
                 </a>
 
                 <a href="https://www.instagram.com/tendaseldorado/" 
@@ -751,14 +751,14 @@
 
                 <div class="text-center md:text-left text-xs text-emerald-200/80 space-y-1">
                     <div>📍 Rua Pedro Martins, 190 — São José do Rio Preto / SP</div>
-                    <div>📞 (17) 3217-9349 | 📱 (17) 99155-5335 | (17) 99142-9132</div>
+                    <div>📞 (17) 3217-9349 | 📱 (17) 99142-9132</div>
                 </div>
 
                 <div class="flex items-center justify-center md:justify-end gap-3">
                     <a href="https://www.instagram.com/tendaseldorado/" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl insta-gradient text-white shadow hover:scale-110 transition" title="Instagram">
                         <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                     </a>
-                    <a href="https://wa.me/5517991555335" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow hover:scale-110 transition" title="WhatsApp">
+                    <a href="https://wa.me/5517991429132" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow hover:scale-110 transition" title="WhatsApp">
                         <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
                     </a>
                     <a href="{{ route('login') }}" class="px-3 py-2 rounded-xl bg-[#04281e] hover:bg-[#073c2e] text-emerald-200 text-xs font-bold border border-emerald-700/60 transition">
@@ -790,13 +790,13 @@
         </a>
     </aside>
 
-    <!-- Botão Flutuante WhatsApp (17 99155-5335) -->
+    <!-- Botão Flutuante WhatsApp (17 99142-9132) -->
     <aside aria-label="Atendimento via WhatsApp" class="fixed bottom-6 right-5 sm:right-6 z-50">
-        <a href="https://wa.me/5517991555335?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+um+or%C3%A7amento+de+loca%C3%A7%C3%A3o." 
+        <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+um+or%C3%A7amento+de+loca%C3%A7%C3%A3o." 
            target="_blank" 
            rel="noopener noreferrer" 
            class="group flex items-center gap-2.5 p-3.5 sm:px-5 sm:py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white shadow-2xl shadow-emerald-950/90 hover:scale-105 active:scale-95 transition duration-300 relative border-2 border-emerald-300/40"
-           title="Fale conosco no WhatsApp (17) 99155-5335">
+           title="Fale conosco no WhatsApp (17) 99142-9132">
             
             <!-- Anel Pulsante -->
             <span class="absolute -inset-1 rounded-full bg-emerald-500 opacity-40 animate-ping pointer-events-none"></span>
@@ -806,7 +806,7 @@
             </svg>
             <div class="hidden sm:block text-left relative z-10 leading-tight">
                 <span class="text-[10px] uppercase font-bold text-emerald-100 block">Atendimento Online</span>
-                <span class="text-xs font-black text-white block">(17) 99155-5335</span>
+                <span class="text-xs font-black text-white block">(17) 99142-9132</span>
             </div>
         </a>
     </aside>

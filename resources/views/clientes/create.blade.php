@@ -17,7 +17,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Telefone / WhatsApp *</label>
-                        <input type="text" name="telefone" placeholder="17991555335" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
+                        <input type="text" name="telefone" placeholder="17991429132" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

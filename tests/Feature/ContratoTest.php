@@ -28,7 +28,7 @@ class ContratoTest extends TestCase
 
         $this->cliente = Cliente::create([
             'nome' => 'Michel Chostite',
-            'telefone' => '17991555335',
+            'telefone' => '17991429132',
             'email' => 'michel@email.com',
             'cpf_cnpj' => '123.456.789-00',
             'endereco' => 'Rua das Palmeiras, 1500',

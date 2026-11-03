@@ -163,7 +163,7 @@
             <tr>
                 <td><span class="label">CNPJ:</span> 58.950.200/0001-95</td>
                 <td><span class="label">IE:</span> ISENTO</td>
-                <td><span class="label">Telefone:</span> (17) 99107-8924 / (17) 99155-5335</td>
+                <td><span class="label">Telefone:</span> (17) 99142-9132 / (17) 99107-8924</td>
             </tr>
             <tr>
                 <td colspan="3">
