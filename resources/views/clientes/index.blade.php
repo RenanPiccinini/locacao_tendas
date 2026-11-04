@@ -33,7 +33,7 @@
                                         <div class="text-xs text-gray-400 dark:text-emerald-400/60">{{ $cliente->email }}</div>
                                     </td>
                                     <td class="px-6 py-4 font-semibold text-emerald-600 dark:text-amber-400">{{ $cliente->telefone }}</td>
-                                    <td class="px-6 py-4 text-gray-700 dark:text-emerald-100">{{ $cliente->endereco }} {{ $cliente->cidade ? " - {$cliente->cidade}" : '' }}</td>
+                                    <td class="px-6 py-4 text-gray-700 dark:text-emerald-100">{{ $cliente->endereco_formatado }}</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 dark:bg-[#02140e] text-gray-800 dark:text-emerald-200 border border-transparent dark:border-emerald-700/40">
                                             {{ $cliente->pedidos_count }} pedidos

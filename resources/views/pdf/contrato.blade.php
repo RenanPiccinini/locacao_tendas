@@ -188,9 +188,7 @@
             </tr>
             <tr>
                 <td colspan="3">
-                    <span class="label">Endereço Principal:</span> {{ $cliente->endereco }} 
-                    @if($cliente->cidade) - Cidade: {{ $cliente->cidade }} @endif
-                    @if($cliente->cep) - CEP: {{ $cliente->cep }} @endif
+                    <span class="label">Endereço Principal:</span> {{ $cliente->endereco_completo }}
                 </td>
             </tr>
         </table>

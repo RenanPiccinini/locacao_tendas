@@ -33,6 +33,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ordens-servico/{ordemServico}/download', [OrdemServicoController::class, 'download'])->name('os.download');
     Route::post('ordens-servico/{ordemServico}/enviar-whatsapp', [OrdemServicoController::class, 'enviarWhatsapp'])->name('os.enviar-whatsapp');
 
+    // Consulta de CEP (Integração com ViaCEP com proxy e fallback de rede)
+    Route::get('consulta-cep/{cep}', function (string $cep) {
+        $limpo = preg_replace('/\D/', '', $cep);
+        if (strlen($limpo) !== 8) {
+            return response()->json(['erro' => true, 'mensagem' => 'CEP inválido. Deve conter 8 dígitos.'], 422);
+        }
+
+        try {
+            $res = \Illuminate\Support\Facades\Http::timeout(5)->get("https://viacep.com.br/ws/{$limpo}/json/");
+            if ($res->successful()) {
+                return $res->json();
+            }
+        } catch (\Throwable $e) {
+            // Fallback silencioso
+        }
+
+        return response()->json(['erro' => true, 'mensagem' => 'Não foi possível consultar o CEP.'], 500);
+    })->name('cep.consulta');
+
     // Calendário (Montador vê os dele, Admin vê todos)
     Route::get('calendario', [CalendarioController::class, 'index'])->name('calendario.index');
     Route::get('calendario/eventos', [CalendarioController::class, 'eventos'])->name('calendario.eventos');
