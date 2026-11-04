@@ -323,7 +323,8 @@
 
             <!-- Fotos Anexadas pelo Montador (se houver) -->
             @php
-                $osInstalacao = $pedido->osInstalacao;
+                $osInstalacao = $pedido->ordensServico->first(fn($item) => !empty($item->fotos) && count($item->fotos) > 0) ?: $pedido->osInstalacao;
+                $osComFotos = $osInstalacao;
                 $fotosList = is_array($osInstalacao?->fotos) ? $osInstalacao->fotos : [];
                 $fotosUrls = array_map(function($path) {
                     return route('storage.file', ['path' => $path]);
@@ -370,9 +371,9 @@
                         </span>
                     </div>
 
-                    @if($osInstalacao->observacoes_montador)
+                    @if($osComFotos && $osComFotos->observacoes_montador)
                         <div class="mb-4 p-3 bg-gray-50 dark:bg-[#02140e] rounded-lg text-sm text-gray-700 dark:text-emerald-100 border-l-4 border-emerald-500 shadow-sm">
-                            <strong class="text-emerald-700 dark:text-amber-400">Obs do montador:</strong> {{ $osInstalacao->observacoes_montador }}
+                            <strong class="text-emerald-700 dark:text-amber-400">Obs do montador:</strong> {{ $osComFotos->observacoes_montador }}
                         </div>
                     @endif
 

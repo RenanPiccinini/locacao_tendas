@@ -15,6 +15,46 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Download do Atalho para Computador / Área de Trabalho (Abre direto no Admin do Sistema)
+Route::get('atalho-pc', function () {
+    $targetUrl = url('/dashboard');
+    $logoUrl = asset('images/logo.png');
+    $html = <<<HTML
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Tendas Eldorado - Painel Administrativo</title>
+    <link rel="icon" type="image/png" href="{$logoUrl}">
+    <meta http-equiv="refresh" content="0; url={$targetUrl}">
+    <script>
+        window.location.replace("{$targetUrl}");
+    </script>
+</head>
+<body style="margin:0;background:#02140e;color:#10b981;font-family:Arial,Helvetica,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;">
+    <div style="text-align:center;padding:20px;">
+        <h2 style="color:#fbbf24;margin-bottom:8px;font-size:22px;">Tendas Eldorado</h2>
+        <p style="font-size:14px;color:#d1fae5;">Abrindo Painel Administrativo do Sistema...</p>
+    </div>
+</body>
+</html>
+HTML;
+
+    return response($html, 200, [
+        'Content-Type' => 'text/html; charset=utf-8',
+        'Content-Disposition' => 'attachment; filename="Tendas Eldorado - Painel.html"',
+    ]);
+})->name('atalho.pc');
+
+Route::get('atalho-url', function () {
+    $targetUrl = url('/dashboard');
+    $content = "[InternetShortcut]\r\nURL={$targetUrl}\r\nIconIndex=0\r\nIconFile=" . asset('images/logo.png') . "\r\n";
+    return response($content, 200, [
+        'Content-Type' => 'application/x-mswinurl; charset=utf-8',
+        'Content-Disposition' => 'attachment; filename="Tendas Eldorado - Painel.url"',
+    ]);
+})->name('atalho.url');
+
 Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

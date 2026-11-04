@@ -143,15 +143,23 @@ class PedidoController extends Controller
                 }
             }
 
-            // Se o montador foi informado (ou se marcado para gerar OS), gera a OS automaticamente e notifica no WhatsApp
-            if (!empty($validated['montador_id']) || $request->filled('gerar_os_agora')) {
-                $this->criarNovaOsParaPedido($pedido, 'instalacao');
+            // 1. Gera a primeira OS automaticamente quando cria o pedido
+            $primeiraOs = $this->criarNovaOsParaPedido($pedido, 'instalacao', [
+                'status' => 'pendente',
+                'observacoes_montador' => 'Ordem de Serviço inicial gerada automaticamente na criação do Pedido #' . $pedido->id,
+            ]);
+
+            $pedido->update(['status' => 'os_gerada']);
+
+            // Se o montador foi informado, notifica no WhatsApp
+            if (!empty($validated['montador_id']) && $pedido->montador && !empty($pedido->montador->whatsapp)) {
+                $this->notificarMontadorNovaOs($pedido, $primeiraOs);
             }
 
             DB::commit();
 
             return redirect()->route('pedidos.show', $pedido)
-                ->with('success', 'Pedido criado com sucesso! Ordem de Serviço gerada e montador notificado no WhatsApp.');
+                ->with('success', "Pedido criado com sucesso! 1ª Ordem de Serviço ({$primeiraOs->numero_os}) gerada automaticamente.");
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Erro ao salvar pedido: ' . $e->getMessage());
@@ -269,17 +277,25 @@ class PedidoController extends Controller
 
     public function iniciarInstalacao(Pedido $pedido): RedirectResponse
     {
-        $os = $pedido->osInstalacao;
-        if ($os) {
-            $os->update([
+        // Atualiza a primeira OS (se existir) para em andamento
+        $osAnterior = $pedido->ordensServico()->where('tipo', 'instalacao')->first();
+        if ($osAnterior) {
+            $osAnterior->update([
                 'status' => 'em_andamento',
-                'iniciado_em' => now(),
+                'iniciado_em' => $osAnterior->iniciado_em ?: now(),
             ]);
         }
 
+        // 2. Gera outra OS automaticamente quando o montador clica no botão e pega para instalar
+        $novaOs = $this->criarNovaOsParaPedido($pedido, 'instalacao', [
+            'status' => 'em_andamento',
+            'iniciado_em' => now(),
+            'observacoes_montador' => 'Instalação iniciada pelo montador no local.',
+        ]);
+
         $pedido->update(['status' => 'em_instalacao']);
 
-        return back()->with('success', 'Status atualizado: Em processo de instalação!');
+        return back()->with('success', "Status atualizado: Em processo de instalação! Nova Ordem de Serviço ({$novaOs->numero_os}) gerada com sucesso.");
     }
 
     public function anexarFotos(Request $request, Pedido $pedido): RedirectResponse
@@ -300,14 +316,14 @@ class PedidoController extends Controller
             }
         }
 
-        $osInstalacao = $pedido->osInstalacao;
-        if ($osInstalacao) {
-            $fotosAntigas = $osInstalacao->fotos ?? [];
+        $todasOsInstalacao = $pedido->ordensServico()->where('tipo', 'instalacao')->get();
+        foreach ($todasOsInstalacao as $osItem) {
+            $fotosAntigas = $osItem->fotos ?? [];
             $fotosFinais = array_merge($fotosAntigas, $caminhosFotos);
 
-            $osInstalacao->update([
+            $osItem->update([
                 'fotos' => $fotosFinais,
-                'observacoes_montador' => $request->observacoes_montador ?: $osInstalacao->observacoes_montador,
+                'observacoes_montador' => $request->observacoes_montador ?: $osItem->observacoes_montador,
             ]);
         }
 
@@ -329,16 +345,17 @@ class PedidoController extends Controller
             }
         }
 
-        $osInstalacao = $pedido->osInstalacao;
-        if ($osInstalacao) {
-            $fotosAntigas = $osInstalacao->fotos ?? [];
-            $fotosFinais = array_merge($fotosAntigas, $caminhosFotos);
+        // Conclui as ordens de serviço de instalação
+        $todasOsInstalacao = $pedido->ordensServico()->where('tipo', 'instalacao')->get();
+        foreach ($todasOsInstalacao as $osItem) {
+            $fotosAntigas = $osItem->fotos ?? [];
+            $fotosFinais = !empty($caminhosFotos) ? array_merge($fotosAntigas, $caminhosFotos) : $fotosAntigas;
 
-            $osInstalacao->update([
+            $osItem->update([
                 'status' => 'concluida',
-                'concluido_em' => now(),
+                'concluido_em' => $osItem->concluido_em ?: now(),
                 'fotos' => $fotosFinais,
-                'observacoes_montador' => $request->observacoes_montador,
+                'observacoes_montador' => $request->observacoes_montador ?: $osItem->observacoes_montador,
             ]);
         }
 
@@ -377,28 +394,28 @@ class PedidoController extends Controller
                 ]);
             }
 
-            // Devolve as tendas ao estoque
+            // 3. Registra automaticamente no estoque como disponível
             foreach ($pedido->tendas as $tenda) {
                 $qtdRetirada = $tenda->pivot->quantidade;
                 $tenda->increment('quantidade_disponivel', $qtdRetirada);
             }
 
-            // Gera a nova OS respectiva para o pedido no status de Conclusão / Devolução
-            $osConclusao = $this->criarNovaOsParaPedido($pedido, 'conclusao', [
+            // 3. Gera outra OS automaticamente quando o montador clica no botão e faz a devolução
+            $osDevolucao = $this->criarNovaOsParaPedido($pedido, 'conclusao', [
                 'status' => 'concluida',
                 'iniciado_em' => now(),
                 'concluido_em' => now(),
-                'observacoes_montador' => 'Tendas retiradas e reintegradas com sucesso ao estoque.',
+                'observacoes_montador' => 'Devolução e desmontagem confirmadas. Todas as tendas foram reintegradas ao estoque como disponíveis.',
             ]);
 
             $pedido->update(['status' => 'concluido']);
 
             DB::commit();
 
-            return back()->with('success', "Retirada confirmada com sucesso! O.S. de Conclusão ({$osConclusao->numero_os}) emitida e tendas reintegradas ao estoque.");
+            return back()->with('success', "Devolução confirmada com sucesso! Nova O.S. de Devolução ({$osDevolucao->numero_os}) emitida e tendas registradas automaticamente no estoque como disponíveis.");
         } catch (\Throwable $e) {
             DB::rollBack();
-            return back()->with('error', 'Erro ao confirmar retirada: ' . $e->getMessage());
+            return back()->with('error', 'Erro ao confirmar devolução: ' . $e->getMessage());
         }
     }
 

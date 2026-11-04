@@ -123,14 +123,14 @@ class FluxoMontadorTest extends TestCase
         $this->assertEquals('conclusao', $osConclusao->tipo);
         $this->assertEquals('concluida', $osConclusao->status);
 
-        // Verifica que todas as 3 ordens de serviço ficam disponíveis no pedido
-        $this->assertCount(3, $pedido->fresh()->ordensServico);
+        // Verifica que todas as ordens de serviço geradas ficam disponíveis no pedido (1ª na criação, 2ª ao pegar para instalar, 3ª na retirada, 4ª na devolução)
+        $this->assertCount(4, $pedido->fresh()->ordensServico);
 
         // 7. Testa gerar uma O.S. a mais manualmente respectiva ao pedido e status
         $this->actingAs($admin)->post(route('pedidos.gerar-os', $pedido), [
             'tipo' => 'manutencao',
         ]);
-        $this->assertCount(4, $pedido->fresh()->ordensServico);
+        $this->assertCount(5, $pedido->fresh()->ordensServico);
 
         // 8. Testa reenvio de O.S. via WhatsApp e download em PDF
         $resWpp = $this->actingAs($admin)->post(route('os.enviar-whatsapp', $osInstalacao));

@@ -160,13 +160,13 @@
                 
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1.5">Atalho para Computador Gerado!</h3>
                 <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mb-4">
-                    ✓ O arquivo de atalho da Área de Trabalho foi baixado
+                    ✓ O arquivo de atalho direto para o Painel foi baixado
                 </p>
 
                 <div class="text-xs text-left bg-gray-50 dark:bg-[#02140e] p-4 rounded-xl border border-gray-100 dark:border-[#083d2c] space-y-2.5 text-gray-700 dark:text-emerald-100/90 mb-5">
                     <div class="flex items-start gap-2.5">
                         <span class="w-5 h-5 rounded-full bg-amber-400/20 text-amber-500 font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
-                        <span>Abra a pasta de <strong>Downloads</strong> do seu computador e encontre <strong>Tendas Eldorado - Sistema.url</strong>.</span>
+                        <span>Abra a pasta de <strong>Downloads</strong> do seu Windows e encontre <strong>Tendas Eldorado - Painel.html</strong>.</span>
                     </div>
                     <div class="flex items-start gap-2.5">
                         <span class="w-5 h-5 rounded-full bg-amber-400/20 text-amber-500 font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
@@ -174,19 +174,22 @@
                     </div>
                     <div class="flex items-start gap-2.5">
                         <span class="w-5 h-5 rounded-full bg-amber-400/20 text-amber-500 font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
-                        <span>Pronto! Dê <strong>dois cliques</strong> no atalho a qualquer momento para abrir o sistema em tela cheia com 1 clique.</span>
+                        <span>Pronto! Dê <strong>dois cliques</strong> no atalho a qualquer momento para abrir o sistema diretamente no Painel Administrativo.</span>
                     </div>
                     <div class="pt-2 border-t border-gray-200 dark:border-[#083d2c] text-[11px] text-gray-500 dark:text-emerald-300/70">
-                        💡 <strong>Dica no Google Chrome e Edge:</strong> Você também pode clicar no ícone <strong>⊕ (Instalar)</strong> na barra de endereços para instalar como app de janela nativo.
+                        💡 <strong>Dica no Chrome / Edge:</strong> Você também pode clicar no ícone <strong>⊕ (Instalar aplicativo)</strong> na barra de endereços para instalar como app de janela nativo no Windows.
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="baixarAtalhoDesktop()" class="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-[#063325] text-emerald-700 dark:text-emerald-300 rounded-xl font-bold text-xs hover:bg-emerald-100 dark:hover:bg-[#084532] border border-emerald-300 dark:border-emerald-700/50 transition">
-                        Baixar Novamente
-                    </button>
-                    <button type="button" onclick="document.getElementById('modal-desktop-shortcut').classList.add('hidden')" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 rounded-xl font-black text-xs shadow-md transition">
-                        Entendi, Fechar
+                <div class="flex flex-col sm:flex-row items-center gap-2">
+                    <a href="{{ route('atalho.pc') }}" class="w-full sm:flex-1 py-2.5 px-3 text-center bg-emerald-50 dark:bg-[#063325] text-emerald-700 dark:text-emerald-300 rounded-xl font-bold text-xs hover:bg-emerald-100 dark:hover:bg-[#084532] border border-emerald-300 dark:border-emerald-700/50 transition">
+                        Baixar Novamente (.html)
+                    </a>
+                    <a href="{{ route('atalho.url') }}" class="w-full sm:flex-1 py-2.5 px-3 text-center bg-gray-50 dark:bg-[#021811] text-gray-700 dark:text-emerald-200 rounded-xl font-bold text-xs hover:bg-gray-100 dark:hover:bg-[#042419] border border-gray-300 dark:border-emerald-800/60 transition">
+                        Baixar Atalho (.url)
+                    </a>
+                    <button type="button" onclick="document.getElementById('modal-desktop-shortcut').classList.add('hidden')" class="w-full sm:flex-1 py-2.5 px-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 rounded-xl font-black text-xs shadow-md transition">
+                        Fechar
                     </button>
                 </div>
             </div>
@@ -284,18 +287,14 @@
                 });
             }
 
-            // Ação do Botão Computador (Cria e baixa atalho para a Área de Trabalho)
+            // Ação do Botão Computador (Cria e baixa atalho para a Área de Trabalho que abre direto no Admin)
             function baixarAtalhoDesktop() {
-                const targetUrl = 'https://locacao-tendas.piccininidigitalsolutions.com.br/login';
-                const fileContent = `[InternetShortcut]\r\nURL=${targetUrl}\r\nIconIndex=0\r\nIconFile=${targetUrl}/images/logo.png\r\nHotKey=0\r\nIDList=\r\n[{000214A0-0000-0000-C000-000000000046}]\r\nProp3=19,11\r\n`;
-                const blob = new Blob([fileContent], { type: 'application/internet-shortcut' });
                 const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'Tendas Eldorado - Painel.url';
+                a.href = "{{ route('atalho.pc') }}";
+                a.setAttribute('download', 'Tendas Eldorado - Painel.html');
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
             }
 
             if (btnDesktopShortcut) {
