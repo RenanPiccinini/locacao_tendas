@@ -65,6 +65,28 @@
                     </div>
                 </div>
 
+                <!-- Botão / Banner "Criar Atalho no Computador" (PWA Desktop / Área de Trabalho) - Aparece SOMENTE em computadores -->
+                <div id="desktop-install-banner" class="hidden bg-gradient-to-r from-[#031d14] via-[#053223] to-[#031d14] border-b border-amber-400/30 text-white p-3 shadow-md transition-all">
+                    <div class="flex items-center justify-between gap-3 max-w-7xl mx-auto">
+                        <div class="flex items-center gap-2.5">
+                            <img src="{{ asset('images/logo.png') }}" alt="Tendas Eldorado" class="w-6 h-6 rounded-full border border-amber-400 object-cover shrink-0">
+                            <div>
+                                <span class="text-xs font-bold text-amber-300">Instale o atalho da Tendas Eldorado no seu computador!</span>
+                                <span class="hidden sm:inline text-[11px] text-emerald-100/90 ml-1.5">• Acesse o sistema operacional direto da Área de Trabalho</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button id="btn-desktop-shortcut" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-black rounded-lg shadow-sm shrink-0 transition transform hover:scale-[1.02] cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                <span>Baixar Atalho PC</span>
+                            </button>
+                            <button type="button" onclick="fecharBannerDesktop()" class="text-emerald-300/60 hover:text-white p-1 rounded transition text-base leading-none cursor-pointer" title="Dispensar aviso">
+                                &times;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Page Heading (se fornecido) -->
                 @isset($header)
                     <div class="bg-white dark:bg-[#031d14] border-b border-gray-200 dark:border-[#083d2c] py-4 px-4 sm:px-6 lg:px-8 transition-colors">
@@ -104,7 +126,7 @@
             </div>
         </div>
 
-        <!-- Modal Informativo para iOS / Não-Android -->
+        <!-- Modal Informativo para iOS / Não-Android (Mantido 100% intacto) -->
         <div id="modal-ios-pwa" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
             <div class="bg-white rounded-xl max-w-sm w-full p-6 text-center shadow-2xl relative">
                 <button onclick="document.getElementById('modal-ios-pwa').classList.add('hidden')" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
@@ -125,7 +147,52 @@
             </div>
         </div>
 
-        <!-- Script PWA e Service Worker -->
+        <!-- Modal Informativo para Computador (Atalho na Área de Trabalho) -->
+        <div id="modal-desktop-shortcut" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+            <div class="bg-white dark:bg-[#031d14] rounded-2xl max-w-md w-full p-6 text-center shadow-2xl relative border border-gray-200 dark:border-[#083d2c]">
+                <button onclick="document.getElementById('modal-desktop-shortcut').classList.add('hidden')" class="absolute top-3.5 right-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-white text-xl font-bold">&times;</button>
+                
+                <div class="w-14 h-14 bg-amber-500/20 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3 border border-amber-400/40">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1.5">Atalho para Computador Gerado!</h3>
+                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mb-4">
+                    ✓ O arquivo de atalho da Área de Trabalho foi baixado
+                </p>
+
+                <div class="text-xs text-left bg-gray-50 dark:bg-[#02140e] p-4 rounded-xl border border-gray-100 dark:border-[#083d2c] space-y-2.5 text-gray-700 dark:text-emerald-100/90 mb-5">
+                    <div class="flex items-start gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-amber-400/20 text-amber-500 font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
+                        <span>Abra a pasta de <strong>Downloads</strong> do seu computador e encontre <strong>Tendas Eldorado - Sistema.url</strong>.</span>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-amber-400/20 text-amber-500 font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
+                        <span><strong>Mova ou arraste o arquivo</strong> para a sua <strong>Área de Trabalho</strong> (Desktop).</span>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-amber-400/20 text-amber-500 font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
+                        <span>Pronto! Dê <strong>dois cliques</strong> no atalho a qualquer momento para abrir o sistema em tela cheia com 1 clique.</span>
+                    </div>
+                    <div class="pt-2 border-t border-gray-200 dark:border-[#083d2c] text-[11px] text-gray-500 dark:text-emerald-300/70">
+                        💡 <strong>Dica no Google Chrome e Edge:</strong> Você também pode clicar no ícone <strong>⊕ (Instalar)</strong> na barra de endereços para instalar como app de janela nativo.
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="baixarAtalhoDesktop()" class="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-[#063325] text-emerald-700 dark:text-emerald-300 rounded-xl font-bold text-xs hover:bg-emerald-100 dark:hover:bg-[#084532] border border-emerald-300 dark:border-emerald-700/50 transition">
+                        Baixar Novamente
+                    </button>
+                    <button type="button" onclick="document.getElementById('modal-desktop-shortcut').classList.add('hidden')" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 rounded-xl font-black text-xs shadow-md transition">
+                        Entendi, Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Script PWA e Service Worker (Mobile + Computador) -->
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
@@ -133,10 +200,17 @@
                 });
             }
 
+            // Variáveis Celular (Mantidas 100% como no original)
             let deferredPrompt;
             const btnInstalar = document.getElementById('btn-instalar-app');
             const pwaBanner = document.getElementById('pwa-install-banner');
             const modalIos = document.getElementById('modal-ios-pwa');
+
+            // Variáveis Computador / Desktop
+            let deferredPromptDesktop = null;
+            const desktopBanner = document.getElementById('desktop-install-banner');
+            const btnDesktopShortcut = document.getElementById('btn-desktop-shortcut');
+            const modalDesktop = document.getElementById('modal-desktop-shortcut');
 
             // Detecção precisa de celular (smartphones apenas)
             const isCelular = () => {
@@ -149,24 +223,50 @@
             const isIos = () => /iphone|ipod/.test(navigator.userAgent.toLowerCase());
             const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
 
-            // Se for computador, desktop ou já estiver instalado, remove o banner e NUNCA exibe
+            // 1. REGRAS DO BOTÃO DO CELULAR (NÃO ALTERADO - mantido 100% intacto)
             if (!isCelular() || isInStandaloneMode()) {
                 if (pwaBanner) pwaBanner.remove();
             } else {
-                // É celular e ainda não instalado:
                 if (pwaBanner) pwaBanner.classList.remove('hidden');
             }
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                if (!isCelular() || isInStandaloneMode()) {
-                    e.preventDefault();
-                    return;
+            // 2. REGRAS DO BOTÃO DO COMPUTADOR (Aparece SOMENTE em computador, NUNCA em celular)
+            function fecharBannerDesktop() {
+                if (desktopBanner) {
+                    desktopBanner.style.display = 'none';
+                    sessionStorage.setItem('dismiss_desktop_banner', '1');
                 }
-                e.preventDefault();
-                deferredPrompt = e;
-                if (pwaBanner) pwaBanner.classList.remove('hidden');
+            }
+
+            if (isCelular() || isInStandaloneMode()) {
+                // Se for celular, remove o banner de computador para NUNCA aparecer no celular
+                if (desktopBanner) desktopBanner.remove();
+            } else {
+                // É computador (Desktop / Notebook): exibe se não tiver sido dispensado na sessão
+                if (desktopBanner && !sessionStorage.getItem('dismiss_desktop_banner')) {
+                    desktopBanner.classList.remove('hidden');
+                }
+            }
+
+            // Gerenciamento de eventos de instalação PWA
+            window.addEventListener('beforeinstallprompt', (e) => {
+                if (isCelular()) {
+                    if (isInStandaloneMode()) return;
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    if (pwaBanner) pwaBanner.classList.remove('hidden');
+                } else {
+                    // Computador
+                    if (isInStandaloneMode()) return;
+                    e.preventDefault();
+                    deferredPromptDesktop = e;
+                    if (desktopBanner && !sessionStorage.getItem('dismiss_desktop_banner')) {
+                        desktopBanner.classList.remove('hidden');
+                    }
+                }
             });
 
+            // Ação do Botão Mobile (Mantido intacto)
             if (btnInstalar) {
                 btnInstalar.addEventListener('click', async () => {
                     if (deferredPrompt) {
@@ -180,6 +280,46 @@
                         if (modalIos) modalIos.classList.remove('hidden');
                     } else {
                         window.appAlert('Instalar Aplicativo', 'Para instalar este app, acione o menu do seu navegador (três pontinhos) e toque em "Adicionar à tela inicial" ou "Instalar aplicativo".', 'info');
+                    }
+                });
+            }
+
+            // Ação do Botão Computador (Cria e baixa atalho para a Área de Trabalho)
+            function baixarAtalhoDesktop() {
+                const urlAtual = window.location.origin;
+                const fileContent = `[InternetShortcut]\r\nURL=${urlAtual}\r\nIconIndex=0\r\nIconFile=${urlAtual}/images/logo.png\r\nHotKey=0\r\nIDList=\r\n[{000214A0-0000-0000-C000-000000000046}]\r\nProp3=19,11\r\n`;
+                const blob = new Blob([fileContent], { type: 'application/internet-shortcut' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'Tendas Eldorado - Sistema.url';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            }
+
+            if (btnDesktopShortcut) {
+                btnDesktopShortcut.addEventListener('click', async () => {
+                    // 1. Gera e baixa o arquivo de atalho direto para a Área de Trabalho
+                    baixarAtalhoDesktop();
+
+                    // 2. Se o navegador no computador suportar prompt de instalação PWA na Área de Trabalho (Chrome/Edge/Brave):
+                    if (deferredPromptDesktop) {
+                        try {
+                            deferredPromptDesktop.prompt();
+                            const { outcome } = await deferredPromptDesktop.userChoice;
+                            if (outcome === 'accepted' && desktopBanner) {
+                                desktopBanner.style.display = 'none';
+                            }
+                            deferredPromptDesktop = null;
+                        } catch (err) {
+                            console.log('Desktop PWA prompt error:', err);
+                        }
+                    }
+
+                    // 3. Abre a modal explicativa para o usuário mover ou fixar
+                    if (modalDesktop) {
+                        modalDesktop.classList.remove('hidden');
                     }
                 });
             }

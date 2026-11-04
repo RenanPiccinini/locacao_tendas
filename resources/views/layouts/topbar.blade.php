@@ -46,6 +46,17 @@
                     <span>Instagram</span>
                 </a>
 
+                <!-- Botão Criar Atalho Computador (Área de Trabalho) - visível somente no desktop -->
+                <button type="button" 
+                        onclick="if(document.getElementById('btn-desktop-shortcut')){document.getElementById('btn-desktop-shortcut').click();}else if(typeof baixarAtalhoDesktop === 'function'){baixarAtalhoDesktop();document.getElementById('modal-desktop-shortcut')?.classList.remove('hidden');}" 
+                        class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-300/80 dark:border-amber-700/50 transition cursor-pointer" 
+                        title="Baixar atalho para a Área de Trabalho do seu computador">
+                    <svg class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Atalho PC</span>
+                </button>
+
                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ Auth::user()->isAdmin() ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60' }}">
                     {{ Auth::user()->isAdmin() ? 'Administrador' : 'Montador' }}
                 </span>

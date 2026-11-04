@@ -269,36 +269,178 @@
                     </div>
                 </div>
 
-                <!-- Coluna de Imagem Real Tendas Eldorado -->
-                <div class="lg:col-span-5 relative">
-                    <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-emerald-950/80 border-2 border-amber-400/50 group">
-                        <!-- Foto Real Tendas Eldorado em Estacionamento -->
-                        <img src="{{ asset('images/tenda_estacionamento.jpg') }}" 
-                             alt="Tenda Piramidal Tendas Eldorado montada com fechamento lateral" 
-                             class="w-full h-[460px] object-cover group-hover:scale-105 transition duration-700">
+                <!-- Coluna de Imagens Reais - Showcase Interativo & Tecnológico com as 3 Fotos -->
+                <div class="lg:col-span-5 relative" 
+                     x-data="{
+                        active: 0,
+                        progress: 0,
+                        timer: null,
+                        slides: [
+                            {
+                                img: '{{ asset('images/1.jpeg') }}',
+                                tag: 'Foto 01 • Piramidal 10x10m',
+                                badge: '100% Vão Livre',
+                                title: 'Tenda Piramidal 10x10m Reforçada',
+                                desc: 'Estrutura autoportante de alta resistência com lona blackout anti-chamas.',
+                                specs: ['Área: 100m²', 'Capacidade: 160 pessoas', 'Fixação técnica']
+                            },
+                            {
+                                img: '{{ asset('images/2.jpeg') }}',
+                                tag: 'Foto 02 • Módulos Acoplados',
+                                badge: 'Fechamento Lateral',
+                                title: 'Módulos Conectados com Fechamento',
+                                desc: 'Proteção total contra sol, chuva e vento com cortinas com zíper e calhas.',
+                                specs: ['Calhas de vedação', 'Cortinas com zíper', 'Isolamento']
+                            },
+                            {
+                                img: '{{ asset('images/3.jpeg') }}',
+                                tag: 'Foto 03 • Cobertura Robusta',
+                                badge: 'Grandes Estruturas',
+                                title: 'Cobertura Especial para Eventos',
+                                desc: 'Montagem ágil e estrutura homologada com laudos técnicos e segurança.',
+                                specs: ['Aço galvanizado', 'Lona antichamas', 'Montagem ágil']
+                            }
+                        ],
+                        init() {
+                            this.startTimer();
+                        },
+                        startTimer() {
+                            this.stopTimer();
+                            this.progress = 0;
+                            const intervalMs = 60;
+                            const totalMs = 4500;
+                            this.timer = setInterval(() => {
+                                this.progress += (intervalMs / totalMs) * 100;
+                                if (this.progress >= 100) {
+                                    this.next();
+                                }
+                            }, intervalMs);
+                        },
+                        stopTimer() {
+                            if (this.timer) clearInterval(this.timer);
+                        },
+                        goTo(index) {
+                            this.active = index;
+                            this.startTimer();
+                        },
+                        next() {
+                            this.active = (this.active + 1) % this.slides.length;
+                            this.startTimer();
+                        },
+                        prev() {
+                            this.active = (this.active - 1 + this.slides.length) % this.slides.length;
+                            this.startTimer();
+                        }
+                     }"
+                     @mouseenter="stopTimer()"
+                     @mouseleave="startTimer()">
+
+                    <!-- Resplendor Cyber / Neon no fundo -->
+                    <div class="absolute -inset-1.5 bg-gradient-to-r from-emerald-500/30 via-amber-400/30 to-teal-500/30 rounded-[32px] blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 animate-pulse pointer-events-none"></div>
+
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-emerald-950/90 border-2 border-amber-400/60 bg-[#021811]">
                         
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-[#021811]/25 to-transparent"></div>
-                        
-                        <!-- Selo de Autenticidade -->
-                        <div class="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-amber-400/60 flex items-center gap-2 text-xs font-bold text-amber-300">
-                            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-5 h-5 rounded-full object-cover">
-                            <span>Foto Real Tendas Eldorado</span>
+                        <!-- Visualizador Principal das Imagens (Carrossel Suave) -->
+                        <div class="relative h-[380px] sm:h-[450px] w-full overflow-hidden bg-black/40">
+                            <template x-for="(slide, index) in slides" :key="index">
+                                <div x-show="active === index" 
+                                     x-transition:enter="transition ease-out duration-700" 
+                                     x-transition:enter-start="opacity-0 scale-95" 
+                                     x-transition:enter-end="opacity-100 scale-100" 
+                                     x-transition:leave="transition ease-in duration-300 absolute inset-0" 
+                                     x-transition:leave-start="opacity-100 scale-100" 
+                                     x-transition:leave-end="opacity-0 scale-105" 
+                                     class="absolute inset-0 w-full h-full">
+                                    <img :src="slide.img" 
+                                         :alt="slide.title" 
+                                         class="w-full h-full object-cover cursor-pointer hover:scale-105 transition duration-700"
+                                         @click="$dispatch('open-lightbox', { index: active })">
+                                </div>
+                            </template>
+
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-[#021811]/30 to-black/30 pointer-events-none"></div>
+
+                            <!-- HUD Superior: Selo Ao Vivo + Contador + Botão Zoom -->
+                            <div class="absolute top-4 left-4 right-4 flex items-center justify-between z-20 pointer-events-auto">
+                                <div class="px-3 py-1.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-amber-400/60 flex items-center gap-2 text-xs font-bold text-amber-300 shadow-lg">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-4 h-4 rounded-full object-cover">
+                                    <span>Fotos Reais Tendas Eldorado</span>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <!-- Contador Slide -->
+                                    <span class="px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-emerald-500/40 text-[11px] font-mono font-bold text-emerald-300" x-text="`${active + 1} / ${slides.length}`"></span>
+                                    
+                                    <!-- Botão Ampliar / Lightbox -->
+                                    <button type="button" 
+                                            @click="$dispatch('open-lightbox', { index: active })" 
+                                            class="p-1.5 rounded-full bg-slate-950/80 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-400/50 backdrop-blur-md transition shadow-md" 
+                                            title="Clique para ver a foto em tela cheia">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Botões de Navegação Lateral (Anterior / Próximo) -->
+                            <button type="button" 
+                                    @click="prev()" 
+                                    aria-label="Foto anterior"
+                                    class="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 hover:bg-amber-500 text-white hover:text-slate-950 border border-emerald-600/40 hover:border-amber-400 flex items-center justify-center backdrop-blur-md transition z-20">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <button type="button" 
+                                    @click="next()" 
+                                    aria-label="Próxima foto"
+                                    class="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-950/70 hover:bg-amber-500 text-white hover:text-slate-950 border border-emerald-600/40 hover:border-amber-400 flex items-center justify-center backdrop-blur-md transition z-20">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+
+                            <!-- Informações Dinâmicas da Foto Inferior -->
+                            <div class="absolute bottom-3 left-3 right-3 p-3.5 rounded-2xl bg-[#021811]/92 backdrop-blur-md border border-emerald-600/40 z-20">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[10px] uppercase font-bold text-amber-400 tracking-wider" x-text="slides[active].badge"></span>
+                                            <span class="text-[10px] text-emerald-400">• Montagem Oficial</span>
+                                        </div>
+                                        <h4 class="text-sm font-bold text-white truncate" x-text="slides[active].title"></h4>
+                                        <p class="text-[11px] text-emerald-200/80 truncate hidden sm:block" x-text="slides[active].desc"></p>
+                                    </div>
+                                    <a :href="`https://wa.me/5517991429132?text=Ol%C3%A1!+Gostei+da+foto+${slides[active].tag}+no+site+e+gostaria+de+um+or%C3%A7amento.`" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer" 
+                                       class="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-black shrink-0 flex items-center gap-1.5 shadow-md transition transform hover:scale-105">
+                                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                        <span>Orçar</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Card Flutuante Inferior com Contato Direto -->
-                        <div class="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-[#021811]/90 backdrop-blur-md border border-emerald-600/40 flex items-center justify-between">
-                            <div>
-                                <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">Atendimento Imediato</span>
-                                <h4 class="text-sm font-bold text-white">(17) 99142-9132 / (17) 3217-9349</h4>
-                            </div>
-                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+solicitar+um+or%C3%A7amento+pelo+WhatsApp." 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               class="w-10 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg transition">
-                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
-                                </svg>
-                            </a>
+                        <!-- 3 Miniaturas Interativas Tecnológicas Embaixo com Barra de Progresso -->
+                        <div class="p-2.5 bg-[#02140e] border-t border-emerald-900/60 grid grid-cols-3 gap-2">
+                            <template x-for="(slide, index) in slides" :key="index">
+                                <button type="button" 
+                                        @click="goTo(index)" 
+                                        class="relative rounded-xl overflow-hidden p-1.5 text-left transition border group cursor-pointer"
+                                        :class="active === index ? 'bg-[#04281e] border-amber-400 shadow-md shadow-amber-500/20' : 'bg-[#021811] border-emerald-900/50 hover:border-emerald-700/60 opacity-70 hover:opacity-100'">
+                                    
+                                    <div class="flex items-center gap-2">
+                                        <img :src="slide.img" class="w-10 h-10 rounded-lg object-cover shrink-0 border border-emerald-800">
+                                        <div class="min-w-0 hidden sm:block">
+                                            <div class="text-[10px] font-bold truncate" :class="active === index ? 'text-amber-400' : 'text-emerald-300'" x-text="slide.tag"></div>
+                                            <div class="text-[9px] text-emerald-400/60 truncate" x-text="slide.badge"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Linha de Progresso Tecnológica -->
+                                    <div class="mt-1.5 w-full bg-slate-900 h-1 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-75" 
+                                             :style="active === index ? `width: ${progress}%` : 'width: 0%'"></div>
+                                    </div>
+                                </button>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -383,13 +525,18 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Card 1: Tenda Piramidal 10x10m -->
-                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40">
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="{{ asset('images/tenda_estacionamento.jpg') }}" 
+                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 0 })">
+                        <img src="{{ asset('images/1.jpeg') }}" 
                              alt="Tenda Piramidal 10x10m Tendas Eldorado" 
-                             class="w-full h-full object-cover hover:scale-110 transition duration-500">
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
                         <div class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-slate-950 rounded-full text-xs font-black shadow-md">
                             10x10 Metros (100m²)
+                        </div>
+                        <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Clique para Ampliar HD</span>
                         </div>
                     </div>
                     <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
@@ -416,13 +563,18 @@
                 </div>
 
                 <!-- Card 2: Tendas Modulares em Fileira com Fechamento Lateral -->
-                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40">
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="{{ asset('images/tendas_fileira.jpg') }}" 
+                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 1 })">
+                        <img src="{{ asset('images/2.jpeg') }}" 
                              alt="Tendas Modulares Tendas Eldorado com fechamento lateral" 
-                             class="w-full h-full object-cover hover:scale-110 transition duration-500">
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
                         <div class="absolute top-4 right-4 px-3 py-1 bg-emerald-500 text-slate-950 rounded-full text-xs font-black shadow-md">
                             Módulos Acopláveis
+                        </div>
+                        <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Clique para Ampliar HD</span>
                         </div>
                     </div>
                     <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
@@ -449,13 +601,18 @@
                 </div>
 
                 <!-- Card 3: Tendas para Eventos & Cerimônias -->
-                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40">
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="{{ asset('images/banner_evento.jpg') }}" 
+                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 2 })">
+                        <img src="{{ asset('images/3.jpeg') }}" 
                              alt="Tendas para Eventos Tendas Eldorado" 
-                             class="w-full h-full object-cover hover:scale-110 transition duration-500">
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
                         <div class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-slate-950 rounded-full text-xs font-black shadow-md">
                             Festas & Feiras
+                        </div>
+                        <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Clique para Ampliar HD</span>
                         </div>
                     </div>
                     <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
@@ -486,16 +643,163 @@
 
     <!-- GALERIA REAL DE FOTOS TENDAS ELDORADO -->
     <section id="fotos-reais" class="py-24 relative z-10 border-t border-emerald-950 bg-[#032016]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                <span class="text-amber-400 font-bold text-xs uppercase tracking-widest">Nossas Montagens</span>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+            
+            <div class="text-center max-w-3xl mx-auto space-y-3">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full badge-gold text-amber-300 text-xs font-bold uppercase tracking-widest">
+                    <span>Nossas Montagens em Campo</span>
+                </span>
                 <h2 class="text-3xl sm:text-5xl font-black text-white">Galeria de Fotos Reais</h2>
-                <p class="text-emerald-200/80 text-sm sm:text-base">Confira as estruturas de grande porte montadas pela nossa equipe técnica em campo.</p>
+                <p class="text-emerald-200/80 text-sm sm:text-base">Confira as estruturas piramidais montadas pela nossa equipe técnica com lonas blackout, vão livre e fixação profissional certificada.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- DESTAQUE PRINCIPAL: AS 3 FOTOS REAIS EM ALTA RESOLUÇÃO -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
                 <!-- Foto 1 -->
-                <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-80">
+                <div class="rounded-3xl overflow-hidden glass-card border border-amber-400/40 shadow-2xl flex flex-col group">
+                    <div class="relative h-72 overflow-hidden cursor-pointer bg-black" @click="$dispatch('open-lightbox', { index: 0 })">
+                        <img src="{{ asset('images/1.jpeg') }}" 
+                             alt="Tenda Piramidal 10x10m Tendas Eldorado montada" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-black/20"></div>
+                        <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-400/50 text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>Foto Real 01</span>
+                        </div>
+                        <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-xs font-black shadow-md">
+                            100m² Vão Livre
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs">
+                            <span class="text-white font-bold drop-shadow">Tenda Piramidal 10x10m</span>
+                            <span class="p-1.5 rounded-lg bg-black/60 text-amber-300 border border-amber-400/40 flex items-center gap-1 text-[11px] font-semibold backdrop-blur-md">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <span>Ver HD</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-semibold text-emerald-400 mb-1">
+                                <span>✦ Cobertura para Pátio / Evento</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white">Tenda Piramidal 10x10m Reforçada</h3>
+                            <p class="text-xs text-emerald-200/80 mt-2 leading-relaxed">
+                                Estrutura metálica tubular de alta rigidez com lona blackout anti-chamas e proteção térmica total. Ideal para concessionárias, eventos e indústrias.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-emerald-800/80 flex items-center justify-between gap-3">
+                            <button type="button" @click="$dispatch('open-lightbox', { index: 0 })" class="text-xs font-bold text-emerald-300 hover:text-amber-400 flex items-center gap-1 transition">
+                                <span>Ver em Detalhes</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+um+or%C3%A7amento+da+Tenda+Piramidal+10x10m+(Foto+01)." 
+                               target="_blank" 
+                               class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-md transition">
+                                <span>Orçar</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 2 -->
+                <div class="rounded-3xl overflow-hidden glass-card border border-amber-400/40 shadow-2xl flex flex-col group">
+                    <div class="relative h-72 overflow-hidden cursor-pointer bg-black" @click="$dispatch('open-lightbox', { index: 1 })">
+                        <img src="{{ asset('images/2.jpeg') }}" 
+                             alt="Módulos Acoplados Tendas Eldorado com Fechamento Lateral" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-black/20"></div>
+                        <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-400/50 text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>Foto Real 02</span>
+                        </div>
+                        <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-emerald-500 text-slate-950 text-xs font-black shadow-md">
+                            Fechamento Lateral
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs">
+                            <span class="text-white font-bold drop-shadow">Módulos c/ Cortinas</span>
+                            <span class="p-1.5 rounded-lg bg-black/60 text-amber-300 border border-amber-400/40 flex items-center gap-1 text-[11px] font-semibold backdrop-blur-md">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <span>Ver HD</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-semibold text-emerald-400 mb-1">
+                                <span>✦ Proteção Total contra Intempéries</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white">Módulos Conectados & Calhas</h3>
+                            <p class="text-xs text-emerald-200/80 mt-2 leading-relaxed">
+                                Sistema modular acoplável com calhas de união para criação de pavilhões contínuos. Fechamentos laterais retráteis com trilho e zíper de vedação.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-emerald-800/80 flex items-center justify-between gap-3">
+                            <button type="button" @click="$dispatch('open-lightbox', { index: 1 })" class="text-xs font-bold text-emerald-300 hover:text-amber-400 flex items-center gap-1 transition">
+                                <span>Ver em Detalhes</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+um+or%C3%A7amento+de+tendas+modulares+com+fechamento+(Foto+02)." 
+                               target="_blank" 
+                               class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-md transition">
+                                <span>Orçar</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 3 -->
+                <div class="rounded-3xl overflow-hidden glass-card border border-amber-400/40 shadow-2xl flex flex-col group">
+                    <div class="relative h-72 overflow-hidden cursor-pointer bg-black" @click="$dispatch('open-lightbox', { index: 2 })">
+                        <img src="{{ asset('images/3.jpeg') }}" 
+                             alt="Cobertura Especial para Grandes Eventos Tendas Eldorado" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-black/20"></div>
+                        <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-400/50 text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>Foto Real 03</span>
+                        </div>
+                        <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-xs font-black shadow-md">
+                            Grandes Coberturas
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs">
+                            <span class="text-white font-bold drop-shadow">Cobertura para Eventos</span>
+                            <span class="p-1.5 rounded-lg bg-black/60 text-amber-300 border border-amber-400/40 flex items-center gap-1 text-[11px] font-semibold backdrop-blur-md">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <span>Ver HD</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-semibold text-emerald-400 mb-1">
+                                <span>✦ Montagem Ágil & Laudos Técnicos</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white">Cobertura Robusta para Eventos</h3>
+                            <p class="text-xs text-emerald-200/80 mt-2 leading-relaxed">
+                                Dimensionamento perfeito para grandes celebrações, feiras de negócios, eventos esportivos e feirões de veículos com laudos de montagem.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-emerald-800/80 flex items-center justify-between gap-3">
+                            <button type="button" @click="$dispatch('open-lightbox', { index: 2 })" class="text-xs font-bold text-emerald-300 hover:text-amber-400 flex items-center gap-1 transition">
+                                <span>Ver em Detalhes</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+um+or%C3%A7amento+de+cobertura+robusta+para+evento+(Foto+03)." 
+                               target="_blank" 
+                               class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-md transition">
+                                <span>Orçar</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOTOS ADICIONAIS DE MONTAGENS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
+                <!-- Foto Estacionamento -->
+                <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-72 cursor-pointer" @click="$dispatch('open-lightbox', { index: 0 })">
                     <img src="{{ asset('images/tenda_estacionamento.jpg') }}" alt="Tenda Piramidal Estacionamento" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent flex items-end p-5">
                         <div>
@@ -505,8 +809,8 @@
                     </div>
                 </div>
 
-                <!-- Foto 2 -->
-                <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-80">
+                <!-- Foto Fileira -->
+                <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-72 cursor-pointer" @click="$dispatch('open-lightbox', { index: 1 })">
                     <img src="{{ asset('images/tendas_fileira.jpg') }}" alt="Fileira de Tendas Piramidais" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent flex items-end p-5">
                         <div>
@@ -516,8 +820,8 @@
                     </div>
                 </div>
 
-                <!-- Foto 3 -->
-                <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-80">
+                <!-- Banner Piramidal -->
+                <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-72">
                     <img src="{{ asset('images/banner_piramidal.jpg') }}" alt="Locação Mensal Tendas Piramidais" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent flex items-end p-5">
                         <div>
@@ -527,8 +831,8 @@
                     </div>
                 </div>
 
-                <!-- Foto 4 -->
-                <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-80">
+                <!-- Banner Evento -->
+                <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-72">
                     <img src="{{ asset('images/banner_evento.jpg') }}" alt="Tendas para Eventos" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent flex items-end p-5">
                         <div>
@@ -540,7 +844,7 @@
             </div>
 
             <!-- Botão Ver Mais no Instagram -->
-            <div class="mt-12 text-center">
+            <div class="pt-4 text-center">
                 <a href="https://www.instagram.com/tendaseldorado/" 
                    target="_blank" 
                    rel="noopener noreferrer" 
@@ -551,6 +855,8 @@
                     <span>Ver Mais Fotos no Instagram @tendaseldorado</span>
                 </a>
             </div>
+        </div>
+    </section>
         </div>
     </section>
 
@@ -810,6 +1116,99 @@
             </div>
         </a>
     </aside>
+
+    <!-- MODAL LIGHTBOX EM ALTA RESOLUÇÃO (1600x1200) PARA AS FOTOS REAIS -->
+    <div x-data="{
+            open: false,
+            currentIndex: 0,
+            slides: [
+                { 
+                    img: '{{ asset('images/1.jpeg') }}', 
+                    tag: 'Foto 01 • Piramidal 10x10m',
+                    badge: '100m² Vão Livre',
+                    title: 'Tenda Piramidal 10x10m Reforçada', 
+                    desc: 'Montagem oficial Tendas Eldorado com estrutura autoportante tubular, lona blackout antichamas e ancoragem técnica profissional.' 
+                },
+                { 
+                    img: '{{ asset('images/2.jpeg') }}', 
+                    tag: 'Foto 02 • Módulos Acoplados',
+                    badge: 'Fechamento Lateral',
+                    title: 'Módulos Conectados com Fechamento Lateral', 
+                    desc: 'Sistema modular acoplado com cortinas de lona reforçadas, calhas estruturais de drenagem e vedação hermética contra vento e chuva.' 
+                },
+                { 
+                    img: '{{ asset('images/3.jpeg') }}', 
+                    tag: 'Foto 03 • Cobertura Robusta',
+                    badge: 'Grandes Estruturas',
+                    title: 'Cobertura Especial para Grandes Eventos', 
+                    desc: 'Estrutura robusta para eventos sociais, esportivos e armazenagem industrial de médio e grande porte com máxima segurança e laudos técnicos.' 
+                }
+            ],
+            init() {
+                window.addEventListener('open-lightbox', (e) => {
+                    this.currentIndex = e.detail?.index ?? 0;
+                    this.open = true;
+                });
+            },
+            next() {
+                this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+            },
+            prev() {
+                this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
+            }
+         }"
+         x-show="open" 
+         x-cloak
+         @keydown.escape.window="open = false"
+         @keydown.left.window="if(open) prev()"
+         @keydown.right.window="if(open) next()"
+         class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md">
+        
+        <div class="relative max-w-5xl w-full bg-[#021811] rounded-3xl border-2 border-amber-400/60 overflow-hidden shadow-2xl flex flex-col max-h-[92vh]"
+             @click.away="open = false">
+            
+            <!-- Barra Superior do Lightbox -->
+            <div class="p-3.5 px-6 bg-[#032016] border-b border-emerald-900/60 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-8 h-8 rounded-full border border-amber-400 object-cover">
+                    <div>
+                        <h4 class="text-sm font-bold text-white" x-text="slides[currentIndex].title"></h4>
+                        <span class="text-xs text-amber-400 font-semibold" x-text="`Foto Real Oficial ${currentIndex + 1} de ${slides.length} • Alta Resolução HD`"></span>
+                    </div>
+                </div>
+                <button @click="open = false" class="text-gray-400 hover:text-white p-2 rounded-xl text-2xl font-bold leading-none cursor-pointer">&times;</button>
+            </div>
+
+            <!-- Imagem em Alta Resolução -->
+            <div class="relative flex-1 bg-black flex items-center justify-center overflow-hidden min-h-[300px] sm:min-h-[460px]">
+                <img :src="slides[currentIndex].img" 
+                     :alt="slides[currentIndex].title" 
+                     class="max-h-[65vh] w-auto max-w-full object-contain select-none">
+                
+                <!-- Botões de Navegação -->
+                <button type="button" @click="prev()" aria-label="Anterior" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-slate-950/80 hover:bg-amber-500 text-white hover:text-slate-950 border border-emerald-600/50 hover:border-amber-400 flex items-center justify-center transition shadow-xl cursor-pointer">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button type="button" @click="next()" aria-label="Próxima" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-slate-950/80 hover:bg-amber-500 text-white hover:text-slate-950 border border-emerald-600/50 hover:border-amber-400 flex items-center justify-center transition shadow-xl cursor-pointer">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+
+            <!-- Barra Inferior com Descrição e Ação -->
+            <div class="p-4 px-6 bg-[#032016] border-t border-emerald-900/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p class="text-xs text-emerald-200/80 text-center sm:text-left" x-text="slides[currentIndex].desc"></p>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a :href="`https://wa.me/5517991429132?text=Ol%C3%A1!+Gostei+da+foto+${currentIndex + 1}+(${slides[currentIndex].title})+no+site+e+gostaria+de+um+or%C3%A7amento.`" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-black flex items-center gap-2 shadow-lg transition transform hover:scale-105">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                        <span>Solicitar Orçamento Desta Tenda</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
