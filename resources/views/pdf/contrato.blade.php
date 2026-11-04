@@ -147,6 +147,9 @@
             </td>
             <td class="contract-meta">
                 <div class="contract-number">Contrato Nº {{ $dados['numero_contrato'] }}</div>
+                @if(!empty($dados['pedido']))
+                    <div style="font-size: 10px; color: #059669; font-weight: bold;">Referente ao Pedido #{{ $dados['pedido']->id }}</div>
+                @endif
                 <div>{{ $dados['data_extenso'] }}</div>
             </td>
         </tr>
@@ -191,6 +194,16 @@
                     <span class="label">Endereço Principal:</span> {{ $cliente->endereco_completo }}
                 </td>
             </tr>
+            @if(!empty($dados['local_instalacao']))
+            <tr>
+                <td colspan="3" style="padding-top: 3px; border-top: 1px dashed #cbd5e1;">
+                    <span class="label">Local de Montagem / Instalação:</span> {{ $dados['local_instalacao'] }}
+                    @if(!empty($dados['responsavel_local']))
+                        &nbsp;|&nbsp;<span class="label">Responsável no Local:</span> {{ $dados['responsavel_local'] }}
+                    @endif
+                </td>
+            </tr>
+            @endif
         </table>
     </div>
 
@@ -203,8 +216,8 @@
     <table class="table-data">
         <thead>
             <tr>
-                <th style="width: 55%;">Item - Produto(s) / Dimensões</th>
-                <th style="width: 20%; text-align: center;">Quantidade</th>
+                <th style="width: 50%;">Item - Produto(s) / Dimensões</th>
+                <th style="width: 25%; text-align: center;">Quantidade</th>
                 <th style="width: 25%; text-align: right;">Total da Locação</th>
             </tr>
         </thead>
@@ -212,17 +225,23 @@
             @forelse($dados['itens'] as $item)
                 <tr>
                     <td><strong>{{ $item['nome'] }}</strong> - {{ $item['tamanho'] }}</td>
-                    <td style="text-align: center;">{{ $item['quantidade'] }} {{ $item['quantidade'] > 1 ? 'PEÇAS' : 'PEÇA' }}</td>
+                    <td style="text-align: center; font-weight: bold;">{{ $item['quantidade'] }} {{ $item['quantidade'] > 1 ? 'PEÇAS' : 'PEÇA' }}</td>
                     <td style="text-align: right; font-weight: bold; color: #064e3b;">R$ {{ $item['total'] }}</td>
                 </tr>
             @empty
                 <tr>
                     <td><strong>TENDA PIRAMIDAL</strong> - Conforme especificação do pedido</td>
-                    <td style="text-align: center;">1 PEÇA</td>
+                    <td style="text-align: center; font-weight: bold;">1 PEÇA</td>
                     <td style="text-align: right; font-weight: bold; color: #064e3b;">R$ {{ $dados['valor_total'] }}</td>
                 </tr>
             @endforelse
         </tbody>
+        <tfoot>
+            <tr style="background-color: #f1f5f9; font-size: 11px;">
+                <td colspan="2" style="text-align: right; font-weight: bold; text-transform: uppercase;">Valor Total da Locação:</td>
+                <td style="text-align: right; font-weight: bold; color: #064e3b; font-size: 11.5px;">R$ {{ $dados['valor_total'] }}</td>
+            </tr>
+        </tfoot>
     </table>
 
     <p style="margin: 6px 0; font-size: 10.5px; color: #334155;">
@@ -256,7 +275,7 @@
 
     <div class="clause-title">2ª) O aluguel será no valor de:</div>
     <div class="clause-text">
-        <strong>Pagamento(s):</strong> À VISTA com vencimento para <strong>{{ $dados['vencimento'] }}</strong> no valor total de <span class="highlight-badge">R$ {{ $dados['valor_total'] }}</span>. Deverá ser pago sempre à locadora na forma e data de vencimento descritas.
+        <strong>Pagamento(s):</strong> À VISTA com vencimento para <strong>{{ $dados['vencimento'] }}</strong> no valor total de <span class="highlight-badge">R$ {{ $dados['valor_total'] }}</span> ({{ $dados['valor_total_extenso'] }}). Deverá ser pago sempre à locadora na forma e data de vencimento descritas.
     </div>
 
     <div class="clause-title">4ª) Garantia do bem Locado:</div>
@@ -314,10 +333,15 @@
         O valor do aluguel poderá ser reajustado na hipótese de ocorrer a prorrogação desta locação, de acordo com negociação entre as partes.
     </div>
 
-    @if(!empty($dados['observacoes']))
+    @if(!empty($dados['observacoes']) || !empty($dados['montador_responsavel']))
         <div class="box" style="margin-top: 8px;">
-            <div class="box-title">Observações do Pedido / Local da Montagem</div>
-            <div style="font-size: 10px; color: #334155;">{{ $dados['observacoes'] }}</div>
+            <div class="box-title">Observações do Pedido / Operação</div>
+            @if(!empty($dados['observacoes']))
+                <div style="font-size: 10px; color: #334155; margin-bottom: 2px;"><strong>Observações:</strong> {{ $dados['observacoes'] }}</div>
+            @endif
+            @if(!empty($dados['montador_responsavel']))
+                <div style="font-size: 10px; color: #334155;"><strong>Montador Designado:</strong> {{ $dados['montador_responsavel'] }}</div>
+            @endif
         </div>
     @endif
 

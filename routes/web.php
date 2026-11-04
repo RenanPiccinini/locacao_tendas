@@ -73,6 +73,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ordens-servico/{ordemServico}/download', [OrdemServicoController::class, 'download'])->name('os.download');
     Route::post('ordens-servico/{ordemServico}/enviar-whatsapp', [OrdemServicoController::class, 'enviarWhatsapp'])->name('os.enviar-whatsapp');
 
+    // Contratos de Locação por Pedido (Visualização, Download e Emissão)
+    Route::get('pedidos/{pedido}/contrato', [ContratoController::class, 'verPedido'])->name('pedidos.contrato.ver');
+    Route::get('pedidos/{pedido}/contrato/download', [ContratoController::class, 'downloadPedido'])->name('pedidos.contrato.download');
+    Route::post('pedidos/{pedido}/gerar-contrato', [ContratoController::class, 'gerarPedido'])->name('pedidos.contrato.gerar');
+
     // Consulta de CEP (Integração com ViaCEP com proxy e fallback de rede)
     Route::get('consulta-cep/{cep}', function (string $cep) {
         $limpo = preg_replace('/\D/', '', $cep);
