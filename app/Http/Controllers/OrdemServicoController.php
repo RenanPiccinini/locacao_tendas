@@ -58,12 +58,24 @@ class OrdemServicoController extends Controller
             $tendasLista .= "• {$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})\n";
         }
 
+        $dadosResp = '';
+        if ($pedido->nome_responsavel) {
+            $dadosResp = "👤 *Responsável / Solicitante:* {$pedido->nome_responsavel}" . ($pedido->telefone_responsavel ? " ({$pedido->telefone_responsavel})" : "") . "\n";
+        }
+
+        $linhaEvento = '';
+        if ($pedido->data_evento) {
+            $linhaEvento = "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
+        }
+
         $msg = "📋 *ORDEM DE SERVIÇO: {$ordemServico->numero_os}*\n"
              . "📌 *Tipo:* {$ordemServico->tipo_label}\n"
              . "🔄 *Status:* {$ordemServico->status_label}\n\n"
              . "👤 *Cliente:* {$pedido->cliente->nome}\n"
              . "📞 *Telefone:* {$pedido->cliente->telefone}\n"
+             . $dadosResp
              . "📅 *Data de Instalação:* {$dataInst} às {$horaInst}\n"
+             . $linhaEvento
              . "🔄 *Data de Retirada:* {$dataRet} às {$horaRet}\n"
              . "📍 *Local:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n\n"
              . "⛺ *Tendas:*\n{$tendasLista}\n"

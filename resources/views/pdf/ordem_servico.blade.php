@@ -3,254 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <title>Ordem de Serviço - {{ $os->numero_os }}</title>
-    @php
-        $corTema = match($os->tipo) {
-            'instalacao' => '#2563eb', // Azul
-            'retirada' => '#7c3aed',   // Roxo
-            'conclusao' => '#059669',  // Verde
-            'manutencao' => '#d97706', // Âmbar
-            default => '#1e3a8a',
-        };
-        $bgBadge = match($os->tipo) {
-            'instalacao' => '#dbeafe',
-            'retirada' => '#f3e8ff',
-            'conclusao' => '#d1fae5',
-            'manutencao' => '#fef3c7',
-            default => '#e2e8f0',
-        };
-        $textoBadge = match($os->tipo) {
-            'instalacao' => '#1e40af',
-            'retirada' => '#6b21a8',
-            'conclusao' => '#065f46',
-            'manutencao' => '#92400e',
-            default => '#1e293b',
-        };
-        $tituloItens = match($os->tipo) {
-            'instalacao' => '3. TENDAS E ITENS A INSTALAR NO LOCAL',
-            'retirada' => '3. TENDAS E ITENS A DESMONTAR E RECOLHER',
-            'conclusao' => '3. TENDAS DEVOLVIDAS E REINTEGRADAS AO ESTOQUE',
-            'manutencao' => '3. TENDAS E ITENS VISTORIADOS / EM MANUTENÇÃO',
-            default => '3. TENDAS E MATERIAIS',
-        };
-    @endphp
     <style>
+        @page {
+            margin: 12mm 15mm 12mm 15mm;
+            size: A4 portrait;
+        }
         body {
             font-family: Arial, Helvetica, sans-serif;
-            color: #333;
-            font-size: 12px;
-            line-height: 1.4;
+            color: #000;
+            font-size: 11px;
+            line-height: 1.35;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
-        .header {
-            border-bottom: 2px solid {{ $corTema }};
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .header table {
+
+        .top-meta {
             width: 100%;
+            margin-bottom: 4px;
         }
-        .title {
-            font-size: 20px;
-            font-weight: bold;
-            color: {{ $corTema }};
-        }
-        .os-number {
-            font-size: 16px;
-            font-weight: bold;
-            color: {{ $corTema }};
-            text-align: right;
-        }
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background-color: {{ $bgBadge }};
-            color: {{ $textoBadge }};
-            font-weight: bold;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-size: 10px;
-        }
-        .badge-status {
-            display: inline-block;
-            padding: 2px 6px;
-            background-color: #f1f5f9;
-            color: #475569;
-            font-size: 9px;
-            font-weight: bold;
-            border-radius: 3px;
-            text-transform: uppercase;
-        }
-        .section-title {
-            background-color: #f8fafc;
-            padding: 6px 10px;
-            font-weight: bold;
-            font-size: 12px;
-            color: #0f172a;
-            margin-top: 15px;
-            margin-bottom: 8px;
-            border-left: 3px solid {{ $corTema }};
-        }
-        table.data-table {
+        .top-meta table {
             width: 100%;
             border-collapse: collapse;
+        }
+        .top-meta td {
+            font-size: 10px;
+            color: #333;
+        }
+
+        .header-logo {
+            text-align: center;
             margin-bottom: 10px;
         }
-        table.data-table td, table.data-table th {
-            padding: 6px 8px;
-            border: 1px solid #cbd5e1;
+        .header-logo img {
+            height: 52px;
+            margin: 0 auto 2px auto;
+            display: block;
         }
-        table.data-table th {
-            background-color: #f8fafc;
-            text-align: left;
+        .header-logo .brand-name {
             font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
-        .signature-box {
-            margin-top: 45px;
+        .header-logo .brand-sub {
+            font-size: 9px;
+            color: #444;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        /* Estrutura das Caixas idêntica ao modelo da foto */
+        .os-box {
             width: 100%;
+            border-collapse: collapse;
+            border: 1.5px solid #333;
+            margin-bottom: 8px;
         }
-        .signature-line {
-            width: 45%;
-            border-top: 1px solid #333;
+        .os-box td, .os-box th {
+            font-size: 11px;
+            color: #000;
+            vertical-align: middle;
+        }
+
+        .box-title-center {
             text-align: center;
-            padding-top: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 5px 8px;
+            border-bottom: 1.5px solid #333;
+            letter-spacing: 0.5px;
+        }
+        .box-title-left {
+            text-align: left;
+            font-weight: bold;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-bottom: 1px solid #333;
+        }
+
+        .border-right {
+            border-right: 1.5px solid #333;
+        }
+
+        /* Box Período(s) */
+        .periodo-col {
+            padding: 6px 8px;
+            font-size: 10.5px;
+            vertical-align: top;
+        }
+
+        /* Box Produtos */
+        .th-prod {
+            font-weight: bold;
+            font-size: 11px;
+            text-align: left;
+            border-bottom: 1.5px solid #333;
+            border-right: 1.5px solid #333;
+            padding: 5px 8px;
+        }
+        .th-qtd {
+            font-weight: bold;
+            font-size: 11px;
+            text-align: center;
+            border-bottom: 1.5px solid #333;
+            padding: 5px 8px;
+        }
+        .td-prod {
+            border-bottom: 1px solid #ddd;
+            border-right: 1.5px solid #333;
+            padding: 5px 8px;
             font-size: 11px;
         }
-        .footer {
-            margin-top: 35px;
+        .td-qtd {
+            border-bottom: 1px solid #ddd;
             text-align: center;
-            font-size: 10px;
-            color: #64748b;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 8px;
+            padding: 5px 8px;
+            font-size: 11px;
+        }
+        .last-row .td-prod, .last-row .td-qtd {
+            border-bottom: none;
+        }
+
+        /* Box Observações */
+        .obs-content {
+            padding: 6px 8px;
+            min-height: 48px;
+            font-size: 10.5px;
+            vertical-align: top;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
+    @php
+        $logoPath = public_path('images/logo.png');
+        $logoBase64 = file_exists($logoPath) ? base64_encode(file_get_contents($logoPath)) : '';
+        
+        $dataEmissaoExtenso = \Carbon\Carbon::parse($os->created_at ?? now())->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y');
+        
+        $identificacao = $pedido->observacoes 
+            ?: ($pedido->cliente->nome . ' ' . ($pedido->data_evento ? $pedido->data_evento->format('d/m/Y') : $pedido->data_instalacao->format('d/m/Y')));
+
+        $solicitante = $pedido->nome_responsavel ?: $pedido->cliente->nome;
+        $celularSolicitante = $pedido->telefone_responsavel ?: $pedido->cliente->telefone;
+        $emailCliente = $pedido->cliente->email ?? '';
+
+        $numApenas = preg_replace('/^OS[A-Z]*-([0-9]{4})-0*/i', '', $os->numero_os);
+        $exibirNumero = $numApenas ?: ($os->id ?: $os->numero_os);
+    @endphp
+
+    <!-- Topo: Horário de Impressão e Nome do Sistema -->
+    <div class="top-meta">
         <table>
             <tr>
-                <td>
-                    <div class="title">TENDAS ELDORADO</div>
-                    <div style="color: #64748b; font-size: 11px; margin-top: 2px;">Sistema Operacional de Locações & Montagens</div>
-                </td>
-                <td class="os-number">
-                    ORDEM DE SERVIÇO<br>
-                    <span>{{ $os->numero_os }}</span><br>
-                    <span class="badge">{{ mb_strtoupper($os->tipo_label) }}</span>
-                    <div style="font-size: 10px; margin-top: 4px; color: #475569;">
-                        Status: <span class="badge-status">{{ $os->status_label }}</span>
-                    </div>
-                </td>
+                <td style="text-align: left; width: 50%;">{{ now()->format('d/m/y, H:i') }}</td>
+                <td style="text-align: right; width: 50%;">Tendas Eldorado</td>
             </tr>
         </table>
     </div>
 
-    <!-- Dados do Cliente e Local -->
-    <div class="section-title">1. DADOS DO CLIENTE E LOCAL DE ATENDIMENTO</div>
-    <table class="data-table">
-        <tr>
-            <td style="width: 20%;"><strong>Cliente:</strong></td>
-            <td style="width: 40%;">{{ $pedido->cliente->nome }}</td>
-            <td style="width: 15%;"><strong>Telefone:</strong></td>
-            <td style="width: 25%;">{{ $pedido->cliente->telefone }}</td>
-        </tr>
-        <tr>
-            <td><strong>Endereço:</strong></td>
-            <td colspan="3">{{ $pedido->endereco_instalacao }} {{ $pedido->cidade_instalacao ? ' - ' . $pedido->cidade_instalacao : '' }}</td>
-        </tr>
-        @if($pedido->observacoes)
-        <tr>
-            <td><strong>Observações:</strong></td>
-            <td colspan="3">{{ $pedido->observacoes }}</td>
-        </tr>
+    <!-- Logotipo Centralizado -->
+    <div class="header-logo">
+        @if($logoBase64)
+            <img src="data:image/png;base64,{{ $logoBase64 }}" alt="Logo Tendas Eldorado">
         @endif
-        @if($os->observacoes_montador)
-        <tr>
-            <td><strong>Obs. do Montador:</strong></td>
-            <td colspan="3" style="color: {{ $corTema }};"><strong>{{ $os->observacoes_montador }}</strong></td>
-        </tr>
-        @endif
-    </table>
+        <div class="brand-name">Tendas Eldorado</div>
+        <div class="brand-sub">Venda e Locação</div>
+    </div>
 
-    <!-- Programação e Equipe -->
-    <div class="section-title">2. PROGRAMAÇÃO E RESPONSÁVEL</div>
-    <table class="data-table">
+    <!-- BOX 1: ORDEM DE SERVIÇO Nº -->
+    <table class="os-box">
         <tr>
-            <td style="width: 25%;"><strong>Data Montagem:</strong></td>
-            <td style="width: 25%;">{{ $pedido->data_instalacao->format('d/m/Y') }} {{ $pedido->hora_instalacao ? 'às ' . substr($pedido->hora_instalacao, 0, 5) : '' }}</td>
-            <td style="width: 25%;"><strong>Data Retirada:</strong></td>
-            <td style="width: 25%;">{{ $pedido->data_retirada->format('d/m/Y') }} {{ $pedido->hora_retirada ? 'às ' . substr($pedido->hora_retirada, 0, 5) : '' }}</td>
+            <td class="box-title-center">
+                ORDEM DE SERVIÇO Nº {{ $exibirNumero }}
+            </td>
         </tr>
         <tr>
-            <td><strong>Montador / Técnico:</strong></td>
-            <td>{{ $pedido->montador ? $pedido->montador->name : 'Equipe Técnica' }}</td>
-            <td><strong>WhatsApp Montador:</strong></td>
-            <td>{{ $pedido->montador->whatsapp ?? 'Não informado' }}</td>
-        </tr>
-        <tr>
-            <td><strong>Emissão da O.S.:</strong></td>
-            <td>{{ $os->created_at->format('d/m/Y H:i') }}</td>
-            <td><strong>Status / Conclusão:</strong></td>
-            <td>
-                {{ $os->status_label }}
-                @if($os->concluido_em)
-                    (em {{ $os->concluido_em->format('d/m/Y H:i') }})
-                @endif
+            <td style="padding: 6px 8px;">
+                <div style="margin-bottom: 4px;">{{ $dataEmissaoExtenso }}</div>
+                <div><strong>Identificação:</strong> {{ $identificacao }}</div>
             </td>
         </tr>
     </table>
 
-    <!-- Tendas e Materiais -->
-    <div class="section-title">{{ $tituloItens }}</div>
-    <table class="data-table">
+    <!-- BOX 2: CLIENTE -->
+    <table class="os-box">
+        <tr>
+            <td class="box-title-left">Cliente:</td>
+        </tr>
+        <tr>
+            <td style="padding: 6px 8px;">
+                <div style="margin-bottom: 4px;">
+                    <strong>Razão Social:</strong> {{ $pedido->cliente->nome }}
+                    <span style="margin: 0 4px;">-</span>
+                    <strong>Fantasia:</strong> {{ $pedido->cliente->nome_fantasia ?: $pedido->cliente->nome }}
+                </div>
+                <div>
+                    <strong>Solicitante:</strong> {{ $solicitante }}
+                    <span style="margin: 0 4px;">-</span>
+                    <strong>Celular:</strong> {{ $celularSolicitante }}
+                    <span style="margin: 0 4px;">-</span>
+                    <strong>Email:</strong> {{ $emailCliente }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- BOX 3: SAÍDA/RETORNO -->
+    <table class="os-box">
+        <tr>
+            <td class="box-title-center">Saída/Retorno</td>
+        </tr>
+        <tr>
+            <td style="padding: 6px 8px;">
+                <strong>Descrição:</strong> {{ $pedido->observacoes ? 'Local de Montagem' : 'Local de Montagem' }}
+                <span style="margin: 0 4px;">-</span>
+                <strong>Endereço:</strong> {{ $pedido->endereco_instalacao }}{{ $pedido->cidade_instalacao ? ' - ' . $pedido->cidade_instalacao : '' }}
+            </td>
+        </tr>
+    </table>
+
+    <!-- BOX 4: PERÍODO(S) -->
+    <table class="os-box">
+        <tr>
+            <td colspan="3" class="box-title-center">Período(s)</td>
+        </tr>
+        <tr>
+            <td class="periodo-col border-right" style="width: 33.33%;">
+                <strong>Saída:</strong> {{ $pedido->data_instalacao->format('d/m/Y') }} {{ $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : '08:00' }}
+            </td>
+            <td class="periodo-col border-right" style="width: 33.34%;">
+                <strong>Data do Evento:</strong> {{ $pedido->data_evento ? $pedido->data_evento->format('d/m/Y') : $pedido->data_instalacao->format('d/m/Y') }} {{ $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : '08:00' }}
+            </td>
+            <td class="periodo-col" style="width: 33.33%;">
+                <strong>Retorno:</strong> {{ $pedido->data_retirada->format('d/m/Y') }} {{ $pedido->hora_retirada ? substr($pedido->hora_retirada, 0, 5) : '08:00' }}
+            </td>
+        </tr>
+    </table>
+
+    <!-- BOX 5: PRODUTOS E QUANTIDADE -->
+    <table class="os-box">
         <thead>
             <tr>
-                <th style="width: 10%;">Item</th>
-                <th style="width: 50%;">Descrição da Tenda</th>
-                <th style="width: 25%;">Tamanho / Dimensões</th>
-                <th style="width: 15%; text-align: center;">Quantidade</th>
+                <th class="th-prod" style="width: 72%;">Produto(s)</th>
+                <th class="th-qtd" style="width: 28%;">Quantidade</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($pedido->tendas as $idx => $tenda)
-                <tr>
-                    <td style="text-align: center;">{{ $idx + 1 }}</td>
-                    <td><strong>{{ $tenda->nome }}</strong> {{ $tenda->descricao ? ' - ' . $tenda->descricao : '' }}</td>
-                    <td>{{ $tenda->tamanho }}</td>
-                    <td style="text-align: center; font-weight: bold; font-size: 13px;">{{ $tenda->pivot->quantidade }}</td>
+            @foreach($pedido->tendas as $tenda)
+                <tr class="{{ $loop->last ? 'last-row' : '' }}">
+                    <td class="td-prod">
+                        TENDA - {{ strtoupper($tenda->tamanho) }} {{ $tenda->nome != $tenda->tamanho ? strtoupper($tenda->nome) : '' }}
+                    </td>
+                    <td class="td-qtd">
+                        {{ $tenda->pivot->quantidade }} PEÇA{{ $tenda->pivot->quantidade > 1 ? 'S' : '' }}
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
-    <!-- Assinaturas de Conferência -->
-    <div class="signature-box">
-        <table style="width: 100%;">
-            <tr>
-                <td class="signature-line" style="float: left;">
-                    <strong>{{ $pedido->cliente->nome }}</strong><br>
-                    @if($os->tipo === 'instalacao')
-                        Assinatura do Cliente / Recebimento da Montagem
-                    @elseif($os->tipo === 'retirada')
-                        Assinatura do Cliente / Liberação da Retirada
-                    @else
-                        Assinatura do Cliente / Encerramento do Pedido
-                    @endif
-                </td>
-                <td style="width: 10%;"></td>
-                <td class="signature-line" style="float: right;">
-                    <strong>{{ $pedido->montador ? $pedido->montador->name : 'Técnico Responsável' }}</strong><br>
-                    Assinatura do Montador
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="footer">
-        Documento gerado eletronicamente em {{ now()->format('d/m/Y H:i:s') }} - Sistema de Locação Tendas Eldorado | Pedido #{{ $pedido->id }}
-    </div>
+    <!-- BOX 6: OBSERVAÇÕES -->
+    <table class="os-box">
+        <tr>
+            <td class="box-title-left">Observações:</td>
+        </tr>
+        <tr>
+            <td class="obs-content">
+                @if($pedido->observacoes)
+                    <div>{{ $pedido->observacoes }}</div>
+                @endif
+                @if($os->observacoes_montador)
+                    <div style="margin-top: 4px;"><strong>Obs. do Montador:</strong> {{ $os->observacoes_montador }}</div>
+                @endif
+                @if($pedido->montador)
+                    <div style="margin-top: 4px; font-size: 10px; color: #444;">
+                        <strong>Montador Responsável:</strong> {{ $pedido->montador->name }} (WhatsApp: {{ $pedido->montador->whatsapp ?? 'Não informado' }})
+                    </div>
+                @endif
+            </td>
+        </tr>
+    </table>
 
 </body>
 </html>

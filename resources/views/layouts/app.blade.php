@@ -286,12 +286,12 @@
 
             // Ação do Botão Computador (Cria e baixa atalho para a Área de Trabalho)
             function baixarAtalhoDesktop() {
-                const urlAtual = window.location.origin;
-                const fileContent = `[InternetShortcut]\r\nURL=${urlAtual}\r\nIconIndex=0\r\nIconFile=${urlAtual}/images/logo.png\r\nHotKey=0\r\nIDList=\r\n[{000214A0-0000-0000-C000-000000000046}]\r\nProp3=19,11\r\n`;
+                const targetUrl = 'https://locacao-tendas.piccininidigitalsolutions.com.br/login';
+                const fileContent = `[InternetShortcut]\r\nURL=${targetUrl}\r\nIconIndex=0\r\nIconFile=${targetUrl}/images/logo.png\r\nHotKey=0\r\nIDList=\r\n[{000214A0-0000-0000-C000-000000000046}]\r\nProp3=19,11\r\n`;
                 const blob = new Blob([fileContent], { type: 'application/internet-shortcut' });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = 'Tendas Eldorado - Sistema.url';
+                a.download = 'Tendas Eldorado - Painel.url';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);

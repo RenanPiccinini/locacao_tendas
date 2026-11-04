@@ -58,7 +58,7 @@
                 </div>
 
                 <!-- Datas e Horários -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Data Instalação *</label>
                         <input type="date" name="data_instalacao" value="{{ old('data_instalacao', date('Y-m-d')) }}" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
@@ -67,6 +67,11 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Hora Instalação</label>
                         <input type="time" name="hora_instalacao" value="{{ old('hora_instalacao', '09:00') }}" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Data do Evento</label>
+                        <input type="date" name="data_evento" value="{{ old('data_evento') }}" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                     </div>
 
                     <div>
@@ -142,6 +147,19 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Observações / Detalhes de Acesso</label>
                         <textarea name="observacoes" rows="2" placeholder="Ex: Entrada pelos fundos, solo de grama, precisa de estacas..." class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">{{ old('observacoes') }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Responsável / Solicitante -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Nome do Responsável / Solicitante</label>
+                        <input type="text" name="nome_responsavel" value="{{ old('nome_responsavel') }}" placeholder="Ex: Lucas / Contato no local" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Telefone do Responsável</label>
+                        <input type="text" name="telefone_responsavel" value="{{ old('telefone_responsavel') }}" placeholder="Ex: (17) 99726-0201" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                     </div>
                 </div>
 

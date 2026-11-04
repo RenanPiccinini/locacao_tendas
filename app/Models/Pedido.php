@@ -17,6 +17,7 @@ class Pedido extends Model
         'montador_id',
         'data_instalacao',
         'hora_instalacao',
+        'data_evento',
         'data_retirada',
         'hora_retirada',
         'endereco_instalacao',
@@ -25,10 +26,13 @@ class Pedido extends Model
         'status',
         'valor_total',
         'observacoes',
+        'nome_responsavel',
+        'telefone_responsavel',
     ];
 
     protected $casts = [
         'data_instalacao' => 'date',
+        'data_evento' => 'date',
         'data_retirada' => 'date',
     ];
 

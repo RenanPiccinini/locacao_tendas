@@ -91,6 +91,7 @@ class PedidoController extends Controller
             'montador_id' => 'nullable|exists:users,id',
             'data_instalacao' => 'required|date',
             'hora_instalacao' => 'nullable',
+            'data_evento' => 'nullable|date',
             'data_retirada' => 'required|date|after_or_equal:data_instalacao',
             'hora_retirada' => 'nullable',
             'endereco_instalacao' => 'required|string|max:255',
@@ -98,6 +99,8 @@ class PedidoController extends Controller
             'cep_instalacao' => 'nullable|string|max:20',
             'valor_total' => 'nullable|numeric|min:0',
             'observacoes' => 'nullable|string',
+            'nome_responsavel' => 'nullable|string|max:255',
+            'telefone_responsavel' => 'nullable|string|max:30',
             'tendas_selecionadas' => 'required|array|min:1',
             'tendas_selecionadas.*' => 'exists:tendas,id',
             'quantidades' => 'nullable|array',
@@ -115,6 +118,7 @@ class PedidoController extends Controller
                 'montador_id' => $validated['montador_id'] ?? null,
                 'data_instalacao' => $validated['data_instalacao'],
                 'hora_instalacao' => $validated['hora_instalacao'] ?? null,
+                'data_evento' => $validated['data_evento'] ?? null,
                 'data_retirada' => $validated['data_retirada'],
                 'hora_retirada' => $validated['hora_retirada'] ?? null,
                 'endereco_instalacao' => $validated['endereco_instalacao'],
@@ -122,6 +126,8 @@ class PedidoController extends Controller
                 'cep_instalacao' => $validated['cep_instalacao'] ?? null,
                 'valor_total' => $validated['valor_total'] ?? 0,
                 'observacoes' => $validated['observacoes'] ?? null,
+                'nome_responsavel' => $validated['nome_responsavel'] ?? null,
+                'telefone_responsavel' => $validated['telefone_responsavel'] ?? null,
                 'status' => 'pendente',
             ]);
 
@@ -182,6 +188,7 @@ class PedidoController extends Controller
             'montador_id' => 'nullable|exists:users,id',
             'data_instalacao' => 'required|date',
             'hora_instalacao' => 'nullable',
+            'data_evento' => 'nullable|date',
             'data_retirada' => 'required|date|after_or_equal:data_instalacao',
             'hora_retirada' => 'nullable',
             'endereco_instalacao' => 'required|string|max:255',
@@ -189,6 +196,8 @@ class PedidoController extends Controller
             'cep_instalacao' => 'nullable|string|max:20',
             'valor_total' => 'nullable|numeric|min:0',
             'observacoes' => 'nullable|string',
+            'nome_responsavel' => 'nullable|string|max:255',
+            'telefone_responsavel' => 'nullable|string|max:30',
         ]);
 
         $pedido->update($validated);
@@ -411,11 +420,23 @@ class PedidoController extends Controller
             $tendasLista .= "• {$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})\n";
         }
 
+        $dadosResp = '';
+        if ($pedido->nome_responsavel) {
+            $dadosResp = "👤 *Responsável / Solicitante:* {$pedido->nome_responsavel}" . ($pedido->telefone_responsavel ? " ({$pedido->telefone_responsavel})" : "") . "\n";
+        }
+
+        $linhaEvento = '';
+        if ($pedido->data_evento) {
+            $linhaEvento = "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
+        }
+
         $msg = "📋 *NOVO PEDIDO DE MONTAGEM AGENDADO! (#{$pedido->id})*\n\n"
              . "Olá *{$pedido->montador->name}*, você foi escalado para um novo pedido de locação:\n\n"
              . "👤 *Cliente:* {$pedido->cliente->nome}\n"
              . "📞 *Contato:* {$pedido->cliente->telefone}\n"
+             . $dadosResp
              . "📅 *Instalação:* {$dataInst} às {$horaInst}\n"
+             . $linhaEvento
              . "🔄 *Retirada:* {$dataRet} às {$horaRet}\n"
              . "📍 *Endereço:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n\n"
              . "⛺ *Tendas a serem instaladas:*\n{$tendasLista}\n"
@@ -442,6 +463,16 @@ class PedidoController extends Controller
             $tendasLista .= "• {$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})\n";
         }
 
+        $dadosResp = '';
+        if ($pedido->nome_responsavel) {
+            $dadosResp = "👤 *Responsável / Solicitante:* {$pedido->nome_responsavel}" . ($pedido->telefone_responsavel ? " ({$pedido->telefone_responsavel})" : "") . "\n";
+        }
+
+        $linhaEvento = '';
+        if ($pedido->data_evento) {
+            $linhaEvento = "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
+        }
+
         $instrucao = match($os->tipo) {
             'instalacao' => "📲 Acesse o sistema pelo celular para clicar em *'Em Processo de Instalação'* assim que iniciar!",
             'retirada' => "🚚 Ordem de serviço de retirada liberada! Clique em *'A Caminho da Retirada'* ao se deslocar ao local.",
@@ -454,7 +485,9 @@ class PedidoController extends Controller
              . "Olá *{$pedido->montador->name}*, uma O.S. do Pedido #{$pedido->id} foi gerada para você:\n\n"
              . "👤 *Cliente:* {$pedido->cliente->nome}\n"
              . "📞 *Telefone:* {$pedido->cliente->telefone}\n"
+             . $dadosResp
              . "📅 *Data de Montagem:* {$dataInst} às {$horaInst}\n"
+             . $linhaEvento
              . "🔄 *Data Prevista de Retirada:* {$dataRet}\n"
              . "📍 *Local:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n\n"
              . "⛺ *Tendas:*\n{$tendasLista}\n"

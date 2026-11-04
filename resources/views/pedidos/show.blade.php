@@ -234,6 +234,18 @@
                             <span class="text-gray-500 dark:text-emerald-300/70">Telefone / WhatsApp:</span>
                             <span class="font-semibold text-emerald-600 dark:text-amber-400">{{ $pedido->cliente->telefone }}</span>
                         </div>
+                        @if($pedido->nome_responsavel)
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 dark:text-emerald-300/70">Responsável / Solicitante:</span>
+                                <span class="font-semibold text-gray-900 dark:text-white">{{ $pedido->nome_responsavel }}</span>
+                            </div>
+                        @endif
+                        @if($pedido->telefone_responsavel)
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 dark:text-emerald-300/70">Telefone Responsável:</span>
+                                <span class="font-semibold text-emerald-600 dark:text-amber-400">{{ $pedido->telefone_responsavel }}</span>
+                            </div>
+                        @endif
                         <div class="flex justify-between">
                             <span class="text-gray-500 dark:text-emerald-300/70">Endereço de Montagem:</span>
                             <span class="font-medium text-gray-900 dark:text-white text-right">{{ $pedido->endereco_instalacao }}</span>
@@ -260,6 +272,12 @@
                             <span class="text-gray-500 dark:text-emerald-300/70">Data de Instalação:</span>
                             <span class="font-bold text-emerald-700 dark:text-emerald-400">{{ $pedido->data_instalacao->format('d/m/Y') }} às {{ $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : 'A combinar' }}</span>
                         </div>
+                        @if($pedido->data_evento)
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 dark:text-emerald-300/70">Data do Evento:</span>
+                                <span class="font-bold text-amber-600 dark:text-amber-400">{{ $pedido->data_evento->format('d/m/Y') }}</span>
+                            </div>
+                        @endif
                         <div class="flex justify-between">
                             <span class="text-gray-500 dark:text-emerald-300/70">Data de Retirada:</span>
                             <span class="font-bold text-purple-700 dark:text-purple-400">{{ $pedido->data_retirada->format('d/m/Y') }} às {{ $pedido->hora_retirada ? substr($pedido->hora_retirada, 0, 5) : 'A combinar' }}</span>
