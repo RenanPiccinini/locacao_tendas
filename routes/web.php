@@ -102,6 +102,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('calendario', [CalendarioController::class, 'index'])->name('calendario.index');
     Route::get('calendario/eventos', [CalendarioController::class, 'eventos'])->name('calendario.eventos');
 
+    // Estoque de Tendas (Visualização de estoque e disponibilidade liberada para Montadores e Admins)
+    Route::get('tendas', [TendaController::class, 'index'])->name('tendas.index');
+
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -115,7 +118,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('usuarios/{usuario}/alterar-senha', [\App\Http\Controllers\UsuarioController::class, 'alterarSenha'])->name('usuarios.alterar-senha');
 
         Route::resource('montadores', \App\Http\Controllers\MontadorController::class);
-        Route::resource('tendas', TendaController::class);
+        Route::resource('tendas', TendaController::class)->except(['index']);
         Route::resource('clientes', ClienteController::class);
         Route::post('clientes/{cliente}/gerar-contrato', [ContratoController::class, 'gerar'])->name('clientes.contrato.gerar');
         Route::get('clientes/{cliente}/contrato', [ContratoController::class, 'ver'])->name('clientes.contrato.ver');

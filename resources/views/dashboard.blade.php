@@ -95,25 +95,52 @@
                 @endif
             </div>
 
-            <!-- Tabela Próximas Instalações -->
+            <!-- Tabela Próximas Instalações / Todas as Ordens -->
             <div class="bg-white dark:bg-[#031d14] rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] overflow-hidden transition-colors">
-                <div class="p-5 border-b border-gray-100 dark:border-[#083d2c] flex items-center justify-between">
+                <div class="p-5 border-b border-gray-100 dark:border-[#083d2c] flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">Próximas Instalações / Montagens</h3>
-                        <p class="text-sm text-gray-500 dark:text-emerald-300/70">Acompanhe os pedidos com montagem agendada</p>
+                        <div class="flex items-center gap-2.5">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white">
+                                {{ Auth::user()->isMontador() ? 'Minhas Ordens e Montagens' : 'Ordens de Serviço e Locações' }}
+                            </h3>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40">
+                                {{ $proximasInstalacoes->count() }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-emerald-300/70 mt-1">
+                            {{ Auth::user()->isMontador() ? 'Acesse o pedido para instalar, anexar fotos ou devolver tendas a qualquer momento (inclusive em caso de antecipação).' : 'Acompanhe as montagens e devoluções programadas.' }}
+                        </p>
                     </div>
-                    <a href="{{ route('pedidos.index') }}" class="text-sm font-semibold text-emerald-600 dark:text-amber-400 hover:underline">Ver todos &rarr;</a>
+
+                    <!-- Filtro Rápido: Todas as Ordens / Somente do Dia -->
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center p-1 bg-gray-100 dark:bg-[#021811] rounded-xl border border-gray-200 dark:border-emerald-800/50">
+                            <a href="{{ route('dashboard', ['filtro' => 'todas']) }}" 
+                               class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ ($filtro ?? 'todas') === 'todas' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-gray-600 dark:text-emerald-300 hover:text-gray-900 dark:hover:text-white' }}">
+                                <span>Todas as Ordens</span>
+                            </a>
+                            <a href="{{ route('dashboard', ['filtro' => 'hoje']) }}" 
+                               class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ ($filtro ?? 'todas') === 'hoje' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-gray-600 dark:text-emerald-300 hover:text-gray-900 dark:hover:text-white' }}">
+                                <span class="w-2 h-2 rounded-full {{ ($filtro ?? 'todas') === 'hoje' ? 'bg-slate-950' : 'bg-emerald-400 animate-pulse' }}"></span>
+                                <span>Somente do Dia</span>
+                            </a>
+                        </div>
+                        <a href="{{ route('pedidos.index') }}" class="text-xs font-semibold text-emerald-600 dark:text-amber-400 hover:underline hidden sm:inline-block">Ver todos &rarr;</a>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-gray-600 dark:text-emerald-100/90 min-w-[700px]">
+                    <table class="w-full text-left text-sm text-gray-600 dark:text-emerald-100/90 min-w-[760px]">
                         <thead class="bg-gray-50 dark:bg-[#02140e] text-xs uppercase font-semibold text-gray-700 dark:text-emerald-300 border-b border-gray-200 dark:border-[#083d2c]">
                             <tr>
                                 <th class="px-6 py-3">Pedido</th>
                                 <th class="px-6 py-3">Cliente</th>
                                 <th class="px-6 py-3">Data Montagem</th>
+                                <th class="px-6 py-3">Previsão Retirada</th>
                                 <th class="px-6 py-3">Endereço</th>
-                                <th class="px-6 py-3">Montador</th>
+                                @if(Auth::user()->isAdmin())
+                                    <th class="px-6 py-3">Montador</th>
+                                @endif
                                 <th class="px-6 py-3">Status</th>
                                 <th class="px-6 py-3 text-right">Ação</th>
                             </tr>
@@ -127,30 +154,44 @@
                                         <div class="text-xs text-gray-400 dark:text-emerald-400/60">{{ $p->cliente->telefone }}</div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="font-semibold text-gray-900 dark:text-white">{{ $p->data_instalacao->format('d/m/Y') }}</div>
+                                        <div class="font-semibold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                            <span>{{ $p->data_instalacao->format('d/m/Y') }}</span>
+                                            @if($p->data_instalacao->isToday())
+                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-400 text-slate-950">Hoje</span>
+                                            @endif
+                                        </div>
                                         <div class="text-xs text-gray-500 dark:text-emerald-300/70">{{ $p->hora_instalacao ? substr($p->hora_instalacao, 0, 5) : 'A combinar' }}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-xs font-medium text-gray-800 dark:text-emerald-200">
+                                            {{ $p->data_retirada->format('d/m/Y') }}
+                                        </div>
+                                        <div class="text-[11px] text-gray-400 dark:text-emerald-400/60">{{ $p->hora_retirada ? substr($p->hora_retirada, 0, 5) : 'Horário livre' }}</div>
                                     </td>
                                     <td class="px-6 py-4 max-w-xs truncate" title="{{ $p->endereco_instalacao }}">
                                         {{ $p->endereco_instalacao }}
                                     </td>
-                                    <td class="px-6 py-4">
-                                        {{ $p->montador ? $p->montador->name : 'Não definido' }}
-                                    </td>
+                                    @if(Auth::user()->isAdmin())
+                                        <td class="px-6 py-4">
+                                            {{ $p->montador ? $p->montador->name : 'Não definido' }}
+                                        </td>
+                                    @endif
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $p->status_color }}">
                                             {{ $p->status_label }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <a href="{{ route('pedidos.show', $p) }}" class="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#0a4835] text-gray-800 dark:text-emerald-100 text-xs font-semibold rounded transition border border-transparent dark:border-emerald-700/40">
-                                            Ver Pedido
+                                        <a href="{{ route('pedidos.show', $p) }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg transition shadow-xs">
+                                            <span>Abrir Pedido</span>
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-emerald-300/60">
-                                        Nenhuma instalação futura agendada no momento.
+                                    <td colspan="{{ Auth::user()->isAdmin() ? '8' : '7' }}" class="px-6 py-8 text-center text-gray-500 dark:text-emerald-300/60">
+                                        {{ ($filtro ?? 'todas') === 'hoje' ? 'Nenhuma ordem de montagem ou retirada agendada para hoje.' : 'Nenhuma ordem em andamento no momento.' }}
                                     </td>
                                 </tr>
                             @endforelse

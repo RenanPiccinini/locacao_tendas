@@ -149,6 +149,9 @@
                     <a href="{{ route('calendario.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('calendario.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                         Calendário
                     </a>
+                    <a href="{{ route('tendas.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('tendas.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
+                        Estoque de Tendas
+                    </a>
 
                     @if(Auth::user()->isAdmin())
                         <div class="pt-4 px-3 text-xs uppercase text-amber-400/90 font-bold">Admin</div>
@@ -157,9 +160,6 @@
                         </a>
                         <a href="{{ route('montadores.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('montadores.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                             Montadores
-                        </a>
-                        <a href="{{ route('tendas.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('tendas.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
-                            Estoque de Tendas
                         </a>
                         <a href="{{ route('clientes.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('clientes.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                             Clientes

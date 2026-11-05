@@ -36,6 +36,15 @@ class PedidoController extends Controller
             $query->where('montador_id', auth()->id());
         }
 
+        // Filtro rápido de dia: 'hoje' ou 'todos' (permite listar tudo para antecipações ou filtrar só o dia)
+        if ($request->input('filtro_dia') === 'hoje') {
+            $hoje = Carbon::today()->format('Y-m-d');
+            $query->where(function ($q) use ($hoje) {
+                $q->whereDate('data_instalacao', $hoje)
+                  ->orWhereDate('data_retirada', $hoje);
+            });
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }

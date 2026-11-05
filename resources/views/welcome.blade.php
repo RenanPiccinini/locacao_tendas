@@ -448,24 +448,24 @@
                             </div>
                         </div>
 
-                        <!-- 6 Miniaturas Interativas Tecnológicas Embaixo com Barra de Progresso -->
-                        <div class="p-2 sm:p-2.5 bg-[#02140e] border-t border-emerald-900/60 grid grid-cols-6 gap-1 sm:gap-1.5">
+                        <!-- 6 Miniaturas Interativas Tecnológicas em 2 Filas (3 cards por fila, um ao lado do outro) -->
+                        <div class="p-2.5 bg-[#02140e] border-t border-emerald-900/60 grid grid-cols-3 gap-2">
                             <template x-for="(slide, index) in slides" :key="index">
                                 <button type="button" 
                                         @click="goTo(index)" 
-                                        class="relative rounded-xl overflow-hidden p-1 sm:p-1.5 text-left transition border group cursor-pointer"
-                                        :class="active === index ? 'bg-[#04281e] border-amber-400 shadow-md shadow-amber-500/20' : 'bg-[#021811] border-emerald-900/50 hover:border-emerald-700/60 opacity-70 hover:opacity-100'">
+                                        class="relative rounded-xl overflow-hidden p-1.5 text-left transition-all duration-200 border group cursor-pointer"
+                                        :class="active === index ? 'bg-[#04281e] border-amber-400 shadow-md shadow-amber-500/20 ring-1 ring-amber-400/60 scale-[1.02]' : 'bg-[#021811] border-emerald-900/50 hover:border-emerald-700/70 opacity-75 hover:opacity-100'">
                                     
-                                    <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
-                                        <img :src="slide.img" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg object-cover shrink-0 border border-emerald-800">
-                                        <div class="min-w-0 text-center sm:text-left">
-                                            <div class="text-[9px] sm:text-[10px] font-bold truncate" :class="active === index ? 'text-amber-400' : 'text-emerald-300'" x-text="slide.tagShort"></div>
-                                            <div class="text-[8px] text-emerald-400/60 truncate hidden md:block" x-text="slide.badge"></div>
+                                    <div class="flex items-center gap-2">
+                                        <img :src="slide.img" class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover shrink-0 border border-emerald-800/80 shadow-xs">
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-[10px] sm:text-[11px] font-bold truncate leading-tight" :class="active === index ? 'text-amber-400' : 'text-emerald-300'" x-text="slide.tagShort"></div>
+                                            <div class="text-[8px] sm:text-[9px] text-emerald-400/70 truncate leading-tight mt-0.5" x-text="slide.badge"></div>
                                         </div>
                                     </div>
 
                                     <!-- Linha de Progresso Tecnológica -->
-                                    <div class="mt-1 w-full bg-slate-900 h-1 rounded-full overflow-hidden">
+                                    <div class="mt-1.5 w-full bg-slate-900 h-1 rounded-full overflow-hidden">
                                         <div class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-75" 
                                              :style="active === index ? `width: ${progress}%` : 'width: 0%'"></div>
                                     </div>

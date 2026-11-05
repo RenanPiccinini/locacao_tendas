@@ -7,9 +7,11 @@
                 </h2>
                 <p class="text-sm text-gray-500 dark:text-emerald-300/70">Consulte o que está disponível e em locação por data ou período</p>
             </div>
-            <a href="{{ route('tendas.create') }}" class="inline-flex items-center px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-lg shadow-sm text-sm transition">
-                + Nova Tenda
-            </a>
+            @if(Auth::user()->isAdmin())
+                <a href="{{ route('tendas.create') }}" class="inline-flex items-center px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-lg shadow-sm text-sm transition">
+                    + Nova Tenda
+                </a>
+            @endif
         </div>
     </x-slot>
 
@@ -157,12 +159,18 @@
                                         R$ {{ number_format($tenda->valor_diaria, 2, ',', '.') }}
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2">
-                                        <a href="{{ route('tendas.edit', $tenda) }}" class="text-xs text-emerald-700 dark:text-amber-400 hover:underline font-semibold">Editar</a>
-                                        <form action="{{ route('tendas.destroy', $tenda) }}" method="POST" class="inline" data-confirm="Deseja realmente excluir a tenda <strong>{{ $tenda->nome }}</strong> do estoque?" data-confirm-title="Excluir Tenda" data-confirm-btn="Sim, Excluir" data-confirm-type="danger">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-xs text-red-600 dark:text-red-400 hover:underline font-semibold">Excluir</button>
-                                        </form>
+                                        @if(Auth::user()->isAdmin())
+                                            <a href="{{ route('tendas.edit', $tenda) }}" class="text-xs text-emerald-700 dark:text-amber-400 hover:underline font-semibold">Editar</a>
+                                            <form action="{{ route('tendas.destroy', $tenda) }}" method="POST" class="inline" data-confirm="Deseja realmente excluir a tenda <strong>{{ $tenda->nome }}</strong> do estoque?" data-confirm-title="Excluir Tenda" data-confirm-btn="Sim, Excluir" data-confirm-type="danger">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-xs text-red-600 dark:text-red-400 hover:underline font-semibold">Excluir</button>
+                                            </form>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 dark:bg-emerald-950/60 text-gray-600 dark:text-emerald-300">
+                                                Consulta
+                                            </span>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

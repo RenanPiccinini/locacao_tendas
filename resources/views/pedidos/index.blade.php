@@ -22,6 +22,27 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
+            <!-- Atalhos de Visualização Rápida (Todas as Ordens x Somente do Dia) -->
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('pedidos.index', array_merge(request()->except('filtro_dia', 'page'), ['filtro_dia' => 'todos'])) }}" 
+                       class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ request('filtro_dia', 'todos') === 'todos' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'bg-white dark:bg-[#031d14] border border-gray-200 dark:border-emerald-800/40 text-gray-700 dark:text-emerald-200 hover:bg-gray-50 dark:hover:bg-[#063325]' }}">
+                        <span>Todas as Ordens / Pedidos</span>
+                    </a>
+                    <a href="{{ route('pedidos.index', array_merge(request()->except('filtro_dia', 'page'), ['filtro_dia' => 'hoje'])) }}" 
+                       class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ request('filtro_dia') === 'hoje' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'bg-white dark:bg-[#031d14] border border-gray-200 dark:border-emerald-800/40 text-gray-700 dark:text-emerald-200 hover:bg-gray-50 dark:hover:bg-[#063325]' }}">
+                        <span class="w-2 h-2 rounded-full {{ request('filtro_dia') === 'hoje' ? 'bg-slate-950' : 'bg-emerald-400 animate-pulse' }}"></span>
+                        <span>Somente do Dia (Hoje)</span>
+                    </a>
+                </div>
+
+                @if(Auth::user()->isMontador())
+                    <p class="text-xs text-gray-500 dark:text-emerald-300/70">
+                        ⚡ Todas as suas ordens estão liberadas para operação (instalação ou devolução antecipada).
+                    </p>
+                @endif
+            </div>
+
             <!-- Filtros -->
             <div class="bg-white dark:bg-[#031d14] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] flex flex-col md:flex-row gap-4 items-center justify-between transition-colors">
                 <form method="GET" action="{{ route('pedidos.index') }}" class="flex flex-wrap items-center gap-3 w-full">

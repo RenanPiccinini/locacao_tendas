@@ -7,14 +7,16 @@ use App\Models\Pedido;
 use App\Models\Tenda;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $hoje = Carbon::today();
         $user = auth()->user();
+        $filtro = $request->input('filtro', 'todas'); // 'todas' ou 'hoje'
 
         if ($user->isMontador()) {
             $pedidosMeus = Pedido::where('montador_id', $user->id);
@@ -23,12 +25,20 @@ class DashboardController extends Controller
             $retiradasHoje = (clone $pedidosMeus)->whereDate('data_retirada', $hoje)->count();
             $pedidosAguardandoRetirada = (clone $pedidosMeus)->where('status', 'aguardando_retirada')->count();
 
-            $proximasInstalacoes = (clone $pedidosMeus)
+            $queryMontador = (clone $pedidosMeus)
                 ->with(['cliente', 'tendas'])
-                ->where('data_instalacao', '>=', $hoje)
-                ->whereNotIn('status', ['concluido', 'cancelado'])
+                ->whereNotIn('status', ['concluido', 'cancelado']);
+
+            // Filtro 'hoje': filtra montagens ou retiradas marcadas para hoje. Filtro 'todas': lista todas mesmo fora do dia (antecipações)
+            if ($filtro === 'hoje') {
+                $queryMontador->where(function ($q) use ($hoje) {
+                    $q->whereDate('data_instalacao', $hoje)
+                      ->orWhereDate('data_retirada', $hoje);
+                });
+            }
+
+            $proximasInstalacoes = $queryMontador
                 ->orderBy('data_instalacao')
-                ->limit(6)
                 ->get();
 
             return view('dashboard', compact(
@@ -36,7 +46,8 @@ class DashboardController extends Controller
                 'montagensHoje',
                 'retiradasHoje',
                 'pedidosAguardandoRetirada',
-                'proximasInstalacoes'
+                'proximasInstalacoes',
+                'filtro'
             ));
         }
 
@@ -47,11 +58,18 @@ class DashboardController extends Controller
         $tendasDisponiveis = Tenda::sum('quantidade_disponivel');
         $totalClientes = Cliente::count();
 
-        $proximasInstalacoes = Pedido::with(['cliente', 'montador', 'tendas'])
-            ->where('data_instalacao', '>=', $hoje)
-            ->whereNotIn('status', ['concluido', 'cancelado'])
+        $queryAdmin = Pedido::with(['cliente', 'montador', 'tendas'])
+            ->whereNotIn('status', ['concluido', 'cancelado']);
+
+        if ($filtro === 'hoje') {
+            $queryAdmin->where(function ($q) use ($hoje) {
+                $q->whereDate('data_instalacao', $hoje)
+                  ->orWhereDate('data_retirada', $hoje);
+            });
+        }
+
+        $proximasInstalacoes = $queryAdmin
             ->orderBy('data_instalacao')
-            ->limit(8)
             ->get();
 
         return view('dashboard', compact(
@@ -60,7 +78,8 @@ class DashboardController extends Controller
             'retiradasHoje',
             'tendasDisponiveis',
             'totalClientes',
-            'proximasInstalacoes'
+            'proximasInstalacoes',
+            'filtro'
         ));
     }
 }

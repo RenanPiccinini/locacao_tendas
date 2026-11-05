@@ -41,6 +41,14 @@
             <span>Calendário</span>
         </a>
 
+        <!-- Estoque de Tendas (Disponível para Montadores e Admins) -->
+        <a href="{{ route('tendas.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('tendas.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold shadow-sm border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827] hover:text-white' }}">
+            <svg class="w-5 h-5 {{ request()->routeIs('tendas.*') ? 'text-amber-400' : 'text-emerald-400/70' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            <span>Estoque de Tendas</span>
+        </a>
+
         @if(Auth::user()->isAdmin())
             <div class="pt-5 px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-amber-400/90">
                 Administração
@@ -60,14 +68,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 <span>Montadores</span>
-            </a>
-
-            <!-- Estoque de Tendas -->
-            <a href="{{ route('tendas.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('tendas.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold shadow-sm border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827] hover:text-white' }}">
-                <svg class="w-5 h-5 {{ request()->routeIs('tendas.*') ? 'text-amber-400' : 'text-emerald-400/70' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-                <span>Estoque de Tendas</span>
             </a>
 
             <!-- Clientes -->

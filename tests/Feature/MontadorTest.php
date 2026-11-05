@@ -111,5 +111,51 @@ class MontadorTest extends TestCase
         $emailErrors = session('errors')->get('email');
         $this->assertContains('Este e-mail já está cadastrado no sistema.', $emailErrors);
     }
+
+    public function test_montador_pode_visualizar_estoque_de_tendas_mas_nao_cadastrar(): void
+    {
+        $montador = User::factory()->create(['role' => 'montador']);
+
+        // Montador acessa a lista de tendas com sucesso (200)
+        $resIndex = $this->actingAs($montador)->get(route('tendas.index'));
+        $resIndex->assertOk();
+        $resIndex->assertSee('Estoque de Tendas');
+
+        // Montador é barrado ao tentar cadastrar tendas (403)
+        $resCreate = $this->actingAs($montador)->get(route('tendas.create'));
+        $resCreate->assertForbidden();
+    }
+
+    public function test_montador_visualiza_pedidos_de_outras_datas_para_antecipacao_e_filtro_funciona(): void
+    {
+        $montador = User::factory()->create(['role' => 'montador']);
+        $cliente = \App\Models\Cliente::create([
+            'nome' => 'Cliente Antecipado',
+            'telefone' => '17999990000',
+            'endereco' => 'Rua Teste, 10',
+        ]);
+
+        // Pedido com data de montagem daqui a 7 dias
+        $pedidoFuturo = \App\Models\Pedido::create([
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montador->id,
+            'data_instalacao' => now()->addDays(7)->format('Y-m-d'),
+            'hora_instalacao' => '10:00',
+            'data_retirada' => now()->addDays(9)->format('Y-m-d'),
+            'endereco_instalacao' => 'Rua Teste, 10',
+            'status' => 'os_gerada',
+        ]);
+
+        // No dashboard com filtro padrão 'todas', o montador vê o pedido futuro liberado para antecipar
+        $resTodas = $this->actingAs($montador)->get(route('dashboard'));
+        $resTodas->assertOk();
+        $resTodas->assertSee('Cliente Antecipado');
+        $resTodas->assertSee('Todas as Ordens');
+
+        // No dashboard com filtro 'hoje', o pedido de data futura não aparece na listagem do dia
+        $resHoje = $this->actingAs($montador)->get(route('dashboard', ['filtro' => 'hoje']));
+        $resHoje->assertOk();
+        $resHoje->assertDontSee('Cliente Antecipado');
+    }
 }
 
