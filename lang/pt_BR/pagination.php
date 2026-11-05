@@ -12,3 +12,4 @@ return [
     'next' => 'Próximo &raquo;',
 
 ];
+

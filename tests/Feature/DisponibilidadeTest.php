@@ -104,4 +104,51 @@ class DisponibilidadeTest extends TestCase
         $this->assertEquals(0, $resultadoDepois['total_em_locacao']);
         $this->assertEquals(15, $resultadoDepois['total_disponivel']);
     }
+
+    public function test_tela_novo_pedido_exibe_todas_as_tendas_e_endpoint_disponibilidade_por_data(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $tenda1 = Tenda::create([
+            'nome' => 'Tenda Piramidal 5x5m',
+            'tamanho' => '5x5m',
+            'quantidade_total' => 6,
+            'quantidade_disponivel' => 0, // Mesmo se quantidade_disponivel for 0 na coluna estática
+            'valor_diaria' => 200.00,
+        ]);
+
+        $tenda2 = Tenda::create([
+            'nome' => 'Tenda Piramidal 10x10m',
+            'tamanho' => '10x10m',
+            'quantidade_total' => 3,
+            'quantidade_disponivel' => 3,
+            'valor_diaria' => 500.00,
+        ]);
+
+        // Tela de cadastro deve mostrar todas as tendas cadastradas
+        $responseCreate = $this->actingAs($admin)->get(route('pedidos.create'));
+        $responseCreate->assertStatus(200);
+        $responseCreate->assertSee('Tenda Piramidal 5x5m');
+        $responseCreate->assertSee('Tenda Piramidal 10x10m');
+        $responseCreate->assertSee('Período da Locação');
+        $responseCreate->assertSee('Tendas para a Locação');
+
+        // Endpoint de consulta dinâmica por data
+        $responseApi = $this->actingAs($admin)->get(route('pedidos.disponibilidade-tendas', [
+            'data_instalacao' => '2026-11-20',
+            'data_retirada' => '2026-11-22',
+        ]));
+
+        $responseApi->assertStatus(200);
+        $responseApi->assertJsonStructure([
+            'success',
+            'data_inicio',
+            'data_fim',
+            'data_formatada',
+            'total_disponivel',
+            'tendas' => [
+                '*' => ['id', 'nome', 'tamanho', 'quantidade_total', 'quantidade_disponivel', 'disponivel'],
+            ],
+        ]);
+    }
 }

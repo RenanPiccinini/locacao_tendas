@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\DisponibilidadeService;
 use App\Services\WhatsappService;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -68,13 +69,52 @@ class PedidoController extends Controller
         return view('pedidos.index', compact('pedidos', 'dadosDisponibilidade'));
     }
 
-    public function create(): View
+    public function create(Request $request, DisponibilidadeService $disponibilidadeService): View
     {
         $clientes = Cliente::orderBy('nome')->get();
         $montadores = User::where('role', 'montador')->orderBy('name')->get();
-        $tendas = Tenda::where('quantidade_disponivel', '>', 0)->get();
 
-        return view('pedidos.create', compact('clientes', 'montadores', 'tendas'));
+        $dataInstalacao = $request->input('data_instalacao', date('Y-m-d'));
+        $dataRetirada = $request->input('data_retirada', date('Y-m-d', strtotime('+2 days')));
+
+        $dadosDisponibilidade = $disponibilidadeService->consultarDisponibilidade($dataInstalacao, $dataRetirada);
+        $tendas = $dadosDisponibilidade['tendas'];
+
+        return view('pedidos.create', compact('clientes', 'montadores', 'tendas', 'dadosDisponibilidade', 'dataInstalacao', 'dataRetirada'));
+    }
+
+    /**
+     * Retorna em JSON a disponibilidade em tempo real das tendas para o período informado
+     */
+    public function consultarDisponibilidadeTendas(Request $request, DisponibilidadeService $disponibilidadeService): JsonResponse
+    {
+        $dataInstalacao = $request->input('data_instalacao', date('Y-m-d'));
+        $dataRetirada = $request->input('data_retirada', $dataInstalacao);
+
+        $dadosDisponibilidade = $disponibilidadeService->consultarDisponibilidade($dataInstalacao, $dataRetirada);
+
+        $tendas = $dadosDisponibilidade['tendas']->map(function ($tenda) {
+            return [
+                'id' => $tenda->id,
+                'nome' => $tenda->nome,
+                'tamanho' => $tenda->tamanho,
+                'quantidade_total' => (int) $tenda->quantidade_total,
+                'quantidade_em_locacao' => (int) $tenda->quantidade_em_locacao,
+                'quantidade_disponivel' => (int) $tenda->quantidade_disponivel_periodo,
+                'disponivel' => (int) $tenda->quantidade_disponivel_periodo > 0,
+                'valor_diaria' => (float) $tenda->valor_diaria,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data_inicio' => $dadosDisponibilidade['data_inicio'],
+            'data_fim' => $dadosDisponibilidade['data_fim'],
+            'data_formatada' => $dadosDisponibilidade['data_formatada'],
+            'total_disponivel' => $dadosDisponibilidade['total_disponivel'],
+            'total_em_locacao' => $dadosDisponibilidade['total_em_locacao'],
+            'tendas' => $tendas,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse

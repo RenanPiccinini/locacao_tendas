@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Pedidos (Montador e Admin acessam com escopos adequados)
+    Route::get('pedidos/disponibilidade-tendas', [PedidoController::class, 'consultarDisponibilidadeTendas'])->name('pedidos.disponibilidade-tendas');
     Route::resource('pedidos', PedidoController::class);
     Route::post('pedidos/{pedido}/gerar-os', [PedidoController::class, 'gerarOs'])->name('pedidos.gerar-os');
     Route::post('pedidos/{pedido}/iniciar-instalacao', [PedidoController::class, 'iniciarInstalacao'])->name('pedidos.iniciar-instalacao');

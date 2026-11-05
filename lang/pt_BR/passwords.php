@@ -15,3 +15,4 @@ return [
     'user' => 'Não encontramos nenhum usuário com esse endereço de e-mail.',
 
 ];
+

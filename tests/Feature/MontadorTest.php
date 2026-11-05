@@ -112,3 +112,4 @@ class MontadorTest extends TestCase
         $this->assertContains('Este e-mail já está cadastrado no sistema.', $emailErrors);
     }
 }
+
