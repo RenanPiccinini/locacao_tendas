@@ -127,7 +127,6 @@
                                 <th class="px-6 py-4">Total Físico</th>
                                 <th class="px-6 py-4">Disponível no Dia</th>
                                 <th class="px-6 py-4">Em Locação no Dia</th>
-                                <th class="px-6 py-4">Valor Diária</th>
                                 <th class="px-6 py-4 text-right">Ações</th>
                             </tr>
                         </thead>
@@ -155,9 +154,6 @@
                                             <span class="text-xs text-gray-400 dark:text-emerald-400/50 font-medium">0 em locação</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
-                                        R$ {{ number_format($tenda->valor_diaria, 2, ',', '.') }}
-                                    </td>
                                     <td class="px-6 py-4 text-right space-x-2">
                                         @if(Auth::user()->isAdmin())
                                             <a href="{{ route('tendas.edit', $tenda) }}" class="text-xs text-emerald-700 dark:text-amber-400 hover:underline font-semibold">Editar</a>
@@ -175,7 +171,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-emerald-300/60">Nenhuma tenda cadastrada no sistema.</td>
+                                    <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-emerald-300/60">Nenhuma tenda cadastrada no sistema.</td>
                                 </tr>
                             @endforelse
                         </tbody>

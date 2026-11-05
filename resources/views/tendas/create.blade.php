@@ -18,15 +18,9 @@
                     <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Tamanho / Dimensões *</label>
                     <input type="text" name="tamanho" placeholder="Ex: 5x5m, 10x10m, 3x3m Sanfonada" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Quantidade Total no Estoque *</label>
-                        <input type="number" name="quantidade_total" value="1" min="1" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Valor da Diária (R$)</label>
-                        <input type="number" step="0.01" name="valor_diaria" value="0.00" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
-                    </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Quantidade Total no Estoque *</label>
+                    <input type="number" name="quantidade_total" value="1" min="1" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Descrição / Detalhes</label>

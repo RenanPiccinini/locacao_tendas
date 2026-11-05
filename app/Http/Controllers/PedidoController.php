@@ -112,7 +112,6 @@ class PedidoController extends Controller
                 'quantidade_em_locacao' => (int) $tenda->quantidade_em_locacao,
                 'quantidade_disponivel' => (int) $tenda->quantidade_disponivel_periodo,
                 'disponivel' => (int) $tenda->quantidade_disponivel_periodo > 0,
-                'valor_diaria' => (float) $tenda->valor_diaria,
             ];
         });
 

@@ -132,12 +132,10 @@
                                     <input type="number" 
                                            id="qtd_{{ $tenda->id }}" 
                                            name="quantidades[{{ $tenda->id }}]" 
-                                           data-diaria="{{ (float) ($tenda->valor_diaria ?? 0) }}"
                                            value="{{ old('quantidades.'.$tenda->id, 1) }}" 
                                            min="1" 
                                            max="{{ max(1, $disp) }}" 
                                            {{ !$isLiberada ? 'disabled' : '' }}
-                                           oninput="recalcularSugestaoValor();"
                                            class="tenda-qtd w-20 bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm text-center font-bold">
                                 </div>
                             </div>

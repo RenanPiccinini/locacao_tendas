@@ -19,7 +19,7 @@
                     <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Tamanho / Dimensões *</label>
                     <input type="text" name="tamanho" value="{{ old('tamanho', $tenda->tamanho) }}" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Quantidade Total *</label>
                         <input type="number" name="quantidade_total" value="{{ old('quantidade_total', $tenda->quantidade_total) }}" min="1" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
@@ -27,10 +27,6 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Qtd. Disponível *</label>
                         <input type="number" name="quantidade_disponivel" value="{{ old('quantidade_disponivel', $tenda->quantidade_disponivel) }}" min="0" required class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Diária (R$)</label>
-                        <input type="number" step="0.01" name="valor_diaria" value="{{ old('valor_diaria', $tenda->valor_diaria) }}" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                     </div>
                 </div>
                 <div>
