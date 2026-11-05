@@ -44,13 +44,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Nova Senha</label>
-                            <input type="password" name="password" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
-                            <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs text-red-500" />
+                            <input type="password" name="password" minlength="6" placeholder="Mínimo 6 caracteres" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
+                            <p class="text-[11px] text-gray-400 dark:text-emerald-400/60 mt-1">Mínimo de 6 caracteres (opcional).</p>
+                            <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs text-red-500 font-semibold" />
                         </div>
 
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Confirmar Nova Senha</label>
-                            <input type="password" name="password_confirmation" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
+                            <input type="password" name="password_confirmation" minlength="6" placeholder="Repita a nova senha" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                         </div>
                     </div>
                 </div>

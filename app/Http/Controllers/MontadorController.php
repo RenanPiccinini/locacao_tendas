@@ -45,12 +45,16 @@ class MontadorController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'whatsapp' => 'required|string|max:30',
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ], [
             'name.required' => 'Informe o nome completo do montador.',
-            'email.required' => 'Informe um e-mail válido.',
+            'name.max' => 'O nome não pode ultrapassar 255 caracteres.',
+            'email.required' => 'Informe o e-mail de acesso ao sistema.',
+            'email.email' => 'Informe um endereço de e-mail válido.',
             'email.unique' => 'Este e-mail já está cadastrado no sistema.',
             'whatsapp.required' => 'Informe o número de WhatsApp (com DDD).',
+            'password.required' => 'Informe uma senha provisória para o montador.',
+            'password.min' => 'A senha deve conter no mínimo :min caracteres.',
             'password.confirmed' => 'A confirmação de senha não confere.',
         ]);
 
@@ -85,7 +89,16 @@ class MontadorController extends Controller
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($montadore->id)],
             'whatsapp' => 'required|string|max:30',
-            'password' => ['nullable', 'confirmed', Password::defaults()],
+            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
+        ], [
+            'name.required' => 'Informe o nome completo do montador.',
+            'name.max' => 'O nome não pode ultrapassar 255 caracteres.',
+            'email.required' => 'Informe o e-mail de acesso ao sistema.',
+            'email.email' => 'Informe um endereço de e-mail válido.',
+            'email.unique' => 'Este e-mail já está cadastrado para outro usuário.',
+            'whatsapp.required' => 'Informe o número de WhatsApp (com DDD).',
+            'password.min' => 'A nova senha deve conter no mínimo :min caracteres.',
+            'password.confirmed' => 'A confirmação de senha não confere.',
         ]);
 
         $dados = [
