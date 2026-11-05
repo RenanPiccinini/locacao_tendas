@@ -279,6 +279,7 @@
                             {
                                 img: '{{ asset('images/1.jpeg') }}',
                                 tag: 'Foto 01 • Piramidal 10x10m',
+                                tagShort: 'Foto 01',
                                 badge: '100% Vão Livre',
                                 title: 'Tenda Piramidal 10x10m Reforçada',
                                 desc: 'Estrutura autoportante de alta resistência com lona blackout anti-chamas.',
@@ -287,6 +288,7 @@
                             {
                                 img: '{{ asset('images/2.jpeg') }}',
                                 tag: 'Foto 02 • Módulos Acoplados',
+                                tagShort: 'Foto 02',
                                 badge: 'Fechamento Lateral',
                                 title: 'Módulos Conectados com Fechamento',
                                 desc: 'Proteção total contra sol, chuva e vento com cortinas com zíper e calhas.',
@@ -295,10 +297,38 @@
                             {
                                 img: '{{ asset('images/3.jpeg') }}',
                                 tag: 'Foto 03 • Cobertura Robusta',
+                                tagShort: 'Foto 03',
                                 badge: 'Grandes Estruturas',
                                 title: 'Cobertura Especial para Eventos',
                                 desc: 'Montagem ágil e estrutura homologada com laudos técnicos e segurança.',
                                 specs: ['Aço galvanizado', 'Lona antichamas', 'Montagem ágil']
+                            },
+                            {
+                                img: '{{ asset('images/4.jpg') }}',
+                                tag: 'Foto 04 • Montagem Técnica',
+                                tagShort: 'Foto 04',
+                                badge: 'Estrutura Reforçada',
+                                title: 'Tendas Piramidais Profissionais',
+                                desc: 'Estrutura com ancoragem reforçada e acabamento impecável para eventos e armazenagem.',
+                                specs: ['Alta estabilidade', 'Lona térmica blackout', 'Montagem ágil']
+                            },
+                            {
+                                img: '{{ asset('images/5.jpg') }}',
+                                tag: 'Foto 05 • Área Coberta Ampla',
+                                tagShort: 'Foto 05',
+                                badge: 'Vão Livre Amplo',
+                                title: 'Soluções Integradas de Cobertura',
+                                desc: 'Perfeita para feiras, convenções, armazenagem e recepções em campo aberto.',
+                                specs: ['Fixação em solo ou asfalto', 'Proteção UV', 'Total segurança']
+                            },
+                            {
+                                img: '{{ asset('images/6.jpg') }}',
+                                tag: 'Foto 06 • Padrão Premium',
+                                tagShort: 'Foto 06',
+                                badge: 'Acabamento Premium',
+                                title: 'Instalação Completa Tendas Eldorado',
+                                desc: 'Qualidade superior com pontualidade na entrega, laudo e equipe técnica qualificada.',
+                                specs: ['Equipe especializada', 'Laudo técnico', 'Atendimento regional']
                             }
                         ],
                         init() {
@@ -418,24 +448,24 @@
                             </div>
                         </div>
 
-                        <!-- 3 Miniaturas Interativas Tecnológicas Embaixo com Barra de Progresso -->
-                        <div class="p-2.5 bg-[#02140e] border-t border-emerald-900/60 grid grid-cols-3 gap-2">
+                        <!-- 6 Miniaturas Interativas Tecnológicas Embaixo com Barra de Progresso -->
+                        <div class="p-2 sm:p-2.5 bg-[#02140e] border-t border-emerald-900/60 grid grid-cols-6 gap-1 sm:gap-1.5">
                             <template x-for="(slide, index) in slides" :key="index">
                                 <button type="button" 
                                         @click="goTo(index)" 
-                                        class="relative rounded-xl overflow-hidden p-1.5 text-left transition border group cursor-pointer"
+                                        class="relative rounded-xl overflow-hidden p-1 sm:p-1.5 text-left transition border group cursor-pointer"
                                         :class="active === index ? 'bg-[#04281e] border-amber-400 shadow-md shadow-amber-500/20' : 'bg-[#021811] border-emerald-900/50 hover:border-emerald-700/60 opacity-70 hover:opacity-100'">
                                     
-                                    <div class="flex items-center gap-2">
-                                        <img :src="slide.img" class="w-10 h-10 rounded-lg object-cover shrink-0 border border-emerald-800">
-                                        <div class="min-w-0 hidden sm:block">
-                                            <div class="text-[10px] font-bold truncate" :class="active === index ? 'text-amber-400' : 'text-emerald-300'" x-text="slide.tag"></div>
-                                            <div class="text-[9px] text-emerald-400/60 truncate" x-text="slide.badge"></div>
+                                    <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5">
+                                        <img :src="slide.img" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg object-cover shrink-0 border border-emerald-800">
+                                        <div class="min-w-0 text-center sm:text-left">
+                                            <div class="text-[9px] sm:text-[10px] font-bold truncate" :class="active === index ? 'text-amber-400' : 'text-emerald-300'" x-text="slide.tagShort"></div>
+                                            <div class="text-[8px] text-emerald-400/60 truncate hidden md:block" x-text="slide.badge"></div>
                                         </div>
                                     </div>
 
                                     <!-- Linha de Progresso Tecnológica -->
-                                    <div class="mt-1.5 w-full bg-slate-900 h-1 rounded-full overflow-hidden">
+                                    <div class="mt-1 w-full bg-slate-900 h-1 rounded-full overflow-hidden">
                                         <div class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-75" 
                                              :style="active === index ? `width: ${progress}%` : 'width: 0%'"></div>
                                     </div>
@@ -1142,6 +1172,27 @@
                     badge: 'Grandes Estruturas',
                     title: 'Cobertura Especial para Grandes Eventos', 
                     desc: 'Estrutura robusta para eventos sociais, esportivos e armazenagem industrial de médio e grande porte com máxima segurança e laudos técnicos.' 
+                },
+                { 
+                    img: '{{ asset('images/4.jpg') }}', 
+                    tag: 'Foto 04 • Montagem Técnica',
+                    badge: 'Estrutura Reforçada',
+                    title: 'Tendas Piramidais Profissionais', 
+                    desc: 'Montagem técnica oficial com ancoragem reforçada, máxima resistência e acabamento impecável para feiras, indústria e eventos.' 
+                },
+                { 
+                    img: '{{ asset('images/5.jpg') }}', 
+                    tag: 'Foto 05 • Área Coberta Ampla',
+                    badge: 'Vão Livre Amplo',
+                    title: 'Soluções Integradas de Cobertura', 
+                    desc: 'Cobertura de grande porte projetada para ampla circulação, isolamento térmico eficiente e segurança contra intempéries.' 
+                },
+                { 
+                    img: '{{ asset('images/6.jpg') }}', 
+                    tag: 'Foto 06 • Padrão Premium',
+                    badge: 'Acabamento Premium',
+                    title: 'Instalação Completa Tendas Eldorado', 
+                    desc: 'Padrão premium em montagem de tendas, entrega pontual e suporte técnico completo em São José do Rio Preto e região.' 
                 }
             ],
             init() {

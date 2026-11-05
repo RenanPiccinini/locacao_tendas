@@ -22,6 +22,9 @@ class ExampleTest extends TestCase
         $response->assertSee('images/1.jpeg');
         $response->assertSee('images/2.jpeg');
         $response->assertSee('images/3.jpeg');
+        $response->assertSee('images/4.jpg');
+        $response->assertSee('images/5.jpg');
+        $response->assertSee('images/6.jpg');
         $response->assertSee('Fotos Reais Tendas Eldorado');
         $response->assertSee('Galeria de Fotos Reais');
     }
