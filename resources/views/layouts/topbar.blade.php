@@ -152,6 +152,9 @@
 
                     @if(Auth::user()->isAdmin())
                         <div class="pt-4 px-3 text-xs uppercase text-amber-400/90 font-bold">Admin</div>
+                        <a href="{{ route('usuarios.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('usuarios.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
+                            Usuários
+                        </a>
                         <a href="{{ route('montadores.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('montadores.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                             Montadores
                         </a>

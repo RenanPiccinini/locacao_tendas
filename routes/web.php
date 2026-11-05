@@ -109,6 +109,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Rotas exclusivas para Administradores
     Route::middleware('admin')->group(function () {
+        // Gestão de Usuários do Sistema (Somente Admins)
+        Route::resource('usuarios', \App\Http\Controllers\UsuarioController::class)->except(['show']);
+        Route::post('usuarios/{usuario}/toggle-bloqueio', [\App\Http\Controllers\UsuarioController::class, 'toggleBloqueio'])->name('usuarios.toggle-bloqueio');
+        Route::post('usuarios/{usuario}/alterar-senha', [\App\Http\Controllers\UsuarioController::class, 'alterarSenha'])->name('usuarios.alterar-senha');
+
         Route::resource('montadores', \App\Http\Controllers\MontadorController::class);
         Route::resource('tendas', TendaController::class);
         Route::resource('clientes', ClienteController::class);

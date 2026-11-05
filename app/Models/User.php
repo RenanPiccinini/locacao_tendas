@@ -17,6 +17,7 @@ class User extends Authenticatable
         'password',
         'role',
         'whatsapp',
+        'ativo',
     ];
 
     protected $hidden = [
@@ -29,6 +30,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'ativo' => 'boolean',
         ];
     }
 
@@ -40,6 +42,16 @@ class User extends Authenticatable
     public function isMontador(): bool
     {
         return $this->role === 'montador';
+    }
+
+    public function isAtivo(): bool
+    {
+        return (bool) ($this->ativo ?? true);
+    }
+
+    public function isBloqueado(): bool
+    {
+        return ! $this->isAtivo();
     }
 
     public function pedidosComoMontador(): HasMany

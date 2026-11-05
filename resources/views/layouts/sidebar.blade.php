@@ -46,6 +46,14 @@
                 Administração
             </div>
 
+            <!-- Gestão de Usuários (Somente Admin) -->
+            <a href="{{ route('usuarios.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('usuarios.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold shadow-sm border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827] hover:text-white' }}">
+                <svg class="w-5 h-5 {{ request()->routeIs('usuarios.*') ? 'text-amber-400' : 'text-emerald-400/70' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <span>Usuários</span>
+            </a>
+
             <!-- Equipe de Montadores -->
             <a href="{{ route('montadores.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('montadores.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold shadow-sm border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827] hover:text-white' }}">
                 <svg class="w-5 h-5 {{ request()->routeIs('montadores.*') ? 'text-amber-400' : 'text-emerald-400/70' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
