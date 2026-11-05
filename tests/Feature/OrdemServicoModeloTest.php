@@ -200,4 +200,77 @@ class OrdemServicoModeloTest extends TestCase
         $resUrl->assertHeader('content-disposition', 'attachment; filename="Tendas Eldorado - Painel.url"');
         $this->assertStringContainsString('/dashboard', $resUrl->getContent());
     }
+
+    public function test_criacao_de_pedido_envia_apenas_um_aviso_de_os_no_whatsapp_sem_duplicidade(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $montador = User::factory()->create([
+            'role' => 'montador',
+            'whatsapp' => '17991429132',
+        ]);
+        $cliente = Cliente::create([
+            'nome' => 'Prefeitura Teste',
+            'telefone' => '1732438120',
+            'endereco' => 'Praça Matriz, 1',
+        ]);
+        $tenda = Tenda::create([
+            'nome' => 'Tenda 10x10',
+            'tamanho' => '10x10m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+            'valor_diaria' => 100,
+        ]);
+
+        // Configura mock para garantir que enviarMensagem seja chamado EXATAMENTE UMA VEZ
+        $mockWhatsapp = $this->createMock(WhatsappService::class);
+        $mockWhatsapp->expects($this->once())
+            ->method('enviarMensagem')
+            ->with(
+                $this->equalTo('17991429132'),
+                $this->stringContains('ORDEM DE SERVIÇO EMITIDA')
+            )
+            ->willReturn(true);
+        $this->app->instance(WhatsappService::class, $mockWhatsapp);
+
+        $response = $this->actingAs($admin)->post(route('pedidos.store'), [
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montador->id,
+            'data_instalacao' => now()->format('Y-m-d'),
+            'hora_instalacao' => '09:00',
+            'data_retirada' => now()->addDays(2)->format('Y-m-d'),
+            'hora_retirada' => '18:00',
+            'endereco_instalacao' => 'Rua Antonio Prado, 2222',
+            'tendas_selecionadas' => [$tenda->id],
+            'quantidades' => [$tenda->id => 1],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('pedidos', [
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montador->id,
+            'status' => 'os_gerada',
+        ]);
+    }
+
+    public function test_whatsapp_service_bloqueia_envio_duplicado_de_mensagens_identicas(): void
+    {
+        \Illuminate\Support\Facades\Http::fake([
+            '*' => \Illuminate\Support\Facades\Http::response(['status' => 'SUCCESS'], 200),
+        ]);
+
+        $service = new WhatsappService();
+        $numero = '17991429132';
+        $msg = "Olá! Teste de mensagem para validação de anti-duplicidade.";
+
+        // 1º envio: deve fazer o request HTTP
+        $res1 = $service->enviarMensagem($numero, $msg);
+        $this->assertTrue($res1);
+
+        // 2º envio com mesmíssimo conteúdo e destinatário: deve ser interceptado pelo cache anti-duplicidade
+        $res2 = $service->enviarMensagem($numero, $msg);
+        $this->assertTrue($res2);
+
+        // Garante que a Evolution API só foi acionada 1 vez via Http
+        \Illuminate\Support\Facades\Http::assertSentCount(1);
+    }
 }

@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -183,18 +184,13 @@ class PedidoController extends Controller
                 }
             }
 
-            // 1. Gera a primeira OS automaticamente quando cria o pedido
+            // 1. Gera a primeira OS automaticamente quando cria o pedido (criarNovaOsParaPedido já notifica o montador uma única vez)
             $primeiraOs = $this->criarNovaOsParaPedido($pedido, 'instalacao', [
                 'status' => 'pendente',
                 'observacoes_montador' => 'Ordem de Serviço inicial gerada automaticamente na criação do Pedido #' . $pedido->id,
             ]);
 
             $pedido->update(['status' => 'os_gerada']);
-
-            // Se o montador foi informado, notifica no WhatsApp
-            if (!empty($validated['montador_id']) && $pedido->montador && !empty($pedido->montador->whatsapp)) {
-                $this->notificarMontadorNovaOs($pedido, $primeiraOs);
-            }
 
             DB::commit();
 
@@ -510,6 +506,14 @@ class PedidoController extends Controller
         if (!$pedido->montador || empty($pedido->montador->whatsapp)) {
             return;
         }
+
+        // Trava anti-duplicação: impede envio repetido do aviso para a mesma O.S.
+        $lockKey = "whatsapp_os_notificada_{$os->id}";
+        if (Cache::has($lockKey)) {
+            Log::info("Aviso WhatsApp para a O.S. {$os->numero_os} (#{$os->id}) já foi enviado. Evitando envio repetido.");
+            return;
+        }
+        Cache::put($lockKey, true, now()->addMinutes(60));
 
         $dataInst = Carbon::parse($pedido->data_instalacao)->format('d/m/Y');
         $horaInst = $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : 'A combinar';

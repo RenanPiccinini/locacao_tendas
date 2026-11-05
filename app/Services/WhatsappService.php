@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -33,6 +34,14 @@ class WhatsappService
                 $numeroLimpo = '55' . $numeroLimpo;
             }
 
+            // Mecanismo anti-duplicidade: bloqueia reenvio da mesmíssima mensagem para o mesmo número em curto intervalo (60 segundos)
+            $dedupKey = 'wa_msg_dedup_' . md5($numeroLimpo . ':' . trim($mensagem));
+            if (Cache::has($dedupKey)) {
+                Log::warning("Envio repetido de mensagem idêntica para {$numeroLimpo} bloqueado pelo sistema anti-duplicidade.");
+                return true;
+            }
+            Cache::put($dedupKey, true, now()->addSeconds(60));
+
             $url = "{$this->baseUrl}/message/sendText/{$this->instance}";
 
             $response = Http::withHeaders([
@@ -48,9 +57,15 @@ class WhatsappService
                 return true;
             }
 
+            // Se a requisição falhou, limpa o lock para permitir retry
+            Cache::forget($dedupKey);
+
             Log::warning("Evolution API retornou status {$response->status()}: " . $response->body());
             return false;
         } catch (\Exception $e) {
+            if (isset($dedupKey)) {
+                Cache::forget($dedupKey);
+            }
             Log::error("Erro ao enviar mensagem via Evolution API: " . $e->getMessage());
             return false;
         }
