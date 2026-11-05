@@ -218,7 +218,7 @@ class ContratoTest extends TestCase
         Storage::disk('public')->assertExists("contratos/contrato_pedido_{$pedido1->id}.pdf");
     }
 
-    public function test_contrato_calcula_automaticamente_valor_total_e_subtotais_quando_nao_informado(): void
+    public function test_contrato_sem_valor_informado_exibe_apenas_descricao_e_sem_valores(): void
     {
         $tendaA = Tenda::create([
             'nome' => 'Tenda Piramidal 10x10m',
@@ -236,16 +236,12 @@ class ContratoTest extends TestCase
             'valor_diaria' => 250.00,
         ]);
 
-        // 2 dias de locação: 10/11/2026 até 12/11/2026
-        // Tenda A: 2 peças * R$ 600 * 2 dias = R$ 2.400,00
-        // Tenda B: 1 peça * R$ 250 * 2 dias = R$ 500,00
-        // Total esperado = R$ 2.900,00
         $pedido = Pedido::create([
             'cliente_id' => $this->cliente->id,
             'data_instalacao' => '2026-11-10',
             'data_retirada' => '2026-11-12',
             'endereco_instalacao' => 'Rua dos Eventos, 500',
-            'valor_total' => 0.00, // Não informado
+            'valor_total' => null, // Não informado
             'status' => 'pendente',
         ]);
         $pedido->tendas()->attach($tendaA->id, ['quantidade' => 2]);
@@ -254,30 +250,28 @@ class ContratoTest extends TestCase
         $contratoController = app(\App\Http\Controllers\ContratoController::class);
         $dados = $contratoController->prepararDadosContrato($this->cliente, $pedido);
 
-        $this->assertEquals('2.900,00', $dados['valor_total']);
-        $this->assertStringContainsString('dois mil e novecentos reais', $dados['valor_total_extenso']);
+        $this->assertFalse($dados['tem_valor']);
+        $this->assertNull($dados['valor_total']);
+        $this->assertNull($dados['valor_total_extenso']);
         $this->assertEquals(2, $dados['dias']);
         $this->assertCount(2, $dados['itens']);
 
         // Primeiro item (Tenda 10x10)
         $this->assertEquals('Tenda Piramidal 10x10m', $dados['itens'][0]['nome']);
         $this->assertEquals(2, $dados['itens'][0]['quantidade']);
-        $this->assertEquals('600,00', $dados['itens'][0]['valor_diaria']);
-        $this->assertEquals('2.400,00', $dados['itens'][0]['total']);
 
         // Segundo item (Tenda 5x5)
         $this->assertEquals('Tenda Piramidal 5x5m', $dados['itens'][1]['nome']);
         $this->assertEquals(1, $dados['itens'][1]['quantidade']);
-        $this->assertEquals('250,00', $dados['itens'][1]['valor_diaria']);
-        $this->assertEquals('500,00', $dados['itens'][1]['total']);
 
-        // Soma exata dos itens bate com o total
-        $somaItens = $dados['itens'][0]['subtotal_numerico'] + $dados['itens'][1]['subtotal_numerico'];
-        $this->assertEquals(2900.00, $somaItens);
-
-        // O pedido foi atualizado no banco
+        // O pedido continua sem valor forçado no banco
         $pedido->refresh();
-        $this->assertEquals(2900.00, (float) $pedido->valor_total);
+        $this->assertNull($pedido->valor_total);
+
+        // Visualização em PDF não quebra e gera com sucesso
+        $resp = $this->actingAs($this->admin)->get(route('pedidos.contrato.ver', $pedido));
+        $resp->assertStatus(200);
+        $this->assertStringContainsString('application/pdf', $resp->headers->get('Content-Type'));
     }
 
     public function test_contrato_com_valor_fechado_pacote_faz_rateio_proporcional_exato_sem_diferenca(): void
@@ -298,7 +292,6 @@ class ContratoTest extends TestCase
             'valor_diaria' => 250.00,
         ]);
 
-        // 2 dias: tabela de referência daria 2.900,00, mas o administrador negociou pacote por R$ 2.500,00
         $pedido = Pedido::create([
             'cliente_id' => $this->cliente->id,
             'data_instalacao' => '2026-11-10',
@@ -313,6 +306,7 @@ class ContratoTest extends TestCase
         $contratoController = app(\App\Http\Controllers\ContratoController::class);
         $dados = $contratoController->prepararDadosContrato($this->cliente, $pedido);
 
+        $this->assertTrue($dados['tem_valor']);
         $this->assertEquals('2.500,00', $dados['valor_total']);
         $this->assertStringContainsString('dois mil e quinhentos reais', $dados['valor_total_extenso']);
 
@@ -323,11 +317,11 @@ class ContratoTest extends TestCase
         }
         $this->assertEquals(2500.00, round($somaItens, 2));
 
-        // E o rateio proporcional respeita que a 10x10 é muito mais cara que a 5x5
+        // Rateio respeita a quantidade de peças (2 peças vs 1 peça)
         $this->assertGreaterThan($dados['itens'][1]['subtotal_numerico'], $dados['itens'][0]['subtotal_numerico']);
     }
 
-    public function test_pedido_store_calcula_automaticamente_valor_total_quando_nao_preenchido(): void
+    public function test_pedido_store_sem_valor_salva_nulo_sem_calcular_diaria(): void
     {
         $tenda = Tenda::create([
             'nome' => 'Tenda Sanfonada 3x3m',
@@ -337,7 +331,6 @@ class ContratoTest extends TestCase
             'valor_diaria' => 120.00,
         ]);
 
-        // Post sem preencher valor_total para 3 dias e 2 tendas (120 * 2 * 3 = 720.00)
         $response = $this->actingAs($this->admin)->post(route('pedidos.store'), [
             'cliente_id' => $this->cliente->id,
             'data_instalacao' => '2026-11-01',
@@ -352,7 +345,70 @@ class ContratoTest extends TestCase
 
         $pedido = Pedido::latest()->first();
         $this->assertNotNull($pedido);
-        $this->assertEquals(720.00, (float) $pedido->valor_total);
+        $this->assertNull($pedido->valor_total);
+    }
+
+    public function test_pedido_store_com_valor_informado_salva_exatamente_o_valor(): void
+    {
+        $tenda = Tenda::create([
+            'nome' => 'Tenda Sanfonada 3x3m',
+            'tamanho' => '3x3m',
+            'quantidade_total' => 10,
+            'quantidade_disponivel' => 10,
+            'valor_diaria' => 120.00,
+        ]);
+
+        $response = $this->actingAs($this->admin)->post(route('pedidos.store'), [
+            'cliente_id' => $this->cliente->id,
+            'data_instalacao' => '2026-11-01',
+            'data_retirada' => '2026-11-04',
+            'endereco_instalacao' => 'Av Central, 123',
+            'valor_total' => '1.500,00',
+            'tendas_selecionadas' => [$tenda->id],
+            'quantidades' => [$tenda->id => 2],
+        ]);
+
+        $response->assertRedirect();
+
+        $pedido = Pedido::latest()->first();
+        $this->assertNotNull($pedido);
+        $this->assertEquals(1500.00, (float) $pedido->valor_total);
+    }
+
+    public function test_montador_nao_tem_acesso_ao_contrato_e_recebe_403(): void
+    {
+        $montador = User::factory()->create([
+            'role' => 'montador',
+        ]);
+
+        $pedido = Pedido::create([
+            'cliente_id' => $this->cliente->id,
+            'montador_id' => $montador->id,
+            'data_instalacao' => '2026-11-10',
+            'data_retirada' => '2026-11-12',
+            'endereco_instalacao' => 'Rua dos Eventos, 500',
+            'valor_total' => 1200.00,
+            'status' => 'pendente',
+        ]);
+
+        // 1. Tentar visualizar contrato do pedido -> 403
+        $respVer = $this->actingAs($montador)->get(route('pedidos.contrato.ver', $pedido));
+        $respVer->assertStatus(403);
+
+        // 2. Tentar baixar contrato do pedido -> 403
+        $respDownload = $this->actingAs($montador)->get(route('pedidos.contrato.download', $pedido));
+        $respDownload->assertStatus(403);
+
+        // 3. Tentar gerar contrato do pedido -> 403
+        $respGerar = $this->actingAs($montador)->post(route('pedidos.contrato.gerar', $pedido));
+        $respGerar->assertStatus(403);
+
+        // 4. Na tela de show do pedido, o montador não vê os botões nem o card do contrato
+        $respShow = $this->actingAs($montador)->get(route('pedidos.show', $pedido));
+        $respShow->assertStatus(200);
+        $respShow->assertDontSee('Contrato do Pedido (PDF)');
+        $respShow->assertDontSee('Visualizar Contrato (PDF)');
+        $respShow->assertDontSee('Baixar Contrato em PDF');
     }
 }
 

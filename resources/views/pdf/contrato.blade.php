@@ -216,10 +216,14 @@
     <table class="table-data">
         <thead>
             <tr>
-                <th style="width: 44%;">Item - Produto(s) / Dimensões</th>
-                <th style="width: 16%; text-align: center;">Quantidade</th>
-                <th style="width: 18%; text-align: right;">Diária Unit.</th>
-                <th style="width: 22%; text-align: right;">Total da Locação</th>
+                @if($dados['tem_valor'])
+                    <th style="width: 55%;">Item - Produto(s) / Dimensões</th>
+                    <th style="width: 20%; text-align: center;">Quantidade</th>
+                    <th style="width: 25%; text-align: right;">Total da Locação</th>
+                @else
+                    <th style="width: 75%;">Item - Produto(s) / Dimensões</th>
+                    <th style="width: 25%; text-align: center;">Quantidade</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -227,30 +231,28 @@
                 <tr>
                     <td><strong>{{ $item['nome'] }}</strong> - {{ $item['tamanho'] }}</td>
                     <td style="text-align: center; font-weight: bold;">{{ $item['quantidade'] }} {{ $item['quantidade'] > 1 ? 'PEÇAS' : 'PEÇA' }}</td>
-                    <td style="text-align: right; color: #475569;">
-                        @if(!empty($item['valor_diaria']) && $item['valor_diaria'] !== '-')
-                            R$ {{ $item['valor_diaria'] }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td style="text-align: right; font-weight: bold; color: #064e3b;">R$ {{ $item['total'] }}</td>
+                    @if($dados['tem_valor'])
+                        <td style="text-align: right; font-weight: bold; color: #064e3b;">R$ {{ $item['total'] }}</td>
+                    @endif
                 </tr>
             @empty
                 <tr>
                     <td><strong>TENDA PIRAMIDAL</strong> - Conforme especificação do pedido</td>
                     <td style="text-align: center; font-weight: bold;">1 PEÇA</td>
-                    <td style="text-align: right; color: #475569;">-</td>
-                    <td style="text-align: right; font-weight: bold; color: #064e3b;">R$ {{ $dados['valor_total'] }}</td>
+                    @if($dados['tem_valor'])
+                        <td style="text-align: right; font-weight: bold; color: #064e3b;">R$ {{ $dados['valor_total'] }}</td>
+                    @endif
                 </tr>
             @endforelse
         </tbody>
-        <tfoot>
-            <tr style="background-color: #f1f5f9; font-size: 11px;">
-                <td colspan="3" style="text-align: right; font-weight: bold; text-transform: uppercase;">Valor Total da Locação ({{ $dados['dias'] }} {{ $dados['dias'] > 1 ? 'dias' : 'dia' }}):</td>
-                <td style="text-align: right; font-weight: bold; color: #064e3b; font-size: 11.5px;">R$ {{ $dados['valor_total'] }}</td>
-            </tr>
-        </tfoot>
+        @if($dados['tem_valor'])
+            <tfoot>
+                <tr style="background-color: #f1f5f9; font-size: 11px;">
+                    <td colspan="2" style="text-align: right; font-weight: bold; text-transform: uppercase;">Valor Total da Locação ({{ $dados['dias'] }} {{ $dados['dias'] > 1 ? 'dias' : 'dia' }}):</td>
+                    <td style="text-align: right; font-weight: bold; color: #064e3b; font-size: 11.5px;">R$ {{ $dados['valor_total'] }}</td>
+                </tr>
+            </tfoot>
+        @endif
     </table>
 
     <p style="margin: 6px 0; font-size: 10.5px; color: #334155;">
@@ -282,9 +284,13 @@
         <strong>PARÁGRAFO PRIMEIRO:</strong> O locatário pagará o aluguel enquanto estiver na posse da TENDA, o aluguel mensal/diário combinado, até a efetiva devolução do objeto deste instrumento, o locatário concorda e é ciente.
     </div>
 
-    <div class="clause-title">2ª) O aluguel será no valor de:</div>
+    <div class="clause-title">2ª) O aluguel:</div>
     <div class="clause-text">
-        <strong>Pagamento(s):</strong> À VISTA com vencimento para <strong>{{ $dados['vencimento'] }}</strong> no valor total de <span class="highlight-badge">R$ {{ $dados['valor_total'] }}</span> ({{ $dados['valor_total_extenso'] }}). Deverá ser pago sempre à locadora na forma e data de vencimento descritas.
+        @if($dados['tem_valor'])
+            <strong>Pagamento(s):</strong> À VISTA com vencimento para <strong>{{ $dados['vencimento'] }}</strong> no valor total de <span class="highlight-badge">R$ {{ $dados['valor_total'] }}</span> ({{ $dados['valor_total_extenso'] }}). Deverá ser pago sempre à locadora na forma e data de vencimento descritas.
+        @else
+            <strong>Pagamento(s):</strong> Conforme negociação e condições acordadas entre as partes.
+        @endif
     </div>
 
     <div class="clause-title">4ª) Garantia do bem Locado:</div>

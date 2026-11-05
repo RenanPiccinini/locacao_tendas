@@ -19,10 +19,12 @@
                 </a>
 
                 <!-- Botão de Contrato do Pedido -->
-                <a href="{{ route('pedidos.contrato.ver', $pedido) }}" target="_blank" class="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-xs rounded-lg shadow-xs transition flex items-center gap-1.5" title="Visualizar Contrato deste Pedido em PDF">
-                    <svg class="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Contrato do Pedido (PDF)</span>
-                </a>
+                @if(!auth()->user()->isMontador())
+                    <a href="{{ route('pedidos.contrato.ver', $pedido) }}" target="_blank" class="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-xs rounded-lg shadow-xs transition flex items-center gap-1.5" title="Visualizar Contrato deste Pedido em PDF">
+                        <svg class="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Contrato do Pedido (PDF)</span>
+                    </a>
+                @endif
 
                 @foreach($pedido->ordensServico as $osHeader)
                     <a href="{{ route('os.pdf', $osHeader) }}" target="_blank" class="px-2.5 py-1.5 bg-white dark:bg-[#031d14] border border-gray-200 dark:border-[#083d2c] hover:bg-gray-50 dark:hover:bg-[#063325] text-gray-800 dark:text-emerald-100 text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1.5" title="{{ $osHeader->tipo_label }} (Status: {{ $osHeader->status_label }})">
@@ -184,7 +186,7 @@
             </div>
 
             <!-- Dados do Pedido, Cliente e Contrato -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 {{ auth()->user()->isMontador() ? 'lg:grid-cols-2' : 'lg:grid-cols-3' }} gap-6">
                 <!-- Informações do Cliente & Local -->
                 <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors">
                     <h3 class="font-bold text-lg text-gray-900 dark:text-white border-b border-gray-100 dark:border-[#083d2c] pb-2">Informações do Cliente & Local</h3>
@@ -254,7 +256,7 @@
                             <span class="text-gray-500 dark:text-emerald-300/70">WhatsApp Montador:</span>
                             <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ $pedido->montador->whatsapp ?? 'Não informado' }}</span>
                         </div>
-                        @if($pedido->valor_total)
+                        @if(!auth()->user()->isMontador() && $pedido->valor_total)
                             <div class="flex justify-between border-t border-gray-100 dark:border-[#083d2c] pt-2">
                                 <span class="text-gray-500 dark:text-emerald-300/70 font-semibold">Valor da Locação:</span>
                                 <span class="font-black text-gray-900 dark:text-white text-base">R$ {{ number_format($pedido->valor_total, 2, ',', '.') }}</span>
@@ -263,54 +265,59 @@
                     </div>
                 </div>
 
-                <!-- Contrato de Locação Digital -->
-                <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between border-b border-gray-100 dark:border-[#083d2c] pb-2">
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-                                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                Contrato de Locação
-                            </h3>
-                            <span class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
-                                Nº {{ sprintf('%04d', $pedido->id) }}
-                            </span>
-                        </div>
-
-                        <div class="space-y-2 text-sm pt-3">
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-emerald-300/70">Cliente:</span>
-                                <span class="font-bold text-gray-900 dark:text-white truncate max-w-[170px]" title="{{ $pedido->cliente->nome }}">{{ $pedido->cliente->nome }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-emerald-300/70">Total da Locação:</span>
-                                <span class="font-bold text-emerald-600 dark:text-emerald-400">R$ {{ number_format($pedido->valor_total ?? 0, 2, ',', '.') }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-emerald-300/70">Período:</span>
-                                <span class="font-medium text-gray-800 dark:text-emerald-100 text-xs text-right">
-                                    {{ $pedido->data_instalacao->format('d/m/Y') }} a {{ $pedido->data_retirada->format('d/m/Y') }}
+                @if(!auth()->user()->isMontador())
+                    <!-- Contrato de Locação Digital -->
+                    <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-gray-100 dark:border-[#083d2c] pb-2">
+                                <h3 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    Contrato de Locação
+                                </h3>
+                                <span class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
+                                    Nº {{ sprintf('%04d', $pedido->id) }}
                                 </span>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-emerald-300/70">Status:</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30">
-                                    Dinâmico do Pedido
-                                </span>
+
+                            <div class="space-y-2 text-sm pt-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500 dark:text-emerald-300/70">Cliente:</span>
+                                    <span class="font-bold text-gray-900 dark:text-white truncate max-w-[170px]" title="{{ $pedido->cliente->nome }}">{{ $pedido->cliente->nome }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500 dark:text-emerald-300/70">Total da Locação:</span>
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">
+                                        {{ $pedido->valor_total ? 'R$ ' . number_format($pedido->valor_total, 2, ',', '.') : 'A combinar / Sem valor' }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500 dark:text-emerald-300/70">Período:</span>
+                                    <span class="font-medium text-gray-800 dark:text-emerald-100 text-xs text-right">
+                                        {{ $pedido->data_instalacao->format('d/m/Y') }} a {{ $pedido->data_retirada->format('d/m/Y') }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500 dark:text-emerald-300/70">Status:</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30">
+                                        Dinâmico do Pedido
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="pt-3 flex flex-col gap-2 border-t border-gray-100 dark:border-[#083d2c]">
-                        <a href="{{ route('pedidos.contrato.ver', $pedido) }}" target="_blank" class="w-full text-center px-3 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold rounded-lg text-xs shadow-xs transition flex items-center justify-center gap-1.5">
-                            <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            Visualizar Contrato (PDF)
-                        </a>
-                        <a href="{{ route('pedidos.contrato.download', $pedido) }}" class="w-full text-center px-3 py-2 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#0a4835] text-gray-800 dark:text-emerald-100 font-semibold rounded-lg text-xs transition flex items-center justify-center gap-1.5 border border-transparent dark:border-emerald-700/40">
-                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            Baixar Contrato em PDF
-                        </a>
+                        <div class="pt-3 flex flex-col gap-2 border-t border-gray-100 dark:border-[#083d2c]">
+                            <a href="{{ route('pedidos.contrato.ver', $pedido) }}" target="_blank" class="w-full text-center px-3 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold rounded-lg text-xs shadow-xs transition flex items-center justify-center gap-1.5">
+                                <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                Visualizar Contrato (PDF)
+                            </a>
+                            <a href="{{ route('pedidos.contrato.download', $pedido) }}" class="w-full text-center px-3 py-2 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#0a4835] text-gray-800 dark:text-emerald-100 font-semibold rounded-lg text-xs transition flex items-center justify-center gap-1.5 border border-transparent dark:border-emerald-700/40">
+                                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                Baixar Contrato em PDF
+                            </a>
+                        </div>
                     </div>
-                </div>
+                @endif
+            </div>
             </div>
 
             <!-- Tendas Alugadas -->

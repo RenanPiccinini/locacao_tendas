@@ -172,27 +172,6 @@ class PedidoController extends Controller
             ? (float) $validated['valor_total']
             : null;
 
-        // Se o valor total não foi informado ou é 0, calcula automaticamente a partir das tendas e dias
-        if ($valorTotal === null || $valorTotal <= 0) {
-            $dias = 1;
-            if (!empty($validated['data_instalacao']) && !empty($validated['data_retirada'])) {
-                $dtIni = Carbon::parse($validated['data_instalacao'])->startOfDay();
-                $dtFim = Carbon::parse($validated['data_retirada'])->startOfDay();
-                $dias = max(1, $dtIni->diffInDays($dtFim));
-            }
-
-            $somaCalculada = 0.0;
-            foreach ($validated['tendas_selecionadas'] as $tendaId) {
-                $qtd = isset($quantidades[$tendaId]) ? max(1, intval($quantidades[$tendaId])) : 1;
-                $tenda = Tenda::find($tendaId);
-                if ($tenda && (float)$tenda->valor_diaria > 0) {
-                    $somaCalculada += ((float)$tenda->valor_diaria * $qtd * $dias);
-                }
-            }
-
-            $valorTotal = $somaCalculada > 0 ? $somaCalculada : 0.0;
-        }
-
         DB::beginTransaction();
         try {
             $pedido = Pedido::create([
@@ -298,26 +277,10 @@ class PedidoController extends Controller
             'telefone_responsavel' => 'nullable|string|max:30',
         ]);
 
-        if (empty($validated['valor_total']) || (float)$validated['valor_total'] <= 0) {
-            $dias = 1;
-            if (!empty($validated['data_instalacao']) && !empty($validated['data_retirada'])) {
-                $dtIni = Carbon::parse($validated['data_instalacao'])->startOfDay();
-                $dtFim = Carbon::parse($validated['data_retirada'])->startOfDay();
-                $dias = max(1, $dtIni->diffInDays($dtFim));
-            }
-
-            $somaCalculada = 0.0;
-            foreach ($pedido->tendas as $tenda) {
-                $qtd = $tenda->pivot->quantidade ?? 1;
-                if ((float)$tenda->valor_diaria > 0) {
-                    $somaCalculada += ((float)$tenda->valor_diaria * $qtd * $dias);
-                }
-            }
-
-            if ($somaCalculada > 0) {
-                $validated['valor_total'] = $somaCalculada;
-            }
-        }
+        $valorTotal = isset($validated['valor_total']) && (float) $validated['valor_total'] > 0
+            ? (float) $validated['valor_total']
+            : null;
+        $validated['valor_total'] = $valorTotal;
 
         $pedido->update($validated);
 

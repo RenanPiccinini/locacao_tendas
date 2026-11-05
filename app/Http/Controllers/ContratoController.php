@@ -73,7 +73,10 @@ class ContratoController extends Controller
             ? Carbon::parse($pedido->created_at)->translatedFormat('d \d\e F \d\e Y')
             : Carbon::now()->translatedFormat('d \d\e F \d\e Y');
 
-        $valorTotalNumerico = $pedido && $pedido->valor_total !== null ? (float) $pedido->valor_total : 0.0;
+        $valorTotalNumerico = $pedido && $pedido->valor_total !== null && (float) $pedido->valor_total > 0
+            ? (float) $pedido->valor_total
+            : 0.0;
+        $temValor = $valorTotalNumerico > 0.0;
 
         // Duração do evento/locação em dias
         $dias = 1;
@@ -86,59 +89,20 @@ class ContratoController extends Controller
         $itens = [];
         if ($pedido && $pedido->tendas->isNotEmpty()) {
             $totalQtdGeral = $pedido->tendas->sum(fn($t) => $t->pivot->quantidade ?? 1);
-
-            // 1. Calcula a diária de referência e subtotal de cada tenda (diária * qtd * dias)
-            $somaReferencia = 0.0;
-            $itensReferencia = [];
-            foreach ($pedido->tendas as $t) {
-                $qtd = isset($t->pivot->quantidade) ? max(1, (int)$t->pivot->quantidade) : 1;
-                $diaria = (float) ($t->valor_diaria ?? 0.0);
-                $ref = $diaria * $qtd * $dias;
-                $somaReferencia += $ref;
-                $itensReferencia[] = [
-                    'tenda' => $t,
-                    'qtd' => $qtd,
-                    'diaria' => $diaria,
-                    'ref' => $ref,
-                ];
-            }
-
-            // Se o valor total do pedido não foi informado ou é zero, assume a soma dinâmica calculada das diárias
-            if ($valorTotalNumerico <= 0.0 && $somaReferencia > 0.0) {
-                $valorTotalNumerico = $somaReferencia;
-                $pedido->update(['valor_total' => $valorTotalNumerico]);
-                $pedido->valor_total = $valorTotalNumerico;
-            }
-
+            $totalItens = $pedido->tendas->count();
             $somaSubtotais = 0.0;
-            $totalItens = count($itensReferencia);
 
-            foreach ($itensReferencia as $index => $itemData) {
-                $t = $itemData['tenda'];
-                $qtd = $itemData['qtd'];
-                $diaria = $itemData['diaria'];
-                $ref = $itemData['ref'];
+            foreach ($pedido->tendas as $index => $t) {
+                $qtd = isset($t->pivot->quantidade) ? max(1, (int)$t->pivot->quantidade) : 1;
                 $isLast = ($index === $totalItens - 1);
 
-                if ($valorTotalNumerico > 0.0) {
-                    if ($somaReferencia > 0.0) {
-                        // Rateia proporcionalmente ao valor de referência das diárias de cada tenda
-                        if ($isLast) {
-                            $subtotal = round($valorTotalNumerico - $somaSubtotais, 2);
-                        } else {
-                            $proporcao = $ref / $somaReferencia;
-                            $subtotal = round($valorTotalNumerico * $proporcao, 2);
-                            $somaSubtotais += $subtotal;
-                        }
+                if ($temValor) {
+                    if ($isLast) {
+                        $subtotal = round($valorTotalNumerico - $somaSubtotais, 2);
                     } else {
-                        // Se não houver valor de diária nas tendas, rateia por quantidade de peças
-                        if ($isLast) {
-                            $subtotal = round($valorTotalNumerico - $somaSubtotais, 2);
-                        } else {
-                            $proporcao = $qtd / max(1, $totalQtdGeral);
-                            $subtotal = round($valorTotalNumerico * $proporcao, 2);
-                            $somaSubtotais += $subtotal;
-                        }
+                        $proporcao = $qtd / max(1, $totalQtdGeral);
+                        $subtotal = round($valorTotalNumerico * $proporcao, 2);
+                        $somaSubtotais += $subtotal;
                     }
                 } else {
                     $subtotal = 0.0;
@@ -149,9 +113,9 @@ class ContratoController extends Controller
                     'tamanho' => $t->tamanho ?: 'Padrão',
                     'quantidade' => $qtd,
                     'dias' => $dias,
-                    'valor_diaria' => $diaria > 0.0 ? number_format($diaria, 2, ',', '.') : '-',
+                    'valor_diaria' => '-',
                     'subtotal_numerico' => $subtotal,
-                    'total' => $subtotal > 0.0 ? number_format($subtotal, 2, ',', '.') : ($valorTotalNumerico > 0.0 ? number_format($valorTotalNumerico, 2, ',', '.') : 'A combinar'),
+                    'total' => $temValor ? number_format($subtotal, 2, ',', '.') : '-',
                 ];
             }
         } else {
@@ -162,7 +126,7 @@ class ContratoController extends Controller
                 'dias' => $dias,
                 'valor_diaria' => '-',
                 'subtotal_numerico' => $valorTotalNumerico,
-                'total' => $valorTotalNumerico > 0.0 ? number_format($valorTotalNumerico, 2, ',', '.') : 'A combinar',
+                'total' => $temValor ? number_format($valorTotalNumerico, 2, ',', '.') : '-',
             ];
         }
 
@@ -188,8 +152,8 @@ class ContratoController extends Controller
             ? Carbon::parse($pedido->data_instalacao)->format('d/m/Y')
             : Carbon::now()->format('d/m/Y');
 
-        $valorTotalFormatado = number_format($valorTotalNumerico, 2, ',', '.');
-        $valorTotalExtenso = $this->valorPorExtenso($valorTotalNumerico);
+        $valorTotalFormatado = $temValor ? number_format($valorTotalNumerico, 2, ',', '.') : null;
+        $valorTotalExtenso = $temValor ? $this->valorPorExtenso($valorTotalNumerico) : null;
 
         // Informações de local e endereço da instalação específico do pedido
         $localInstalacao = null;
@@ -225,6 +189,7 @@ class ContratoController extends Controller
             'fim' => $fim,
             'retorno' => $retorno,
             'vencimento' => $vencimento,
+            'tem_valor' => $temValor,
             'valor_total' => $valorTotalFormatado,
             'valor_total_extenso' => $valorTotalExtenso,
             'local_instalacao' => $localInstalacao,
@@ -237,10 +202,22 @@ class ContratoController extends Controller
     }
 
     /**
+     * Valida se o usuário autenticado tem permissão para acessar contratos (apenas admins)
+     */
+    protected function autorizarAcessoContrato(): void
+    {
+        if (auth()->check() && auth()->user()->isMontador()) {
+            abort(403, 'Acesso não autorizado. Contratos são de acesso restrito a administradores.');
+        }
+    }
+
+    /**
      * Gera o contrato em PDF para o cliente (e pedido) e salva no storage
      */
     public function gerar(Cliente $cliente, Request $request): JsonResponse
     {
+        $this->autorizarAcessoContrato();
+
         try {
             $pedidoId = $request->input('pedido_id') ?? $request->query('pedido_id');
             $pedido = $pedidoId ? $cliente->pedidos()->find($pedidoId) : null;
@@ -287,6 +264,8 @@ class ContratoController extends Controller
      */
     public function ver(Cliente $cliente, Request $request): Response
     {
+        $this->autorizarAcessoContrato();
+
         $pedidoId = $request->input('pedido_id') ?? $request->query('pedido_id');
         $pedido = $pedidoId ? $cliente->pedidos()->find($pedidoId) : null;
 
@@ -318,6 +297,8 @@ class ContratoController extends Controller
      */
     public function download(Cliente $cliente, Request $request): Response
     {
+        $this->autorizarAcessoContrato();
+
         $pedidoId = $request->input('pedido_id') ?? $request->query('pedido_id');
         $pedido = $pedidoId ? $cliente->pedidos()->find($pedidoId) : null;
 
@@ -341,6 +322,8 @@ class ContratoController extends Controller
      */
     public function verPedido(Pedido $pedido): Response
     {
+        $this->autorizarAcessoContrato();
+
         $pedido->loadMissing(['cliente', 'tendas', 'montador']);
         $cliente = $pedido->cliente;
 
@@ -367,6 +350,8 @@ class ContratoController extends Controller
      */
     public function downloadPedido(Pedido $pedido): Response
     {
+        $this->autorizarAcessoContrato();
+
         $pedido->loadMissing(['cliente', 'tendas', 'montador']);
         $cliente = $pedido->cliente;
 
@@ -389,6 +374,8 @@ class ContratoController extends Controller
      */
     public function gerarPedido(Pedido $pedido): JsonResponse
     {
+        $this->autorizarAcessoContrato();
+
         try {
             $pedido->loadMissing(['cliente', 'tendas', 'montador']);
             $cliente = $pedido->cliente;
