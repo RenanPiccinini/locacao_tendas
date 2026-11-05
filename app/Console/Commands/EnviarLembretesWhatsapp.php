@@ -45,6 +45,7 @@ class EnviarLembretesWhatsapp extends Command
 
         $montadores = User::where('role', 'montador')
             ->whereNotNull('whatsapp')
+            ->where('whatsapp', '!=', '')
             ->get();
 
         $enviados = 0;
@@ -72,39 +73,44 @@ class EnviarLembretesWhatsapp extends Command
                 continue;
             }
 
-            $msg = "🗓️ *AGENDA DA SEMANA - LOCAÇÃO DE TENDAS*\n"
+            $msg = "🗓️ *AGENDA DA SEMANA - TENDAS ELDORADO*\n"
                  . "Olá *{$montador->name}*, confira sua programação para esta semana ({$inicioSemana->format('d/m')} a {$fimSemana->format('d/m')}):\n\n";
 
             if ($pedidosInstalacao->isNotEmpty()) {
-                $msg .= "⛺ *MONTAGENS / INSTALAÇÕES:*\n";
+                $msg .= "⛺ *MONTAGENS / INSTALAÇÕES DA SEMANA:*\n";
                 foreach ($pedidosInstalacao as $p) {
                     $data = $p->data_instalacao->format('d/m (D)');
-                    $hora = $p->hora_instalacao ? substr($p->hora_instalacao, 0, 5) : 'A combinar';
+                    $hora = $p->hora_instalacao ? substr($p->hora_instalacao, 0, 5) : 'Horário livre';
                     $tendas = $p->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome}")->implode(', ');
+
+                    $resp = '';
+                    if ($p->nome_responsavel) {
+                        $resp = "  Contato: {$p->nome_responsavel}" . ($p->telefone_responsavel ? " ({$p->telefone_responsavel})" : "") . "\n";
+                    }
 
                     $msg .= "• *{$data} às {$hora}* (Pedido #{$p->id})\n"
                           . "  Cliente: {$p->cliente->nome} ({$p->cliente->telefone})\n"
+                          . $resp
                           . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
-                          . "  Tendas: {$tendas}\n"
-                          . "  Status: {$p->status_label}\n\n";
+                          . "  Tendas: {$tendas}\n\n";
                 }
             }
 
             if ($pedidosRetirada->isNotEmpty()) {
-                $msg .= "🔄 *RETIRADAS / DESMONTAGENS:*\n";
+                $msg .= "🔄 *RETIRADAS DA SEMANA:*\n";
                 foreach ($pedidosRetirada as $p) {
                     $data = $p->data_retirada->format('d/m (D)');
-                    $hora = $p->hora_retirada ? substr($p->hora_retirada, 0, 5) : 'A combinar';
+                    $hora = $p->hora_retirada ? substr($p->hora_retirada, 0, 5) : 'Horário livre';
                     $tendas = $p->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome}")->implode(', ');
 
                     $msg .= "• *{$data} às {$hora}* (Pedido #{$p->id})\n"
                           . "  Cliente: {$p->cliente->nome}\n"
-                          . "  Local: {$p->endereco_instalacao}\n"
+                          . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
                           . "  Tendas a recolher: {$tendas}\n\n";
                 }
             }
 
-            $msg .= "📲 Acesse o sistema pelo celular para emitir e atualizar suas Ordens de Serviço!";
+            $msg .= "📲 Acesse o sistema pelo celular para registrar *'Tenda instalada'* e *'Tenda retirada'*!";
 
             $this->whatsapp->enviarMensagem($montador->whatsapp, $msg);
             $this->info("Lembrete semanal enviado para: {$montador->name}");
@@ -117,69 +123,79 @@ class EnviarLembretesWhatsapp extends Command
     }
 
     /**
-     * Lembrete no dia de cada montagem e retirada pela manhã
+     * Lembrete diário às 08h00 com as montagens e retiradas de hoje para cada montador
      */
     protected function enviarLembreteDiario(): void
     {
-        $hojeStr = Carbon::now('America/Sao_Paulo')->format('Y-m-d');
+        $hoje = Carbon::now('America/Sao_Paulo');
+        $hojeStr = $hoje->format('Y-m-d');
         $enviados = 0;
 
-        // 1. Montagens do dia
-        $pedidosInstalacao = Pedido::with(['cliente', 'montador', 'tendas'])
-            ->whereDate('data_instalacao', $hojeStr)
-            ->whereNotIn('status', ['instalado', 'aguardando_retirada', 'em_retirada', 'concluido', 'cancelado'])
+        $montadores = User::where('role', 'montador')
+            ->whereNotNull('whatsapp')
+            ->where('whatsapp', '!=', '')
             ->get();
 
-        foreach ($pedidosInstalacao as $pedido) {
-            if (!$pedido->montador || empty($pedido->montador->whatsapp)) {
+        foreach ($montadores as $montador) {
+            $pedidosInstalacao = Pedido::with(['cliente', 'tendas'])
+                ->where('montador_id', $montador->id)
+                ->whereDate('data_instalacao', $hojeStr)
+                ->whereNotIn('status', ['instalado', 'aguardando_retirada', 'em_retirada', 'concluido', 'cancelado'])
+                ->orderBy('hora_instalacao')
+                ->get();
+
+            $pedidosRetirada = Pedido::with(['cliente', 'tendas'])
+                ->where('montador_id', $montador->id)
+                ->whereDate('data_retirada', $hojeStr)
+                ->whereIn('status', ['instalado', 'aguardando_retirada', 'em_retirada'])
+                ->orderBy('hora_retirada')
+                ->get();
+
+            if ($pedidosInstalacao->isEmpty() && $pedidosRetirada->isEmpty()) {
                 continue;
             }
 
-            $hora = $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : 'Horário a combinar';
-            $tendas = $pedido->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})")->implode(', ');
+            $msg = "☀️ *BOM DIA! AGENDA DE HOJE ({$hoje->format('d/m/Y')}) - TENDAS ELDORADO*\n"
+                 . "Olá *{$montador->name}*, confira seus atendimentos agendados para hoje:\n\n";
 
-            $msg = "☀️ *BOM DIA! LEMBRETE DE MONTAGEM HOJE*\n\n"
-                 . "Olá *{$pedido->montador->name}*, você tem montagem agendada para hoje:\n\n"
-                 . "📋 *Pedido:* #{$pedido->id}\n"
-                 . "👤 *Cliente:* {$pedido->cliente->nome}\n"
-                 . "📞 *Contato:* {$pedido->cliente->telefone}\n"
-                 . "⏰ *Horário:* {$hora}\n"
-                 . "📍 *Endereço:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n"
-                 . "⛺ *Tendas:* {$tendas}\n"
-                 . "📝 *Instruções:* " . ($pedido->observacoes ?: 'Sem observações adicionais') . "\n\n"
-                 . "📲 Ao chegar no local, acesse o sistema no seu celular e clique em *'Estou em Processo de Instalação'*!";
+            if ($pedidosInstalacao->isNotEmpty()) {
+                $msg .= "⛺ *MONTAGENS / INSTALAÇÕES DE HOJE:*\n";
+                foreach ($pedidosInstalacao as $p) {
+                    $hora = $p->hora_instalacao ? substr($p->hora_instalacao, 0, 5) : 'Horário livre';
+                    $tendas = $p->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})")->implode(', ');
 
-            $this->whatsapp->enviarMensagem($pedido->montador->whatsapp, $msg);
-            $this->info("Lembrete de montagem enviado para {$pedido->montador->name} (Pedido #{$pedido->id})");
-            $enviados++;
-        }
+                    $resp = '';
+                    if ($p->nome_responsavel) {
+                        $resp = "  Contato no Local: {$p->nome_responsavel}" . ($p->telefone_responsavel ? " ({$p->telefone_responsavel})" : "") . "\n";
+                    }
 
-        // 2. Retiradas do dia
-        $pedidosRetirada = Pedido::with(['cliente', 'montador', 'tendas'])
-            ->whereDate('data_retirada', $hojeStr)
-            ->whereIn('status', ['instalado', 'aguardando_retirada', 'em_retirada'])
-            ->get();
-
-        foreach ($pedidosRetirada as $pedido) {
-            if (!$pedido->montador || empty($pedido->montador->whatsapp)) {
-                continue;
+                    $msg .= "• *Pedido #{$p->id}* às *{$hora}*\n"
+                          . "  Cliente: {$p->cliente->nome} ({$p->cliente->telefone})\n"
+                          . $resp
+                          . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
+                          . "  Tendas: {$tendas}\n"
+                          . ($p->observacoes ? "  Obs: {$p->observacoes}\n" : "")
+                          . "\n";
+                }
             }
 
-            $hora = $pedido->hora_retirada ? substr($pedido->hora_retirada, 0, 5) : 'Horário a combinar';
-            $tendas = $pedido->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})")->implode(', ');
+            if ($pedidosRetirada->isNotEmpty()) {
+                $msg .= "🔄 *RETIRADAS DE HOJE:*\n";
+                foreach ($pedidosRetirada as $p) {
+                    $hora = $p->hora_retirada ? substr($p->hora_retirada, 0, 5) : 'Horário livre';
+                    $tendas = $p->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})")->implode(', ');
 
-            $msg = "🔄 *LEMBRETE DE RETIRADA HOJE!*\n\n"
-                 . "Olá *{$pedido->montador->name}*, você tem retirada de tendas agendada para hoje:\n\n"
-                 . "📋 *Pedido:* #{$pedido->id}\n"
-                 . "👤 *Cliente:* {$pedido->cliente->nome}\n"
-                 . "📞 *Contato:* {$pedido->cliente->telefone}\n"
-                 . "⏰ *Horário Previsto:* {$hora}\n"
-                 . "📍 *Local de Retirada:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n"
-                 . "⛺ *Tendas a recolher:* {$tendas}\n\n"
-                 . "📲 Após desmontar e recolher, clique em *'Confirmar Retirada'* no sistema para retornar os itens ao estoque!";
+                    $msg .= "• *Pedido #{$p->id}* às *{$hora}*\n"
+                          . "  Cliente: {$p->cliente->nome} ({$p->cliente->telefone})\n"
+                          . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
+                          . "  Tendas a recolher: {$tendas}\n\n";
+                }
+            }
 
-            $this->whatsapp->enviarMensagem($pedido->montador->whatsapp, $msg);
-            $this->info("Lembrete de retirada enviado para {$pedido->montador->name} (Pedido #{$pedido->id})");
+            $msg .= "📲 Ao concluir cada serviço, acesse o sistema no celular para registrar *'Tenda instalada'* ou *'Tenda retirada'*!";
+
+            $this->whatsapp->enviarMensagem($montador->whatsapp, $msg);
+            $this->info("Lembrete diário enviado para {$montador->name}");
             $enviados++;
         }
 

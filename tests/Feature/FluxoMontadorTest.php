@@ -8,6 +8,7 @@ use App\Models\Pedido;
 use App\Models\Tenda;
 use App\Models\User;
 use App\Services\WhatsappService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -142,8 +143,66 @@ class FluxoMontadorTest extends TestCase
 
     public function test_comandos_lembrete_whatsapp_executam_com_sucesso(): void
     {
-        $this->artisan('lembretes:whatsapp', ['--tipo' => 'semana'])->assertExitCode(0);
+        $montadorA = User::factory()->create([
+            'role' => 'montador',
+            'name' => 'Montador Carlos',
+            'whatsapp' => '17991111111',
+        ]);
+        $montadorB = User::factory()->create([
+            'role' => 'montador',
+            'name' => 'Montador Sem Pedidos',
+            'whatsapp' => '17992222222',
+        ]);
+        $cliente = Cliente::create([
+            'nome' => 'Cliente Eventos',
+            'telefone' => '17993333333',
+            'endereco' => 'Rua Principal, 50',
+        ]);
+        $tenda = Tenda::create([
+            'nome' => 'Tenda Piramidal 10x10',
+            'tamanho' => '10x10m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+            'valor_diaria' => 200,
+        ]);
+
+        $hoje = Carbon::now('America/Sao_Paulo')->format('Y-m-d');
+
+        $pedido = Pedido::create([
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montadorA->id,
+            'data_instalacao' => $hoje,
+            'data_retirada' => Carbon::now('America/Sao_Paulo')->addDays(1)->format('Y-m-d'),
+            'endereco_instalacao' => 'Rua Principal, 50',
+            'status' => 'os_gerada',
+        ]);
+        $pedido->tendas()->attach($tenda->id, ['quantidade' => 2]);
+
+        $mensagens = [];
+        $mockWpp = $this->createMock(WhatsappService::class);
+        $mockWpp->method('enviarMensagem')
+            ->willReturnCallback(function ($numero, $msg) use (&$mensagens) {
+                $mensagens[] = ['numero' => $numero, 'msg' => $msg];
+                return true;
+            });
+        $this->app->instance(WhatsappService::class, $mockWpp);
+
+        // 1. Testa disparo diário
         $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia'])->assertExitCode(0);
+
+        // Deve enviar apenas para o Montador A (que tem pedido hoje), e NUNCA para o Montador B
+        $this->assertCount(1, $mensagens);
+        $this->assertEquals('17991111111', $mensagens[0]['numero']);
+        $this->assertStringContainsString('AGENDA DE HOJE', $mensagens[0]['msg']);
+        $this->assertStringContainsString('Tenda Piramidal 10x10', $mensagens[0]['msg']);
+
+        // 2. Testa disparo semanal
+        $mensagens = [];
+        $this->artisan('lembretes:whatsapp', ['--tipo' => 'semana'])->assertExitCode(0);
+
+        $this->assertCount(1, $mensagens);
+        $this->assertEquals('17991111111', $mensagens[0]['numero']);
+        $this->assertStringContainsString('AGENDA DA SEMANA', $mensagens[0]['msg']);
     }
 
     public function test_servir_arquivo_storage_e_exibicao_fotos_com_lightbox(): void

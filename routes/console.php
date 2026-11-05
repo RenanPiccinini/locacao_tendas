@@ -13,7 +13,7 @@ Schedule::command('lembretes:whatsapp --tipo=semana')
     ->weeklyOn(1, '08:00')
     ->timezone('America/Sao_Paulo');
 
-// Lembrete diário às 07h00 no dia de cada montagem
+// Lembrete diário às 08h00 no dia de cada montagem e retirada
 Schedule::command('lembretes:whatsapp --tipo=dia')
-    ->dailyAt('07:00')
+    ->dailyAt('08:00')
     ->timezone('America/Sao_Paulo');

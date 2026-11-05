@@ -117,10 +117,10 @@
                     <div class="p-3.5 bg-gray-50 dark:bg-[#02140e] rounded-lg border border-gray-200 dark:border-[#083d2c]">
                         <div class="font-bold text-gray-800 dark:text-white text-sm mb-1 flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-                            Todos os dias às 07h00
+                            Todos os dias às 08h00
                         </div>
                         <p class="text-gray-600 dark:text-emerald-200/70">
-                            Dispara no dia de cada montagem e retirada um <strong>aviso matinal</strong> lembrando o montador do cliente, endereço, horário e tendas.
+                            Dispara para cada montador o <strong>resumo exclusivo das suas tendas do dia</strong> (montagens e retiradas programadas para hoje).
                         </p>
                     </div>
                 </div>
