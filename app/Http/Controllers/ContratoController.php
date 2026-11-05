@@ -78,8 +78,8 @@ class ContratoController extends Controller
         // Duração do evento/locação em dias
         $dias = 1;
         if ($pedido && $pedido->data_instalacao && $pedido->data_retirada) {
-            $dtIni = Carbon::parse($pedido->data_instalacao);
-            $dtFim = Carbon::parse($pedido->data_retirada);
+            $dtIni = Carbon::parse($pedido->data_instalacao)->startOfDay();
+            $dtFim = Carbon::parse($pedido->data_retirada)->startOfDay();
             $dias = max(1, $dtIni->diffInDays($dtFim));
         }
 
@@ -87,33 +87,71 @@ class ContratoController extends Controller
         if ($pedido && $pedido->tendas->isNotEmpty()) {
             $totalQtdGeral = $pedido->tendas->sum(fn($t) => $t->pivot->quantidade ?? 1);
 
-            // Soma das diárias calculadas
-            $somaDiarias = 0;
+            // 1. Calcula a diária de referência e subtotal de cada tenda (diária * qtd * dias)
+            $somaReferencia = 0.0;
+            $itensReferencia = [];
             foreach ($pedido->tendas as $t) {
-                $qtd = $t->pivot->quantidade ?? 1;
-                $somaDiarias += ((float)$t->valor_diaria * $qtd * $dias);
+                $qtd = isset($t->pivot->quantidade) ? max(1, (int)$t->pivot->quantidade) : 1;
+                $diaria = (float) ($t->valor_diaria ?? 0.0);
+                $ref = $diaria * $qtd * $dias;
+                $somaReferencia += $ref;
+                $itensReferencia[] = [
+                    'tenda' => $t,
+                    'qtd' => $qtd,
+                    'diaria' => $diaria,
+                    'ref' => $ref,
+                ];
             }
 
-            foreach ($pedido->tendas as $t) {
-                $qtd = $t->pivot->quantidade ?? 1;
+            // Se o valor total do pedido não foi informado ou é zero, assume a soma dinâmica calculada das diárias
+            if ($valorTotalNumerico <= 0.0 && $somaReferencia > 0.0) {
+                $valorTotalNumerico = $somaReferencia;
+                $pedido->update(['valor_total' => $valorTotalNumerico]);
+                $pedido->valor_total = $valorTotalNumerico;
+            }
 
-                if ((float)$t->valor_diaria > 0 && ($valorTotalNumerico <= 0 || abs($somaDiarias - $valorTotalNumerico) < 0.01)) {
-                    $subtotal = (float)$t->valor_diaria * $qtd * $dias;
-                } elseif ($valorTotalNumerico > 0) {
-                    // Se houver um valor_total fechado, calcula proporcionalmente pela quantidade de peças
-                    $subtotal = ($valorTotalNumerico / max(1, $totalQtdGeral)) * $qtd;
-                } elseif ((float)$t->valor_diaria > 0) {
-                    $subtotal = (float)$t->valor_diaria * $qtd * $dias;
+            $somaSubtotais = 0.0;
+            $totalItens = count($itensReferencia);
+
+            foreach ($itensReferencia as $index => $itemData) {
+                $t = $itemData['tenda'];
+                $qtd = $itemData['qtd'];
+                $diaria = $itemData['diaria'];
+                $ref = $itemData['ref'];
+                $isLast = ($index === $totalItens - 1);
+
+                if ($valorTotalNumerico > 0.0) {
+                    if ($somaReferencia > 0.0) {
+                        // Rateia proporcionalmente ao valor de referência das diárias de cada tenda
+                        if ($isLast) {
+                            $subtotal = round($valorTotalNumerico - $somaSubtotais, 2);
+                        } else {
+                            $proporcao = $ref / $somaReferencia;
+                            $subtotal = round($valorTotalNumerico * $proporcao, 2);
+                            $somaSubtotais += $subtotal;
+                        }
+                    } else {
+                        // Se não houver valor de diária nas tendas, rateia por quantidade de peças
+                        if ($isLast) {
+                            $subtotal = round($valorTotalNumerico - $somaSubtotais, 2);
+                        } else {
+                            $proporcao = $qtd / max(1, $totalQtdGeral);
+                            $subtotal = round($valorTotalNumerico * $proporcao, 2);
+                            $somaSubtotais += $subtotal;
+                        }
+                    }
                 } else {
-                    $subtotal = 0;
+                    $subtotal = 0.0;
                 }
 
                 $itens[] = [
                     'nome' => $t->nome,
                     'tamanho' => $t->tamanho ?: 'Padrão',
                     'quantidade' => $qtd,
-                    'valor_diaria' => (float)$t->valor_diaria > 0 ? number_format((float)$t->valor_diaria, 2, ',', '.') : null,
-                    'total' => $subtotal > 0 ? number_format($subtotal, 2, ',', '.') : ($valorTotalNumerico > 0 ? number_format($valorTotalNumerico, 2, ',', '.') : 'A combinar'),
+                    'dias' => $dias,
+                    'valor_diaria' => $diaria > 0.0 ? number_format($diaria, 2, ',', '.') : '-',
+                    'subtotal_numerico' => $subtotal,
+                    'total' => $subtotal > 0.0 ? number_format($subtotal, 2, ',', '.') : ($valorTotalNumerico > 0.0 ? number_format($valorTotalNumerico, 2, ',', '.') : 'A combinar'),
                 ];
             }
         } else {
@@ -121,8 +159,10 @@ class ContratoController extends Controller
                 'nome' => 'TENDA PIRAMIDAL',
                 'tamanho' => 'Conforme especificação do pedido',
                 'quantidade' => 1,
-                'valor_diaria' => null,
-                'total' => $valorTotalNumerico > 0 ? number_format($valorTotalNumerico, 2, ',', '.') : 'A combinar',
+                'dias' => $dias,
+                'valor_diaria' => '-',
+                'subtotal_numerico' => $valorTotalNumerico,
+                'total' => $valorTotalNumerico > 0.0 ? number_format($valorTotalNumerico, 2, ',', '.') : 'A combinar',
             ];
         }
 

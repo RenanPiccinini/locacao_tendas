@@ -217,5 +217,142 @@ class ContratoTest extends TestCase
         $respGerar->assertJson(['success' => true]);
         Storage::disk('public')->assertExists("contratos/contrato_pedido_{$pedido1->id}.pdf");
     }
+
+    public function test_contrato_calcula_automaticamente_valor_total_e_subtotais_quando_nao_informado(): void
+    {
+        $tendaA = Tenda::create([
+            'nome' => 'Tenda Piramidal 10x10m',
+            'tamanho' => '10x10m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+            'valor_diaria' => 600.00,
+        ]);
+
+        $tendaB = Tenda::create([
+            'nome' => 'Tenda Piramidal 5x5m',
+            'tamanho' => '5x5m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+            'valor_diaria' => 250.00,
+        ]);
+
+        // 2 dias de locação: 10/11/2026 até 12/11/2026
+        // Tenda A: 2 peças * R$ 600 * 2 dias = R$ 2.400,00
+        // Tenda B: 1 peça * R$ 250 * 2 dias = R$ 500,00
+        // Total esperado = R$ 2.900,00
+        $pedido = Pedido::create([
+            'cliente_id' => $this->cliente->id,
+            'data_instalacao' => '2026-11-10',
+            'data_retirada' => '2026-11-12',
+            'endereco_instalacao' => 'Rua dos Eventos, 500',
+            'valor_total' => 0.00, // Não informado
+            'status' => 'pendente',
+        ]);
+        $pedido->tendas()->attach($tendaA->id, ['quantidade' => 2]);
+        $pedido->tendas()->attach($tendaB->id, ['quantidade' => 1]);
+
+        $contratoController = app(\App\Http\Controllers\ContratoController::class);
+        $dados = $contratoController->prepararDadosContrato($this->cliente, $pedido);
+
+        $this->assertEquals('2.900,00', $dados['valor_total']);
+        $this->assertStringContainsString('dois mil e novecentos reais', $dados['valor_total_extenso']);
+        $this->assertEquals(2, $dados['dias']);
+        $this->assertCount(2, $dados['itens']);
+
+        // Primeiro item (Tenda 10x10)
+        $this->assertEquals('Tenda Piramidal 10x10m', $dados['itens'][0]['nome']);
+        $this->assertEquals(2, $dados['itens'][0]['quantidade']);
+        $this->assertEquals('600,00', $dados['itens'][0]['valor_diaria']);
+        $this->assertEquals('2.400,00', $dados['itens'][0]['total']);
+
+        // Segundo item (Tenda 5x5)
+        $this->assertEquals('Tenda Piramidal 5x5m', $dados['itens'][1]['nome']);
+        $this->assertEquals(1, $dados['itens'][1]['quantidade']);
+        $this->assertEquals('250,00', $dados['itens'][1]['valor_diaria']);
+        $this->assertEquals('500,00', $dados['itens'][1]['total']);
+
+        // Soma exata dos itens bate com o total
+        $somaItens = $dados['itens'][0]['subtotal_numerico'] + $dados['itens'][1]['subtotal_numerico'];
+        $this->assertEquals(2900.00, $somaItens);
+
+        // O pedido foi atualizado no banco
+        $pedido->refresh();
+        $this->assertEquals(2900.00, (float) $pedido->valor_total);
+    }
+
+    public function test_contrato_com_valor_fechado_pacote_faz_rateio_proporcional_exato_sem_diferenca(): void
+    {
+        $tendaA = Tenda::create([
+            'nome' => 'Tenda Piramidal 10x10m',
+            'tamanho' => '10x10m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+            'valor_diaria' => 600.00,
+        ]);
+
+        $tendaB = Tenda::create([
+            'nome' => 'Tenda Piramidal 5x5m',
+            'tamanho' => '5x5m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+            'valor_diaria' => 250.00,
+        ]);
+
+        // 2 dias: tabela de referência daria 2.900,00, mas o administrador negociou pacote por R$ 2.500,00
+        $pedido = Pedido::create([
+            'cliente_id' => $this->cliente->id,
+            'data_instalacao' => '2026-11-10',
+            'data_retirada' => '2026-11-12',
+            'endereco_instalacao' => 'Rua dos Eventos, 500',
+            'valor_total' => 2500.00,
+            'status' => 'pendente',
+        ]);
+        $pedido->tendas()->attach($tendaA->id, ['quantidade' => 2]);
+        $pedido->tendas()->attach($tendaB->id, ['quantidade' => 1]);
+
+        $contratoController = app(\App\Http\Controllers\ContratoController::class);
+        $dados = $contratoController->prepararDadosContrato($this->cliente, $pedido);
+
+        $this->assertEquals('2.500,00', $dados['valor_total']);
+        $this->assertStringContainsString('dois mil e quinhentos reais', $dados['valor_total_extenso']);
+
+        // A soma dos subtotais numéricos dos itens DEVE ser exatamente 2500.00
+        $somaItens = 0.0;
+        foreach ($dados['itens'] as $item) {
+            $somaItens += $item['subtotal_numerico'];
+        }
+        $this->assertEquals(2500.00, round($somaItens, 2));
+
+        // E o rateio proporcional respeita que a 10x10 é muito mais cara que a 5x5
+        $this->assertGreaterThan($dados['itens'][1]['subtotal_numerico'], $dados['itens'][0]['subtotal_numerico']);
+    }
+
+    public function test_pedido_store_calcula_automaticamente_valor_total_quando_nao_preenchido(): void
+    {
+        $tenda = Tenda::create([
+            'nome' => 'Tenda Sanfonada 3x3m',
+            'tamanho' => '3x3m',
+            'quantidade_total' => 10,
+            'quantidade_disponivel' => 10,
+            'valor_diaria' => 120.00,
+        ]);
+
+        // Post sem preencher valor_total para 3 dias e 2 tendas (120 * 2 * 3 = 720.00)
+        $response = $this->actingAs($this->admin)->post(route('pedidos.store'), [
+            'cliente_id' => $this->cliente->id,
+            'data_instalacao' => '2026-11-01',
+            'data_retirada' => '2026-11-04',
+            'endereco_instalacao' => 'Av Central, 123',
+            'valor_total' => '', // Vazio
+            'tendas_selecionadas' => [$tenda->id],
+            'quantidades' => [$tenda->id => 2],
+        ]);
+
+        $response->assertRedirect();
+
+        $pedido = Pedido::latest()->first();
+        $this->assertNotNull($pedido);
+        $this->assertEquals(720.00, (float) $pedido->valor_total);
+    }
 }
 

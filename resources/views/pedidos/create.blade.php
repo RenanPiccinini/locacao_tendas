@@ -109,9 +109,10 @@
                                            id="tenda_{{ $tenda->id }}" 
                                            name="tendas_selecionadas[]" 
                                            value="{{ $tenda->id }}" 
+                                           data-diaria="{{ (float) ($tenda->valor_diaria ?? 0) }}"
                                            {{ in_array($tenda->id, old('tendas_selecionadas', [])) ? 'checked' : '' }}
                                            {{ !$isLiberada ? 'disabled' : '' }}
-                                           onchange="toggleQuantidade({{ $tenda->id }}, this.checked)"
+                                           onchange="toggleQuantidade({{ $tenda->id }}, this.checked); recalcularSugestaoValor();"
                                            class="tenda-checkbox rounded text-amber-500 focus:ring-amber-400 w-4 h-4 cursor-pointer mt-1 sm:mt-0">
                                     
                                     <label for="tenda_{{ $tenda->id }}" class="text-sm cursor-pointer select-none">
@@ -119,6 +120,12 @@
                                             <span class="font-bold text-gray-900 dark:text-slate-100 text-sm">{{ $tenda->nome }}</span>
                                             <span class="text-xs text-gray-500 dark:text-gray-400">Dimensões: <strong>{{ $tenda->tamanho }}</strong></span>
                                             
+                                            @if((float)($tenda->valor_diaria ?? 0) > 0)
+                                                <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/20">
+                                                    R$ {{ number_format($tenda->valor_diaria, 2, ',', '.') }} / dia
+                                                </span>
+                                            @endif
+
                                             <!-- Badge de Disponibilidade Dinâmica -->
                                             <span id="badge-disp-{{ $tenda->id }}" class="badge-disp text-[11px] font-bold px-2 py-0.5 rounded-full {{ $isLiberada ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500/30' : 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border border-red-500/30' }}">
                                                 {{ $isLiberada ? "{$disp} disponíveis neste período (Estoque total: {$tenda->quantidade_total})" : "0 disponíveis neste período (Todas as {$tenda->quantidade_total} locadas)" }}
@@ -132,10 +139,12 @@
                                     <input type="number" 
                                            id="qtd_{{ $tenda->id }}" 
                                            name="quantidades[{{ $tenda->id }}]" 
+                                           data-diaria="{{ (float) ($tenda->valor_diaria ?? 0) }}"
                                            value="{{ old('quantidades.'.$tenda->id, 1) }}" 
                                            min="1" 
                                            max="{{ max(1, $disp) }}" 
                                            {{ !$isLiberada ? 'disabled' : '' }}
+                                           oninput="recalcularSugestaoValor();"
                                            class="tenda-qtd w-20 bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm text-center font-bold">
                                 </div>
                             </div>
@@ -204,7 +213,13 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Valor Total da Locação (R$)</label>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200">Valor Total da Locação (R$)</label>
+                                <button type="button" id="btn-aplicar-sugestao" onclick="aplicarSugestaoValor()" class="hidden text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-500 underline flex items-center gap-1 transition">
+                                    <span>Usar cálculo:</span>
+                                    <span id="texto-sugestao-valor">R$ 0,00</span>
+                                </button>
+                            </div>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 dark:text-amber-400 font-semibold text-sm">
                                     R$
@@ -216,7 +231,7 @@
                                        placeholder="0,00" 
                                        class="w-full pl-11 pr-4 bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm font-semibold">
                             </div>
-                            <p class="text-[11px] text-gray-400 dark:text-emerald-400/60 mt-1">Formatação em Real automática.</p>
+                            <p class="text-[11px] text-gray-400 dark:text-emerald-400/60 mt-1">Calculado dinamicamente pelas diárias se deixado em branco, ou digite o valor acordado.</p>
                         </div>
 
                         <div>
@@ -363,6 +378,7 @@
                     console.error('Erro ao consultar disponibilidade:', err);
                 } finally {
                     if (spinner) spinner.classList.add('hidden');
+                    recalcularSugestaoValor();
                 }
             }
 
@@ -380,6 +396,52 @@
                 const inputQtd = document.getElementById(`qtd_${tendaId}`);
                 if (inputQtd) {
                     inputQtd.disabled = !isChecked;
+                }
+            };
+
+            // Cálculo dinâmico do valor sugerido (diária * quantidade * dias)
+            let ultimoValorSugeridoCalculado = 0;
+
+            window.recalcularSugestaoValor = function () {
+                const dtInst = inputInstalacao.value;
+                const dtRet = inputRetirada.value;
+                let dias = 1;
+
+                if (dtInst && dtRet) {
+                    const d1 = new Date(dtInst + 'T00:00:00');
+                    const d2 = new Date(dtRet + 'T00:00:00');
+                    const diffTime = d2.getTime() - d1.getTime();
+                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                    dias = Math.max(1, diffDays);
+                }
+
+                let soma = 0;
+                document.querySelectorAll('.tenda-checkbox:checked').forEach(cb => {
+                    const id = cb.value;
+                    const diaria = parseFloat(cb.getAttribute('data-diaria') || 0);
+                    const inputQtd = document.getElementById(`qtd_${id}`);
+                    const qtd = inputQtd ? Math.max(1, parseInt(inputQtd.value || 1, 10)) : 1;
+                    soma += (diaria * qtd * dias);
+                });
+
+                ultimoValorSugeridoCalculado = soma;
+
+                const textoSugestao = document.getElementById('texto-sugestao-valor');
+                const btnSugestao = document.getElementById('btn-aplicar-sugestao');
+
+                if (textoSugestao && btnSugestao) {
+                    if (soma > 0) {
+                        textoSugestao.textContent = 'R$ ' + soma.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        btnSugestao.classList.remove('hidden');
+                    } else {
+                        btnSugestao.classList.add('hidden');
+                    }
+                }
+            };
+
+            window.aplicarSugestaoValor = function () {
+                if (campoValor && ultimoValorSugeridoCalculado > 0) {
+                    campoValor.value = ultimoValorSugeridoCalculado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 }
             };
 
@@ -401,6 +463,9 @@
                     campoValor.value = formatarMoeda(campoValor.value);
                 }
             }
+
+            // Cálculo inicial
+            recalcularSugestaoValor();
         });
     </script>
 </x-app-layout>

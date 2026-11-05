@@ -216,9 +216,10 @@
     <table class="table-data">
         <thead>
             <tr>
-                <th style="width: 50%;">Item - Produto(s) / Dimensões</th>
-                <th style="width: 25%; text-align: center;">Quantidade</th>
-                <th style="width: 25%; text-align: right;">Total da Locação</th>
+                <th style="width: 44%;">Item - Produto(s) / Dimensões</th>
+                <th style="width: 16%; text-align: center;">Quantidade</th>
+                <th style="width: 18%; text-align: right;">Diária Unit.</th>
+                <th style="width: 22%; text-align: right;">Total da Locação</th>
             </tr>
         </thead>
         <tbody>
@@ -226,19 +227,27 @@
                 <tr>
                     <td><strong>{{ $item['nome'] }}</strong> - {{ $item['tamanho'] }}</td>
                     <td style="text-align: center; font-weight: bold;">{{ $item['quantidade'] }} {{ $item['quantidade'] > 1 ? 'PEÇAS' : 'PEÇA' }}</td>
+                    <td style="text-align: right; color: #475569;">
+                        @if(!empty($item['valor_diaria']) && $item['valor_diaria'] !== '-')
+                            R$ {{ $item['valor_diaria'] }}
+                        @else
+                            -
+                        @endif
+                    </td>
                     <td style="text-align: right; font-weight: bold; color: #064e3b;">R$ {{ $item['total'] }}</td>
                 </tr>
             @empty
                 <tr>
                     <td><strong>TENDA PIRAMIDAL</strong> - Conforme especificação do pedido</td>
                     <td style="text-align: center; font-weight: bold;">1 PEÇA</td>
+                    <td style="text-align: right; color: #475569;">-</td>
                     <td style="text-align: right; font-weight: bold; color: #064e3b;">R$ {{ $dados['valor_total'] }}</td>
                 </tr>
             @endforelse
         </tbody>
         <tfoot>
             <tr style="background-color: #f1f5f9; font-size: 11px;">
-                <td colspan="2" style="text-align: right; font-weight: bold; text-transform: uppercase;">Valor Total da Locação:</td>
+                <td colspan="3" style="text-align: right; font-weight: bold; text-transform: uppercase;">Valor Total da Locação ({{ $dados['dias'] }} {{ $dados['dias'] > 1 ? 'dias' : 'dia' }}):</td>
                 <td style="text-align: right; font-weight: bold; color: #064e3b; font-size: 11.5px;">R$ {{ $dados['valor_total'] }}</td>
             </tr>
         </tfoot>

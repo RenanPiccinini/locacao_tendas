@@ -129,11 +129,17 @@ class PedidoController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // Se o valor_total vier formatado com máscara (ex: 1.500,50 ou 500,00), converte para float
-        if ($request->filled('valor_total')) {
-            $limpo = str_replace('.', '', $request->input('valor_total'));
-            $limpo = str_replace(',', '.', $limpo);
-            $request->merge(['valor_total' => (float)$limpo]);
+        // Normalização robusta de moeda para float
+        $rawValor = trim((string) $request->input('valor_total'));
+        if ($rawValor !== '') {
+            if (str_contains($rawValor, ',')) {
+                $limpo = str_replace('.', '', $rawValor);
+                $limpo = str_replace(',', '.', $limpo);
+            } else {
+                $limpo = $rawValor;
+            }
+            $valorNumerico = (float) preg_replace('/[^0-9.]/', '', $limpo);
+            $request->merge(['valor_total' => $valorNumerico]);
         }
 
         $validated = $request->validate([
@@ -161,6 +167,32 @@ class PedidoController extends Controller
             'data_retirada.after_or_equal' => 'A data de retirada deve ser igual ou posterior à data de instalação.',
         ]);
 
+        $quantidades = $request->input('quantidades', []);
+        $valorTotal = isset($validated['valor_total']) && (float) $validated['valor_total'] > 0
+            ? (float) $validated['valor_total']
+            : null;
+
+        // Se o valor total não foi informado ou é 0, calcula automaticamente a partir das tendas e dias
+        if ($valorTotal === null || $valorTotal <= 0) {
+            $dias = 1;
+            if (!empty($validated['data_instalacao']) && !empty($validated['data_retirada'])) {
+                $dtIni = Carbon::parse($validated['data_instalacao'])->startOfDay();
+                $dtFim = Carbon::parse($validated['data_retirada'])->startOfDay();
+                $dias = max(1, $dtIni->diffInDays($dtFim));
+            }
+
+            $somaCalculada = 0.0;
+            foreach ($validated['tendas_selecionadas'] as $tendaId) {
+                $qtd = isset($quantidades[$tendaId]) ? max(1, intval($quantidades[$tendaId])) : 1;
+                $tenda = Tenda::find($tendaId);
+                if ($tenda && (float)$tenda->valor_diaria > 0) {
+                    $somaCalculada += ((float)$tenda->valor_diaria * $qtd * $dias);
+                }
+            }
+
+            $valorTotal = $somaCalculada > 0 ? $somaCalculada : 0.0;
+        }
+
         DB::beginTransaction();
         try {
             $pedido = Pedido::create([
@@ -174,7 +206,7 @@ class PedidoController extends Controller
                 'endereco_instalacao' => $validated['endereco_instalacao'],
                 'cidade_instalacao' => $validated['cidade_instalacao'] ?? null,
                 'cep_instalacao' => $validated['cep_instalacao'] ?? null,
-                'valor_total' => $validated['valor_total'] ?? 0,
+                'valor_total' => $valorTotal,
                 'observacoes' => $validated['observacoes'] ?? null,
                 'nome_responsavel' => $validated['nome_responsavel'] ?? null,
                 'telefone_responsavel' => $validated['telefone_responsavel'] ?? null,
@@ -236,6 +268,19 @@ class PedidoController extends Controller
     {
         $montadorAnterior = $pedido->montador_id;
 
+        // Normalização robusta de moeda para float
+        $rawValor = trim((string) $request->input('valor_total'));
+        if ($rawValor !== '') {
+            if (str_contains($rawValor, ',')) {
+                $limpo = str_replace('.', '', $rawValor);
+                $limpo = str_replace(',', '.', $limpo);
+            } else {
+                $limpo = $rawValor;
+            }
+            $valorNumerico = (float) preg_replace('/[^0-9.]/', '', $limpo);
+            $request->merge(['valor_total' => $valorNumerico]);
+        }
+
         $validated = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'montador_id' => 'nullable|exists:users,id',
@@ -252,6 +297,27 @@ class PedidoController extends Controller
             'nome_responsavel' => 'nullable|string|max:255',
             'telefone_responsavel' => 'nullable|string|max:30',
         ]);
+
+        if (empty($validated['valor_total']) || (float)$validated['valor_total'] <= 0) {
+            $dias = 1;
+            if (!empty($validated['data_instalacao']) && !empty($validated['data_retirada'])) {
+                $dtIni = Carbon::parse($validated['data_instalacao'])->startOfDay();
+                $dtFim = Carbon::parse($validated['data_retirada'])->startOfDay();
+                $dias = max(1, $dtIni->diffInDays($dtFim));
+            }
+
+            $somaCalculada = 0.0;
+            foreach ($pedido->tendas as $tenda) {
+                $qtd = $tenda->pivot->quantidade ?? 1;
+                if ((float)$tenda->valor_diaria > 0) {
+                    $somaCalculada += ((float)$tenda->valor_diaria * $qtd * $dias);
+                }
+            }
+
+            if ($somaCalculada > 0) {
+                $validated['valor_total'] = $somaCalculada;
+            }
+        }
 
         $pedido->update($validated);
 
