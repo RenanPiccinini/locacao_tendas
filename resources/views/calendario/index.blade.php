@@ -75,8 +75,8 @@
     </div>
 
     <!-- Modal Detalhe Rápido do Evento -->
-    <div id="modal-evento" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-[#031d14] rounded-xl max-w-md w-full p-6 shadow-2xl relative border border-gray-200 dark:border-[#083d2c]">
+    <div id="modal-evento" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4" onclick="if(event.target === this) this.classList.add('hidden')">
+        <div class="bg-white dark:bg-[#031d14] rounded-xl max-w-md w-full p-6 shadow-2xl relative border border-gray-200 dark:border-[#083d2c]" onclick="event.stopPropagation()">
             <button onclick="document.getElementById('modal-evento').classList.add('hidden')" class="absolute top-3 right-3 text-gray-400 dark:text-emerald-400 hover:text-gray-600 dark:hover:text-white text-xl font-bold">&times;</button>
             <div class="flex items-center gap-2 mb-2">
                 <span id="evento-badge-tipo" class="px-2.5 py-0.5 rounded text-xs font-bold"></span>
@@ -91,8 +91,11 @@
             </div>
 
             <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-[#083d2c]">
-                <button onclick="document.getElementById('modal-evento').classList.add('hidden')" class="px-4 py-2 bg-gray-100 dark:bg-[#063325] text-gray-700 dark:text-emerald-200 font-semibold rounded-lg text-xs">Fechar</button>
-                <a id="evento-link-pedido" href="#" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-lg text-xs transition">Ver Pedido Completo</a>
+                <button type="button" onclick="document.getElementById('modal-evento').classList.add('hidden')" class="px-4 py-2 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#084230] text-gray-700 dark:text-emerald-200 font-semibold rounded-lg text-xs transition">Fechar</button>
+                <a id="evento-link-pedido" href="#" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm">
+                    <span>Ver Pedido Completo</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </div>
@@ -121,28 +124,40 @@
                 events: '{{ route("calendario.eventos") }}',
                 eventClick: function(info) {
                     info.jsEvent.preventDefault();
-                    var p = info.event.extendedProps;
+                    var p = info.event.extendedProps || {};
+                    var urlPedido = p.pedido_url || info.event.url || (p.pedido_id ? ('/pedidos/' + p.pedido_id) : '#');
                     
-                    document.getElementById('evento-titulo').textContent = info.event.title;
-                    document.getElementById('evento-cliente').textContent = p.cliente_nome || '-';
+                    document.getElementById('evento-titulo').textContent = info.event.title || '';
+                    document.getElementById('evento-cliente').textContent = p.cliente_nome || p.cliente || '-';
                     document.getElementById('evento-endereco').textContent = p.endereco || '-';
-                    document.getElementById('evento-montador').textContent = p.montador_nome || 'Não definido';
-                    document.getElementById('evento-link-pedido').href = p.pedido_url;
+                    document.getElementById('evento-montador').textContent = p.montador_nome || p.montador || 'Não definido';
+                    
+                    var linkBtn = document.getElementById('evento-link-pedido');
+                    if (linkBtn) {
+                        linkBtn.href = urlPedido;
+                    }
 
                     var badgeTipo = document.getElementById('evento-badge-tipo');
-                    if (p.tipo === 'instalacao') {
-                        badgeTipo.textContent = 'Instalação';
+                    var tipoLimpo = (p.tipo || '').toLowerCase();
+                    if (tipoLimpo === 'instalacao' || tipoLimpo.includes('montag') || tipoLimpo.includes('instala')) {
+                        badgeTipo.textContent = p.tipo_label || 'Montagem / Instalação';
                         badgeTipo.className = 'px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
                     } else {
-                        badgeTipo.textContent = 'Retirada';
+                        badgeTipo.textContent = p.tipo_label || 'Retirada / Devolução';
                         badgeTipo.className = 'px-2.5 py-0.5 rounded text-xs font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300';
                     }
 
-                    document.getElementById('evento-badge-status').textContent = p.status_label || '';
+                    document.getElementById('evento-badge-status').textContent = p.status_label || p.status || '';
                     document.getElementById('modal-evento').classList.remove('hidden');
                 }
             });
             calendar.render();
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.getElementById('modal-evento')?.classList.add('hidden');
+                }
+            });
         });
     </script>
 </x-app-layout>

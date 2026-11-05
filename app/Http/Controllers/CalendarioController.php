@@ -41,40 +41,57 @@ class CalendarioController extends Controller
         foreach ($pedidos as $pedido) {
             $tendasNomes = $pedido->tendas->pluck('nome')->implode(', ');
             $montadorNome = $pedido->montador ? $pedido->montador->name : 'Sem montador';
+            $clienteNome = $pedido->cliente ? $pedido->cliente->nome : 'Cliente não informado';
+            $endereco = $pedido->endereco_instalacao . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "");
+            $urlPedido = route('pedidos.show', $pedido);
 
             // Evento 1: Instalação
             $eventos[] = [
                 'id' => "inst-{$pedido->id}",
-                'title' => "⛺ Montagem: {$pedido->cliente->nome} (" . ($user->isAdmin() ? $montadorNome : $tendasNomes) . ")",
+                'title' => "⛺ Montagem: {$clienteNome} (" . ($user->isAdmin() ? $montadorNome : $tendasNomes) . ")",
                 'start' => $pedido->data_instalacao->format('Y-m-d') . ($pedido->hora_instalacao ? 'T' . $pedido->hora_instalacao : ''),
                 'allDay' => empty($pedido->hora_instalacao),
-                'backgroundColor' => '#2563eb', // Azul
-                'borderColor' => '#1d4ed8',
-                'url' => route('pedidos.show', $pedido),
+                'backgroundColor' => '#059669', // Verde Esmeralda
+                'borderColor' => '#047857',
+                'url' => $urlPedido,
                 'extendedProps' => [
-                    'tipo' => 'Instalação',
-                    'cliente' => $pedido->cliente->nome,
-                    'endereco' => $pedido->endereco_instalacao,
+                    'pedido_id' => $pedido->id,
+                    'pedido_url' => $urlPedido,
+                    'tipo' => 'instalacao',
+                    'tipo_label' => 'Montagem / Instalação',
+                    'cliente' => $clienteNome,
+                    'cliente_nome' => $clienteNome,
+                    'cliente_telefone' => $pedido->cliente?->telefone ?? '',
+                    'endereco' => $endereco,
                     'montador' => $montadorNome,
+                    'montador_nome' => $montadorNome,
                     'status' => $pedido->status_label,
+                    'status_label' => $pedido->status_label,
                 ]
             ];
 
             // Evento 2: Retirada
             $eventos[] = [
                 'id' => "ret-{$pedido->id}",
-                'title' => "🔄 Retirada: {$pedido->cliente->nome} (" . ($user->isAdmin() ? $montadorNome : $tendasNomes) . ")",
+                'title' => "🔄 Retirada: {$clienteNome} (" . ($user->isAdmin() ? $montadorNome : $tendasNomes) . ")",
                 'start' => $pedido->data_retirada->format('Y-m-d') . ($pedido->hora_retirada ? 'T' . $pedido->hora_retirada : ''),
                 'allDay' => empty($pedido->hora_retirada),
                 'backgroundColor' => '#9333ea', // Roxo
                 'borderColor' => '#7e22ce',
-                'url' => route('pedidos.show', $pedido),
+                'url' => $urlPedido,
                 'extendedProps' => [
-                    'tipo' => 'Retirada',
-                    'cliente' => $pedido->cliente->nome,
-                    'endereco' => $pedido->endereco_instalacao,
+                    'pedido_id' => $pedido->id,
+                    'pedido_url' => $urlPedido,
+                    'tipo' => 'retirada',
+                    'tipo_label' => 'Retirada / Devolução',
+                    'cliente' => $clienteNome,
+                    'cliente_nome' => $clienteNome,
+                    'cliente_telefone' => $pedido->cliente?->telefone ?? '',
+                    'endereco' => $endereco,
                     'montador' => $montadorNome,
+                    'montador_nome' => $montadorNome,
                     'status' => $pedido->status_label,
+                    'status_label' => $pedido->status_label,
                 ]
             ];
         }
