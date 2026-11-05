@@ -72,6 +72,79 @@ class WhatsappService
     }
 
     /**
+     * Obtém o número do WhatsApp principal conectado ou cadastrado para a empresa
+     */
+    public function getNumeroPrincipal(): ?string
+    {
+        // 1. Número explícito via config / env
+        $configNumero = config('services.evolution.admin_number') ?? env('WHATSAPP_ADMIN_NOTIFY');
+        if (!empty($configNumero)) {
+            $num = preg_replace('/\D/', '', $configNumero);
+            if (!empty($num)) {
+                return $num;
+            }
+        }
+
+        // 2. Cache da consulta de owner da instância
+        $cacheKey = 'whatsapp_numero_conectado_' . $this->instance;
+        if (Cache::has($cacheKey)) {
+            $cached = Cache::get($cacheKey);
+            if (!empty($cached)) {
+                return $cached;
+            }
+        }
+
+        // 3. Consulta o owner da instância conectada na Evolution API
+        try {
+            $url = "{$this->baseUrl}/instance/connectionState/{$this->instance}";
+            $response = Http::withHeaders(['apikey' => $this->apiKey])->timeout(5)->get($url);
+            if ($response->successful()) {
+                $data = $response->json();
+                $owner = $data['instance']['owner'] ?? $data['owner'] ?? $data['instance']['ownerJid'] ?? null;
+                if ($owner) {
+                    $num = preg_replace('/\D/', '', explode('@', $owner)[0]);
+                    if (!empty($num)) {
+                        Cache::put($cacheKey, $num, now()->addHours(6));
+                        return $num;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::info("Não foi possível consultar owner da Evolution API: " . $e->getMessage());
+        }
+
+        // 4. Primeiro usuário Admin com WhatsApp cadastrado
+        try {
+            $admin = \App\Models\User::where('role', 'admin')->whereNotNull('whatsapp')->where('whatsapp', '!=', '')->first();
+            if ($admin && !empty($admin->whatsapp)) {
+                $num = preg_replace('/\D/', '', $admin->whatsapp);
+                if (!empty($num)) {
+                    return $num;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Em testes ou sem migration
+        }
+
+        // 5. Fallback para o número comercial oficial de Tendas Eldorado
+        return '5517991429132';
+    }
+
+    /**
+     * Envia aviso diretamente ao WhatsApp principal conectado da empresa
+     */
+    public function notificarWhatsappPrincipal(string $mensagem): bool
+    {
+        $numero = $this->getNumeroPrincipal();
+        if (empty($numero)) {
+            Log::warning("Nenhum número principal de WhatsApp disponível para envio de notificação.");
+            return false;
+        }
+
+        return $this->enviarMensagem($numero, $mensagem);
+    }
+
+    /**
      * Cria a instância caso ela não exista ainda no servidor
      */
     public function criarInstanciaSeNaoExistir(): array

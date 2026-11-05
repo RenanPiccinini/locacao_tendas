@@ -163,13 +163,13 @@ class OrdemServicoModeloTest extends TestCase
         $primeiraOs = $pedido->fresh()->ordensServico->first();
         $this->assertEquals('instalacao', $primeiraOs->tipo);
 
-        // MOMENTO 2: Montador clica no botão e pega para instalar -> Gera outra OS automaticamente
-        $resIniciar = $this->actingAs($montador)->post(route('pedidos.iniciar-instalacao', $pedido));
-        $resIniciar->assertSessionHas('success');
-        $this->assertEquals('em_instalacao', $pedido->fresh()->status);
+        // MOMENTO 2: Montador conclui instalação ("Tenda instalada") -> Gera a 2ª OS
+        $resFinalizar = $this->actingAs($montador)->post(route('pedidos.finalizar-instalacao', $pedido));
+        $resFinalizar->assertSessionHas('success');
+        $this->assertEquals('aguardando_retirada', $pedido->fresh()->status);
         $this->assertCount(2, $pedido->fresh()->ordensServico); // 2ª OS gerada automaticamente
 
-        // MOMENTO 3: Montador clica no botão e faz a devolução -> Devolve tendas ao estoque e gera outra OS
+        // MOMENTO 3: Montador faz a retirada ("Tenda retirada") -> Devolve tendas ao estoque e gera a 3ª OS
         $resDevolver = $this->actingAs($montador)->post(route('pedidos.confirmar-retirada', $pedido));
         $resDevolver->assertSessionHas('success');
         $this->assertEquals('concluido', $pedido->fresh()->status);

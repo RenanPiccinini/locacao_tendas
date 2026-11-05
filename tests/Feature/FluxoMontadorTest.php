@@ -123,14 +123,14 @@ class FluxoMontadorTest extends TestCase
         $this->assertEquals('conclusao', $osConclusao->tipo);
         $this->assertEquals('concluida', $osConclusao->status);
 
-        // Verifica que todas as ordens de serviço geradas ficam disponíveis no pedido (1ª na criação, 2ª ao pegar para instalar, 3ª na retirada, 4ª na devolução)
-        $this->assertCount(4, $pedido->fresh()->ordensServico);
+        // Verifica que exatamente 3 ordens de serviço foram geradas automaticamente no ciclo completo (1ª na criação, 2ª na conclusão da instalação, 3ª na devolução)
+        $this->assertCount(3, $pedido->fresh()->ordensServico);
 
         // 7. Testa gerar uma O.S. a mais manualmente respectiva ao pedido e status
         $this->actingAs($admin)->post(route('pedidos.gerar-os', $pedido), [
             'tipo' => 'manutencao',
         ]);
-        $this->assertCount(5, $pedido->fresh()->ordensServico);
+        $this->assertCount(4, $pedido->fresh()->ordensServico);
 
         // 8. Testa reenvio de O.S. via WhatsApp e download em PDF
         $resWpp = $this->actingAs($admin)->post(route('os.enviar-whatsapp', $osInstalacao));
@@ -169,6 +169,104 @@ class FluxoMontadorTest extends TestCase
         $responseLink = $this->get(route('cron.storage-link'));
         $responseLink->assertStatus(200);
         $responseLink->assertJson(['success' => true]);
+    }
+
+    public function test_regras_whatsapp_e_os_tres_casos_e_dois_botoes_montador(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'whatsapp' => '17999991111',
+        ]);
+        $montador = User::factory()->create([
+            'role' => 'montador',
+            'whatsapp' => '17988882222',
+        ]);
+        $cliente = Cliente::create([
+            'nome' => 'Cliente Teste WhatsApp',
+            'telefone' => '1732438120',
+            'endereco' => 'Av Brasil, 100',
+        ]);
+        $tenda = Tenda::create([
+            'nome' => 'Tenda Piramidal 5x5',
+            'tamanho' => '5x5m',
+            'quantidade_total' => 10,
+            'quantidade_disponivel' => 10,
+            'valor_diaria' => 100,
+        ]);
+
+        $mensagensEnviadas = [];
+        $mockWhatsapp = $this->createMock(WhatsappService::class);
+        $mockWhatsapp->method('enviarMensagem')
+            ->willReturnCallback(function ($numero, $msg) use (&$mensagensEnviadas) {
+                $mensagensEnviadas[] = ['numero' => $numero, 'msg' => $msg];
+                return true;
+            });
+        $mockWhatsapp->method('getNumeroPrincipal')->willReturn('17999991111');
+        $mockWhatsapp->method('notificarWhatsappPrincipal')
+            ->willReturnCallback(function ($msg) use (&$mensagensEnviadas) {
+                $mensagensEnviadas[] = ['numero' => '17999991111', 'msg' => $msg];
+                return true;
+            });
+        $this->app->instance(WhatsappService::class, $mockWhatsapp);
+
+        // 1º CASO: Criação do Pedido -> Gera 1ª OS e notifica o MONTADOR no WhatsApp
+        $this->actingAs($admin)->post(route('pedidos.store'), [
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montador->id,
+            'data_instalacao' => now()->format('Y-m-d'),
+            'hora_instalacao' => '09:00',
+            'data_retirada' => now()->addDays(2)->format('Y-m-d'),
+            'hora_retirada' => '17:00',
+            'endereco_instalacao' => 'Av Brasil, 100',
+            'tendas_selecionadas' => [$tenda->id],
+            'quantidades' => [$tenda->id => 1],
+        ]);
+
+        $pedido = Pedido::latest()->first();
+        $this->assertNotNull($pedido);
+        $this->assertCount(1, $pedido->ordensServico); // 1ª OS gerada
+        $this->assertCount(1, $mensagensEnviadas);
+        $this->assertEquals('17988882222', $mensagensEnviadas[0]['numero']); // Montador recebeu a OS inicial!
+        $this->assertStringContainsString('ORDEM DE SERVIÇO EMITIDA', $mensagensEnviadas[0]['msg']);
+
+        // Verifica os botões na tela do pedido: só deve aparecer "Tenda instalada"
+        $respShow1 = $this->actingAs($montador)->get(route('pedidos.show', $pedido));
+        $respShow1->assertSee('Tenda instalada');
+        $respShow1->assertDontSee('Estou em Processo de Instalação');
+        $respShow1->assertDontSee('A Caminho da Retirada');
+
+        // 2º CASO: Montador conclui instalação ("Tenda instalada")
+        // -> Emite a 2ª OS, Montador NÃO recebe aviso, WhatsApp PRINCIPAL recebe aviso de instalação!
+        $mensagensEnviadas = [];
+        $this->actingAs($montador)->post(route('pedidos.finalizar-instalacao', $pedido), [
+            'observacoes_montador' => 'Montado com sucesso!',
+        ]);
+
+        $pedido->refresh();
+        $this->assertEquals('aguardando_retirada', $pedido->status);
+        $this->assertCount(2, $pedido->ordensServico); // Exatamente 2 OS até aqui!
+        $this->assertCount(1, $mensagensEnviadas);
+        $this->assertEquals('17999991111', $mensagensEnviadas[0]['numero']); // Foi para o WhatsApp PRINCIPAL!
+        $this->assertStringContainsString('TENDA INSTALADA COM SUCESSO', $mensagensEnviadas[0]['msg']);
+
+        // Verifica os botões na tela do pedido: só deve aparecer "Tenda retirada"
+        $respShow2 = $this->actingAs($montador)->get(route('pedidos.show', $pedido));
+        $respShow2->assertSee('Tenda retirada');
+        $respShow2->assertDontSee('<span>Tenda instalada</span>', false);
+        $respShow2->assertDontSee('A Caminho da Retirada');
+
+        // 3º CASO: Montador conclui retirada ("Tenda retirada")
+        // -> Emite a 3ª OS, tendas retornam ao estoque, Montador NÃO recebe aviso, WhatsApp PRINCIPAL recebe aviso de retirada!
+        $mensagensEnviadas = [];
+        $this->actingAs($montador)->post(route('pedidos.confirmar-retirada', $pedido));
+
+        $pedido->refresh();
+        $this->assertEquals('concluido', $pedido->status);
+        $this->assertCount(3, $pedido->ordensServico); // Exatamente 3 OS no total!
+        $this->assertEquals(10, $tenda->fresh()->quantidade_disponivel); // Estoque retornado!
+        $this->assertCount(1, $mensagensEnviadas);
+        $this->assertEquals('17999991111', $mensagensEnviadas[0]['numero']); // Foi para o WhatsApp PRINCIPAL!
+        $this->assertStringContainsString('TENDA RETIRADA & ESTOQUE ATUALIZADO', $mensagensEnviadas[0]['msg']);
     }
 }
 

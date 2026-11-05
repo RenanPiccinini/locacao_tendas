@@ -225,11 +225,11 @@ class PedidoController extends Controller
                 }
             }
 
-            // 1. Gera a primeira OS automaticamente quando cria o pedido (criarNovaOsParaPedido já notifica o montador uma única vez)
+            // 1. Gera a primeira OS automaticamente quando cria o pedido (notifica o montador na OS inicial)
             $primeiraOs = $this->criarNovaOsParaPedido($pedido, 'instalacao', [
                 'status' => 'pendente',
                 'observacoes_montador' => 'Ordem de Serviço inicial gerada automaticamente na criação do Pedido #' . $pedido->id,
-            ]);
+            ], true);
 
             $pedido->update(['status' => 'os_gerada']);
 
@@ -359,7 +359,7 @@ class PedidoController extends Controller
             ->with('success', "Nova Ordem de Serviço gerada com sucesso: {$os->numero_os} ({$os->tipo_label})!");
     }
 
-    public function criarNovaOsParaPedido(Pedido $pedido, string $tipo = 'instalacao', array $dadosExtras = []): OrdemServico
+    public function criarNovaOsParaPedido(Pedido $pedido, string $tipo = 'instalacao', array $dadosExtras = [], bool $notificarMontador = false): OrdemServico
     {
         $os = OrdemServico::create([
             'pedido_id' => $pedido->id,
@@ -375,20 +375,21 @@ class PedidoController extends Controller
             $pedido->update(['status' => 'os_gerada']);
         }
 
-        // Notifica montador no WhatsApp
-        $this->notificarMontadorNovaOs($pedido, $os);
+        // Montadores recebem ordem no WhatsApp SOMENTE na geração da O.S. inicial
+        if ($notificarMontador) {
+            $this->notificarMontadorNovaOs($pedido, $os);
+        }
 
         return $os;
     }
 
     protected function processarGerarOs(Pedido $pedido, string $tipo = 'instalacao'): OrdemServico
     {
-        return $this->criarNovaOsParaPedido($pedido, $tipo);
+        return $this->criarNovaOsParaPedido($pedido, $tipo, [], true);
     }
 
     public function iniciarInstalacao(Pedido $pedido): RedirectResponse
     {
-        // Atualiza a primeira OS (se existir) para em andamento
         $osAnterior = $pedido->ordensServico()->where('tipo', 'instalacao')->first();
         if ($osAnterior) {
             $osAnterior->update([
@@ -397,16 +398,9 @@ class PedidoController extends Controller
             ]);
         }
 
-        // 2. Gera outra OS automaticamente quando o montador clica no botão e pega para instalar
-        $novaOs = $this->criarNovaOsParaPedido($pedido, 'instalacao', [
-            'status' => 'em_andamento',
-            'iniciado_em' => now(),
-            'observacoes_montador' => 'Instalação iniciada pelo montador no local.',
-        ]);
-
         $pedido->update(['status' => 'em_instalacao']);
 
-        return back()->with('success', "Status atualizado: Em processo de instalação! Nova Ordem de Serviço ({$novaOs->numero_os}) gerada com sucesso.");
+        return back()->with('success', 'Status atualizado: Em processo de instalação.');
     }
 
     public function anexarFotos(Request $request, Pedido $pedido): RedirectResponse
@@ -456,7 +450,7 @@ class PedidoController extends Controller
             }
         }
 
-        // Conclui as ordens de serviço de instalação
+        // 1. Conclui a ordem de serviço de instalação inicial
         $todasOsInstalacao = $pedido->ordensServico()->where('tipo', 'instalacao')->get();
         foreach ($todasOsInstalacao as $osItem) {
             $fotosAntigas = $osItem->fotos ?? [];
@@ -470,12 +464,18 @@ class PedidoController extends Controller
             ]);
         }
 
-        // Gera automaticamente a nova OS respectiva para Retirada
-        $osRetirada = $this->criarNovaOsParaPedido($pedido, 'retirada');
+        // 2. Emite a 2ª OS do ciclo: O.S. de Retirada (sem notificar montador)
+        $osRetirada = $this->criarNovaOsParaPedido($pedido, 'retirada', [
+            'status' => 'pendente',
+            'observacoes_montador' => 'O.S. de Retirada gerada automaticamente após confirmação da instalação.',
+        ], false);
 
         $pedido->update(['status' => 'aguardando_retirada']);
 
-        return back()->with('success', "Instalação finalizada com sucesso! Nova OS de Retirada ({$osRetirada->numero_os}) gerada e disponível no pedido.");
+        // 3. Notifica o WhatsApp principal conectado (empresa/admin)
+        $this->notificarAdminTendaInstalada($pedido);
+
+        return back()->with('success', "Tenda instalada com sucesso! O.S. de Retirada ({$osRetirada->numero_os}) gerada.");
     }
 
     public function iniciarRetirada(Pedido $pedido): RedirectResponse
@@ -484,13 +484,13 @@ class PedidoController extends Controller
         if ($osRetirada) {
             $osRetirada->update([
                 'status' => 'em_andamento',
-                'iniciado_em' => now(),
+                'iniciado_em' => $osRetirada->iniciado_em ?: now(),
             ]);
         }
 
         $pedido->update(['status' => 'em_retirada']);
 
-        return back()->with('success', 'Status atualizado: Em processo de retirada!');
+        return back()->with('success', 'Status atualizado: Em processo de retirada.');
     }
 
     public function confirmarRetirada(Pedido $pedido): RedirectResponse
@@ -505,29 +505,84 @@ class PedidoController extends Controller
                 ]);
             }
 
-            // 3. Registra automaticamente no estoque como disponível
+            // 1. Registra automaticamente no estoque como disponível (somando de volta)
             foreach ($pedido->tendas as $tenda) {
                 $qtdRetirada = $tenda->pivot->quantidade;
                 $tenda->increment('quantidade_disponivel', $qtdRetirada);
             }
 
-            // 3. Gera outra OS automaticamente quando o montador clica no botão e faz a devolução
+            // 2. Emite a 3ª OS do ciclo: Conclusão / Devolução ao estoque (sem notificar montador)
             $osDevolucao = $this->criarNovaOsParaPedido($pedido, 'conclusao', [
                 'status' => 'concluida',
                 'iniciado_em' => now(),
                 'concluido_em' => now(),
-                'observacoes_montador' => 'Devolução e desmontagem confirmadas. Todas as tendas foram reintegradas ao estoque como disponíveis.',
-            ]);
+                'observacoes_montador' => 'Retirada e desmontagem concluídas. Todas as tendas foram reintegradas ao estoque como disponíveis.',
+            ], false);
 
             $pedido->update(['status' => 'concluido']);
 
             DB::commit();
 
-            return back()->with('success', "Devolução confirmada com sucesso! Nova O.S. de Devolução ({$osDevolucao->numero_os}) emitida e tendas registradas automaticamente no estoque como disponíveis.");
+            // 3. Notifica o WhatsApp principal conectado (empresa/admin)
+            $this->notificarAdminTendaRetirada($pedido);
+
+            return back()->with('success', "Tenda retirada com sucesso! Tendas retornaram ao estoque como disponíveis e O.S. de Conclusão ({$osDevolucao->numero_os}) emitida.");
         } catch (\Throwable $e) {
             DB::rollBack();
             return back()->with('error', 'Erro ao confirmar devolução: ' . $e->getMessage());
         }
+    }
+
+    protected function notificarAdminTendaInstalada(Pedido $pedido): void
+    {
+        $pedido->loadMissing(['montador', 'cliente', 'tendas']);
+
+        $nomeMontador = $pedido->montador ? $pedido->montador->name : 'Montador da Equipe';
+        $telefoneMontador = $pedido->montador && $pedido->montador->whatsapp ? " ({$pedido->montador->whatsapp})" : '';
+        $dataInst = Carbon::parse($pedido->data_instalacao)->format('d/m/Y');
+        $horaInst = $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : '09:00';
+        $dataRet = Carbon::parse($pedido->data_retirada)->format('d/m/Y');
+
+        $tendasLista = '';
+        foreach ($pedido->tendas as $t) {
+            $tendasLista .= "• {$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})\n";
+        }
+
+        $msg = "⛺ *TENDA INSTALADA COM SUCESSO! (#{$pedido->id})*\n\n"
+             . "O montador *{$nomeMontador}*{$telefoneMontador} concluiu a instalação das tendas:\n\n"
+             . "👤 *Cliente:* {$pedido->cliente->nome}\n"
+             . "📞 *Contato do Cliente:* {$pedido->cliente->telefone}\n"
+             . "📍 *Local:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n"
+             . "📅 *Data da Montagem:* {$dataInst} às {$horaInst}\n"
+             . "🔄 *Previsão de Retirada:* {$dataRet}\n\n"
+             . "⛺ *Tendas Montadas:*\n{$tendasLista}\n"
+             . "📝 *Status:* Montagem concluída com sucesso. Pedido aguardando retirada.";
+
+        $this->whatsapp->notificarWhatsappPrincipal($msg);
+    }
+
+    protected function notificarAdminTendaRetirada(Pedido $pedido): void
+    {
+        $pedido->loadMissing(['montador', 'cliente', 'tendas']);
+
+        $nomeMontador = $pedido->montador ? $pedido->montador->name : 'Montador da Equipe';
+        $telefoneMontador = $pedido->montador && $pedido->montador->whatsapp ? " ({$pedido->montador->whatsapp})" : '';
+        $dataRet = Carbon::parse($pedido->data_retirada)->format('d/m/Y');
+
+        $tendasLista = '';
+        foreach ($pedido->tendas as $t) {
+            $tendasLista .= "• {$t->pivot->quantidade}x {$t->nome} ({$t->tamanho})\n";
+        }
+
+        $msg = "🔄 *TENDA RETIRADA & ESTOQUE ATUALIZADO! (#{$pedido->id})*\n\n"
+             . "O montador *{$nomeMontador}*{$telefoneMontador} concluiu a retirada e desmontagem:\n\n"
+             . "👤 *Cliente:* {$pedido->cliente->nome}\n"
+             . "📍 *Local:* {$pedido->endereco_instalacao}" . ($pedido->cidade_instalacao ? " - {$pedido->cidade_instalacao}" : "") . "\n"
+             . "📅 *Data da Retirada:* {$dataRet}\n\n"
+             . "⛺ *Tendas Devolvidas ao Estoque:*\n{$tendasLista}\n"
+             . "📦 *Estoque:* Todas as tendas foram reintegradas e já constam como disponíveis no sistema.";
+
+        $this->whatsapp->notificarWhatsappPrincipal($msg);
     }
 
     protected function notificarMontadorNovoPedido(Pedido $pedido): void

@@ -51,82 +51,40 @@
                 </h3>
                 <p class="text-xs text-gray-600 dark:text-emerald-300/70 mb-4">Atualize o andamento da montagem/desmontagem deste pedido:</p>
 
-                <div class="flex flex-wrap gap-3">
-                    {{-- Status: PENDENTE --}}
-                    @if($pedido->status === 'pendente')
-                        <form action="{{ route('pedidos.gerar-os', $pedido) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                Gerar O.S. e Avisar Montador no WhatsApp
-                            </button>
-                        </form>
-                    @endif
-
-                    {{-- Status: OS GERADA (Montador a caminho ou pronto pra iniciar) --}}
-                    @if(in_array($pedido->status, ['os_gerada', 'pendente']))
-                        <form action="{{ route('pedidos.iniciar-instalacao', $pedido) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Estou em Processo de Instalação
-                            </button>
-                        </form>
-                    @endif
-
-                    {{-- Status: EM INSTALAÇÃO (Montador pode tirar/anexar fotos e concluir a montagem) --}}
-                    @if($pedido->status === 'em_instalacao')
-                        <button type="button" onclick="document.getElementById('modal-anexar-fotos').classList.remove('hidden')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            📸 Tirar / Anexar Fotos
-                        </button>
-
-                        <button type="button" onclick="document.getElementById('modal-finalizar-instalacao').classList.remove('hidden')" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            ✅ Concluir Montagem
+                <div class="flex flex-wrap gap-3 items-center">
+                    {{-- 1. BOTÃO "TENDA INSTALADA": Apenas no fluxo de montagem/instalação --}}
+                    @if(in_array($pedido->status, ['pendente', 'os_gerada', 'em_instalacao']))
+                        <button type="button" onclick="document.getElementById('modal-finalizar-instalacao').classList.remove('hidden')" class="px-6 py-3 bg-gradient-to-r from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 text-amber-300 font-bold rounded-xl shadow-md hover:shadow-lg transition text-sm flex items-center gap-2 border border-amber-400/40 cursor-pointer">
+                            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Tenda instalada</span>
                         </button>
                     @endif
 
-                    {{-- Status: AGUARDANDO RETIRADA --}}
-                    @if($pedido->status === 'aguardando_retirada')
-                        <form action="{{ route('pedidos.iniciar-retirada', $pedido) }}" method="POST">
+                    {{-- 2. BOTÃO "TENDA RETIRADA": Apenas no fluxo de devolução/retirada --}}
+                    @if(in_array($pedido->status, ['instalado', 'aguardando_retirada', 'em_retirada']))
+                        <form action="{{ route('pedidos.confirmar-retirada', $pedido) }}" method="POST" data-confirm="Confirma que a tenda foi retirada no local?<br><span class='text-xs text-emerald-500 font-medium'>As tendas retornarão automaticamente ao estoque como disponíveis.</span>" data-confirm-title="Confirmar Retirada da Tenda" data-confirm-btn="Sim, Tenda Retirada" data-confirm-type="success">
                             @csrf
-                            <button type="submit" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                                A Caminho da Retirada (Iniciar Retirada)
-                            </button>
-                        </form>
-
-                        <form action="{{ route('pedidos.confirmar-retirada', $pedido) }}" method="POST" data-confirm="Confirma que as tendas foram retiradas no local?<br><span class='text-xs text-emerald-500 font-medium'>Elas retornarão automaticamente ao estoque como disponíveis.</span>" data-confirm-title="Confirmar Retirada" data-confirm-btn="Sim, Confirmar Retirada" data-confirm-type="success">
-                            @csrf
-                            <button type="submit" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Confirmar Retirada & Devolver ao Estoque
+                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-purple-700 to-purple-600 hover:from-purple-800 hover:to-purple-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition text-sm flex items-center gap-2 border border-purple-400/30 cursor-pointer">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Tenda retirada</span>
                             </button>
                         </form>
                     @endif
 
-                    {{-- Status: EM RETIRADA --}}
-                    @if($pedido->status === 'em_retirada')
-                        <form action="{{ route('pedidos.confirmar-retirada', $pedido) }}" method="POST" data-confirm="Confirma que as tendas foram retiradas no local?<br><span class='text-xs text-emerald-500 font-medium'>Elas retornarão automaticamente ao estoque como disponíveis.</span>" data-confirm-title="Confirmar Retirada" data-confirm-btn="Sim, Confirmar Retirada" data-confirm-type="success">
-                            @csrf
-                            <button type="submit" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow transition text-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Retirado! Concluir e Retornar ao Estoque
-                            </button>
-                        </form>
-                    @endif
-
+                    {{-- 3. CICLO CONCLUÍDO --}}
                     @if($pedido->status === 'concluido')
-                        <span class="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-emerald-950/70 text-green-800 dark:text-emerald-300 text-sm font-bold rounded-lg border border-transparent dark:border-emerald-700/50">
+                        <span class="inline-flex items-center px-4 py-2.5 bg-green-100 dark:bg-emerald-950/70 text-green-800 dark:text-emerald-300 text-sm font-bold rounded-xl border border-transparent dark:border-emerald-700/50">
                             🎉 Ciclo Completo! Tendas reintegradas ao estoque.
                         </span>
                     @endif
 
-                    <button type="button" onclick="document.getElementById('modal-gerar-nova-os').classList.remove('hidden')" class="px-4 py-2.5 bg-emerald-800/80 hover:bg-emerald-800 text-white font-semibold rounded-lg shadow-xs transition text-sm flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        + Gerar Nova O.S. (Adicional)
-                    </button>
+                    {{-- Botão Adicional exclusivo para Administradores --}}
+                    @if(auth()->check() && auth()->user()->isAdmin())
+                        <button type="button" onclick="document.getElementById('modal-gerar-nova-os').classList.remove('hidden')" class="px-4 py-2.5 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#0a4835] text-gray-700 dark:text-emerald-200 font-semibold rounded-xl transition text-xs flex items-center gap-2 border border-transparent dark:border-emerald-700/40">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            + Gerar Nova O.S. Manual
+                        </button>
+                    @endif
                 </div>
             </div>
 
@@ -592,30 +550,33 @@
         </div>
     </div>
 
-    <!-- Modal Finalizar Instalação (com upload de fotos) -->
+    <!-- Modal Informar Tenda Instalada (com fotos e observações) -->
     <div id="modal-finalizar-instalacao" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#031d14] rounded-xl max-w-lg w-full p-6 shadow-2xl relative border border-gray-200 dark:border-[#083d2c]">
             <button onclick="document.getElementById('modal-finalizar-instalacao').classList.add('hidden')" class="absolute top-3 right-3 text-gray-400 dark:text-emerald-400 hover:text-gray-600 dark:hover:text-white text-xl font-bold">&times;</button>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Finalizar Instalação da Tenda</h3>
-            <p class="text-xs text-gray-500 dark:text-emerald-300/70 mb-4">Ao concluir, o status mudará para "Aguardando Retirada" e a <strong>O.S. de Retorno</strong> será gerada automaticamente.</p>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Informar Tenda Instalada
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-emerald-300/70 mb-4">Ao confirmar, a instalação será concluída, a 2ª O.S. (Retirada) será emitida e o WhatsApp principal da empresa será notificado.</p>
 
             <form action="{{ route('pedidos.finalizar-instalacao', $pedido) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Anexar Fotos Finais da Tenda Montada</label>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Fotos da Tenda Montada (Opcional)</label>
                     <input type="file" name="fotos[]" multiple accept="image/*" capture="environment" class="w-full border-gray-300 dark:border-emerald-700/60 dark:bg-[#02140e] dark:text-white rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 dark:file:bg-emerald-950/70 file:text-emerald-700 dark:file:text-emerald-300 hover:file:bg-emerald-100">
-                    <p class="text-xs text-gray-400 dark:text-emerald-400/60 mt-1">Você pode selecionar várias fotos ou tirar com a câmera do celular.</p>
+                    <p class="text-xs text-gray-400 dark:text-emerald-400/60 mt-1">Você pode selecionar várias fotos ou tirar direto com a câmera do celular.</p>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Observações do Montador</label>
-                    <textarea name="observacoes_montador" rows="3" placeholder="Ex: Tenda montada no gramado com estacas e pesos adicionais..." class="w-full border-gray-300 dark:border-emerald-700/60 dark:bg-[#02140e] dark:text-white placeholder-gray-400 dark:placeholder-emerald-400/40 focus:border-amber-400 focus:ring-amber-400/20 rounded-lg text-sm"></textarea>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Observações da Instalação (Opcional)</label>
+                    <textarea name="observacoes_montador" rows="3" placeholder="Ex: Montagem finalizada no gramado com estacas e pesos adicionais..." class="w-full border-gray-300 dark:border-emerald-700/60 dark:bg-[#02140e] dark:text-white placeholder-gray-400 dark:placeholder-emerald-400/40 focus:border-amber-400 focus:ring-amber-400/20 rounded-lg text-sm"></textarea>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="document.getElementById('modal-finalizar-instalacao').classList.add('hidden')" class="px-4 py-2 bg-gray-100 dark:bg-[#063325] text-gray-700 dark:text-emerald-200 font-semibold rounded-lg text-sm">Cancelar</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-sm shadow">
-                        Confirmar Conclusão & Gerar O.S. Retorno
+                    <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 text-amber-300 font-bold rounded-lg text-sm shadow border border-amber-400/40">
+                        Confirmar Tenda Instalada
                     </button>
                 </div>
             </form>

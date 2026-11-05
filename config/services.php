@@ -39,6 +39,7 @@ return [
         'url' => rtrim(env('EVOLUTION_API_URL', 'https://evolution.piccinidigitalsolutions.com.br'), '/'),
         'key' => env('EVOLUTION_API_KEY', ''),
         'instance' => env('EVOLUTION_INSTANCE', 'TENDA'),
+        'admin_number' => env('WHATSAPP_ADMIN_NOTIFY', '17991429132'),
     ],
 
 ];
