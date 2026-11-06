@@ -16,7 +16,7 @@ class DisponibilidadeService
      * @param string|Carbon|null $dataFim
      * @return array
      */
-    public function consultarDisponibilidade($dataInicio = null, $dataFim = null): array
+    public function consultarDisponibilidade($dataInicio = null, $dataFim = null, ?int $ignorarPedidoId = null): array
     {
         $inicio = $dataInicio ? Carbon::parse($dataInicio)->startOfDay() : Carbon::today()->startOfDay();
         $fim = $dataFim ? Carbon::parse($dataFim)->endOfDay() : $inicio->copy()->endOfDay();
@@ -29,11 +29,16 @@ class DisponibilidadeService
         $fimStr = $fim->format('Y-m-d');
 
         // Pedidos ativos cuja locação sobrepõe o período consultado
-        $pedidosAtivos = Pedido::with(['cliente', 'montador', 'tendas'])
+        $pedidosAtivosQuery = Pedido::with(['cliente', 'montador', 'tendas'])
             ->whereNotIn('status', ['cancelado', 'concluido'])
             ->whereDate('data_instalacao', '<=', $fimStr)
-            ->whereDate('data_retirada', '>=', $inicioStr)
-            ->orderBy('data_retirada', 'asc')
+            ->whereDate('data_retirada', '>=', $inicioStr);
+
+        if ($ignorarPedidoId) {
+            $pedidosAtivosQuery->where('id', '!=', $ignorarPedidoId);
+        }
+
+        $pedidosAtivos = $pedidosAtivosQuery->orderBy('data_retirada', 'asc')
             ->orderBy('hora_retirada', 'asc')
             ->get();
 

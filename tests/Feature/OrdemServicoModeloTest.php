@@ -273,4 +273,109 @@ class OrdemServicoModeloTest extends TestCase
         // Garante que a Evolution API só foi acionada 1 vez via Http
         \Illuminate\Support\Facades\Http::assertSentCount(1);
     }
+
+    public function test_editar_pedido_e_atualizacao_automatica_da_os(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $cliente = Cliente::create([
+            'nome' => 'Cliente Original',
+            'telefone' => '17999999999',
+            'endereco' => 'Rua Velha, 10',
+        ]);
+
+        $tendaOriginal = Tenda::create([
+            'nome' => 'Tenda 5x5 Original',
+            'tamanho' => '5x5m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+        ]);
+
+        $tendaNova = Tenda::create([
+            'nome' => 'Tenda 10x10 Nova',
+            'tamanho' => '10x10m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+        ]);
+
+        $pedido = Pedido::create([
+            'cliente_id' => $cliente->id,
+            'data_instalacao' => '2026-11-10',
+            'data_retirada' => '2026-11-12',
+            'endereco_instalacao' => 'Rua Velha, 10',
+            'cidade_instalacao' => 'Mirassol',
+            'status' => 'os_gerada',
+        ]);
+        $pedido->tendas()->attach($tendaOriginal->id, ['quantidade' => 1]);
+        $tendaOriginal->decrement('quantidade_disponivel', 1);
+
+        $os = OrdemServico::create([
+            'pedido_id' => $pedido->id,
+            'tipo' => 'instalacao',
+            'numero_os' => 'OSI-2026-00099',
+            'status' => 'pendente',
+        ]);
+
+        // 1. Tela de edição carrega com sucesso
+        $respEdit = $this->actingAs($admin)->get(route('pedidos.edit', $pedido));
+        $respEdit->assertStatus(200);
+        $respEdit->assertSee('Editar Pedido #' . $pedido->id);
+        $respEdit->assertSee('Rua Velha, 10');
+
+        // 2. Salva edição do pedido com novo endereço e nova tenda
+        $respUpdate = $this->actingAs($admin)->put(route('pedidos.update', $pedido), [
+            'cliente_id' => $cliente->id,
+            'data_instalacao' => '2026-11-15',
+            'data_retirada' => '2026-11-18',
+            'endereco_instalacao' => 'Avenida Renovada, 500',
+            'cidade_instalacao' => 'São José do Rio Preto',
+            'observacoes' => 'Alterado para o novo espaço',
+            'tendas_selecionadas' => [$tendaNova->id],
+            'quantidades' => [$tendaNova->id => 2],
+        ]);
+
+        $respUpdate->assertRedirect(route('pedidos.show', $pedido));
+        $respUpdate->assertSessionHas('success');
+
+        // Pedido atualizado no banco
+        $pedido->refresh();
+        $this->assertEquals('Avenida Renovada, 500', $pedido->endereco_instalacao);
+        $this->assertEquals('São José do Rio Preto', $pedido->cidade_instalacao);
+        $this->assertEquals('2026-11-15', $pedido->data_instalacao->format('Y-m-d'));
+
+        // Estoques ajustados: tenda original devolvida (5), nova tenda deduzida (3)
+        $tendaOriginal->refresh();
+        $tendaNova->refresh();
+        $this->assertEquals(5, $tendaOriginal->quantidade_disponivel);
+        $this->assertEquals(3, $tendaNova->quantidade_disponivel);
+
+        // A OS agora reflete dinamicamente as alterações salvas no pedido
+        $respPdf = $this->actingAs($admin)->get(route('os.pdf', $os));
+        $respPdf->assertStatus(200);
+        $this->assertStringContainsString('application/pdf', $respPdf->headers->get('Content-Type'));
+    }
+
+    public function test_botao_tenda_retirada_aparece_verde_no_show(): void
+    {
+        $montador = User::factory()->create(['role' => 'montador']);
+        $cliente = Cliente::create([
+            'nome' => 'Cliente Teste',
+            'telefone' => '17999999999',
+            'endereco' => 'Rua Teste, 10',
+        ]);
+
+        $pedido = Pedido::create([
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montador->id,
+            'data_instalacao' => '2026-11-10',
+            'data_retirada' => '2026-11-12',
+            'endereco_instalacao' => 'Rua Teste, 10',
+            'status' => 'instalado', // Fluxo de retirada ativo
+        ]);
+
+        $respShow = $this->actingAs($montador)->get(route('pedidos.show', $pedido));
+        $respShow->assertStatus(200);
+        $respShow->assertSee('Tenda retirada');
+        $respShow->assertSee('#059669');
+        $respShow->assertSee('from-emerald-600');
+    }
 }

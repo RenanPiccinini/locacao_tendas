@@ -18,6 +18,13 @@
                     &larr; Voltar
                 </a>
 
+                @if(Auth::user()->isAdmin())
+                    <a href="{{ route('pedidos.edit', $pedido) }}" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg shadow-xs transition flex items-center gap-1.5" title="Editar dados do pedido, tendas e local">
+                        <svg class="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        <span>Editar Pedido</span>
+                    </a>
+                @endif
+
                 <!-- Botão de Contrato do Pedido -->
                 @if(!auth()->user()->isMontador())
                     <a href="{{ route('pedidos.contrato.ver', $pedido) }}" target="_blank" class="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-xs rounded-lg shadow-xs transition flex items-center gap-1.5" title="Visualizar Contrato deste Pedido em PDF">
@@ -66,8 +73,8 @@
                     @if(in_array($pedido->status, ['instalado', 'aguardando_retirada', 'em_retirada']))
                         <form action="{{ route('pedidos.confirmar-retirada', $pedido) }}" method="POST" data-confirm="Confirma que a tenda foi retirada no local?<br><span class='text-xs text-emerald-500 font-medium'>As tendas retornarão automaticamente ao estoque como disponíveis.</span>" data-confirm-title="Confirmar Retirada da Tenda" data-confirm-btn="Sim, Tenda Retirada" data-confirm-type="success">
                             @csrf
-                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-purple-700 to-purple-600 hover:from-purple-800 hover:to-purple-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition text-sm flex items-center gap-2 border border-purple-400/30 cursor-pointer">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <button type="submit" style="background-color: #059669; color: #ffffff;" class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition text-sm flex items-center gap-2 border border-emerald-400/50 cursor-pointer">
+                                <svg class="w-5 h-5 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                 <span>Tenda retirada</span>
                             </button>
                         </form>

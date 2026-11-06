@@ -100,8 +100,9 @@ class PedidoController extends Controller
     {
         $dataInstalacao = $request->input('data_instalacao', date('Y-m-d'));
         $dataRetirada = $request->input('data_retirada', $dataInstalacao);
+        $ignorarPedidoId = $request->filled('pedido_id') ? (int) $request->input('pedido_id') : null;
 
-        $dadosDisponibilidade = $disponibilidadeService->consultarDisponibilidade($dataInstalacao, $dataRetirada);
+        $dadosDisponibilidade = $disponibilidadeService->consultarDisponibilidade($dataInstalacao, $dataRetirada, $ignorarPedidoId);
 
         $tendas = $dadosDisponibilidade['tendas']->map(function ($tenda) {
             return [
@@ -232,14 +233,19 @@ class PedidoController extends Controller
         return view('pedidos.show', compact('pedido'));
     }
 
-    public function edit(Pedido $pedido): View
+    public function edit(Pedido $pedido, DisponibilidadeService $disponibilidadeService): View
     {
         $clientes = Cliente::orderBy('nome')->get();
         $montadores = User::where('role', 'montador')->orderBy('name')->get();
-        $tendas = Tenda::all();
-        $pedido->load(['tendas']);
+        $pedido->load(['tendas', 'cliente', 'montador']);
 
-        return view('pedidos.edit', compact('pedido', 'clientes', 'montadores', 'tendas'));
+        $dataInstalacao = old('data_instalacao', $pedido->data_instalacao ? $pedido->data_instalacao->format('Y-m-d') : date('Y-m-d'));
+        $dataRetirada = old('data_retirada', $pedido->data_retirada ? $pedido->data_retirada->format('Y-m-d') : date('Y-m-d', strtotime('+2 days')));
+
+        $dadosDisponibilidade = $disponibilidadeService->consultarDisponibilidade($dataInstalacao, $dataRetirada, $pedido->id);
+        $tendas = $dadosDisponibilidade['tendas'];
+
+        return view('pedidos.edit', compact('pedido', 'clientes', 'montadores', 'tendas', 'dadosDisponibilidade', 'dataInstalacao', 'dataRetirada'));
     }
 
     public function update(Request $request, Pedido $pedido): RedirectResponse
@@ -274,6 +280,9 @@ class PedidoController extends Controller
             'observacoes' => 'nullable|string',
             'nome_responsavel' => 'nullable|string|max:255',
             'telefone_responsavel' => 'nullable|string|max:30',
+            'tendas_selecionadas' => 'nullable|array',
+            'tendas_selecionadas.*' => 'exists:tendas,id',
+            'quantidades' => 'nullable|array',
         ]);
 
         $valorTotal = isset($validated['valor_total']) && (float) $validated['valor_total'] > 0
@@ -281,14 +290,67 @@ class PedidoController extends Controller
             : null;
         $validated['valor_total'] = $valorTotal;
 
-        $pedido->update($validated);
+        DB::beginTransaction();
+        try {
+            $pedido->update($validated);
 
-        // Se designou ou alterou o montador, gera a OS (caso ainda não exista) e notifica no WhatsApp
-        if (!empty($validated['montador_id']) && $validated['montador_id'] != $montadorAnterior) {
-            $this->processarGerarOs($pedido);
+            // Se tendas foram selecionadas na edição, atualiza a relação e ajusta os estoques
+            if ($request->has('tendas_selecionadas')) {
+                $novasTendasSelecionadas = $validated['tendas_selecionadas'] ?? [];
+                $quantidades = $request->input('quantidades', []);
+
+                // 1. Devolve ao estoque as tendas que estavam no pedido (se não estiver concluído)
+                if (!in_array($pedido->status, ['concluido', 'cancelado'])) {
+                    foreach ($pedido->tendas as $tendaAtual) {
+                        $tendaAtual->increment('quantidade_disponivel', $tendaAtual->pivot->quantidade);
+                    }
+                }
+
+                // 2. Registra as novas tendas selecionadas com suas quantidades
+                $syncData = [];
+                foreach ($novasTendasSelecionadas as $tendaId) {
+                    $qtd = isset($quantidades[$tendaId]) ? max(1, intval($quantidades[$tendaId])) : 1;
+                    $syncData[$tendaId] = ['quantidade' => $qtd];
+
+                    if (!in_array($pedido->status, ['concluido', 'cancelado'])) {
+                        $tenda = Tenda::find($tendaId);
+                        if ($tenda) {
+                            $tenda->decrement('quantidade_disponivel', min($tenda->quantidade_disponivel, $qtd));
+                        }
+                    }
+                }
+
+                $pedido->tendas()->sync($syncData);
+            }
+
+            // Atualiza as Ordens de Serviço (OS) vinculadas para refletir as alterações
+            $pedido->ordensServico()->touch();
+
+            // Se designou ou alterou o montador, gera a OS (caso ainda não exista) ou notifica
+            if (!empty($validated['montador_id']) && $validated['montador_id'] != $montadorAnterior) {
+                if ($pedido->ordensServico()->count() === 0) {
+                    $this->processarGerarOs($pedido);
+                } else {
+                    $osRecente = $pedido->ordensServico()->latest()->first();
+                    if ($osRecente) {
+                        try {
+                            app(WhatsappService::class)->notificarNovaOsMontador($osRecente);
+                        } catch (\Throwable $e) {
+                            Log::warning("Erro ao notificar novo montador no WhatsApp: " . $e->getMessage());
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('pedidos.show', $pedido)
+                ->with('success', 'Pedido atualizado com sucesso! As Ordens de Serviço (OS) foram alteradas automaticamente com as novas informações.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Erro ao atualizar pedido: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Erro ao atualizar pedido: ' . $e->getMessage());
         }
-
-        return redirect()->route('pedidos.show', $pedido)->with('success', 'Pedido atualizado com sucesso!');
     }
 
     public function destroy(Pedido $pedido): RedirectResponse
