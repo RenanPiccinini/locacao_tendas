@@ -55,7 +55,6 @@ class DatabaseSeeder extends Seeder
                 'descricao' => 'Lona branca impermeável, estrutura tubular de ferro reforçado',
                 'quantidade_total' => 6,
                 'quantidade_disponivel' => 4,
-                'valor_diaria' => 250.00,
             ]
         );
 
@@ -66,7 +65,6 @@ class DatabaseSeeder extends Seeder
                 'descricao' => 'Grande porte, ideal para eventos de até 150 pessoas',
                 'quantidade_total' => 3,
                 'quantidade_disponivel' => 2,
-                'valor_diaria' => 650.00,
             ]
         );
 
@@ -77,7 +75,36 @@ class DatabaseSeeder extends Seeder
                 'descricao' => 'Montagem rápida em alumínio, versátil para feiras e stands',
                 'quantidade_total' => 8,
                 'quantidade_disponivel' => 7,
-                'valor_diaria' => 120.00,
+            ]
+        );
+
+        $tenda4 = Tenda::firstOrCreate(
+            ['nome' => 'Tenda Piramidal 4x4m'],
+            [
+                'tamanho' => '4x4m',
+                'descricao' => 'Excelente espaço intermediário para recepções, feiras e stands',
+                'quantidade_total' => 5,
+                'quantidade_disponivel' => 5,
+            ]
+        );
+
+        $tenda5 = Tenda::firstOrCreate(
+            ['nome' => 'Tenda 3x3m com Balcão de Atendimento'],
+            [
+                'tamanho' => '3x3m com Balcão',
+                'descricao' => 'Ideal para feiras gastronômicas, bilheterias, bares e atendimento ao público',
+                'quantidade_total' => 4,
+                'quantidade_disponivel' => 4,
+            ]
+        );
+
+        $tenda6 = Tenda::firstOrCreate(
+            ['nome' => 'Tenda 5x5m com Balcão de Atendimento'],
+            [
+                'tamanho' => '5x5m com Balcão',
+                'descricao' => 'Estrutura completa com balcão integrado para atendimento e praça de alimentação',
+                'quantidade_total' => 3,
+                'quantidade_disponivel' => 3,
             ]
         );
 

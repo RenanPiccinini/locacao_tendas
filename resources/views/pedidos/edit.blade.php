@@ -204,7 +204,7 @@
 
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Cidade</label>
-                            <input type="text" name="cidade_instalacao" value="{{ old('cidade_instalacao', $pedido->cidade_instalacao) }}" placeholder="Ex: Mirassol / São José do Rio Preto" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm font-medium">
+                            <input type="text" name="cidade_instalacao" value="{{ old('cidade_instalacao', $pedido->cidade_instalacao) }}" placeholder="Ex: Cidade / Região" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm font-medium">
                         </div>
                     </div>
 

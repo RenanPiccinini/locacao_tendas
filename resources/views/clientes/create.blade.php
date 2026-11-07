@@ -99,7 +99,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="sm:col-span-2">
                             <label for="cidade" class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Cidade</label>
-                            <input type="text" id="cidade" name="cidade" value="{{ old('cidade') }}" placeholder="Ex: São José do Rio Preto" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
+                            <input type="text" id="cidade" name="cidade" value="{{ old('cidade') }}" placeholder="Ex: Cidade" class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
                         </div>
                         <div>
                             <label for="estado" class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Estado (UF)</label>

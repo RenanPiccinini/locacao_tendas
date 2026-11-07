@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tendas Eldorado — Venda e Locação de Tendas Piramidais | São José do Rio Preto e Região</title>
-    <meta name="description" content="Tendas Eldorado em São José do Rio Preto. Locação mensal e diária de tendas piramidais, coberturas para eventos, feiras e indústrias. Lonas antichamas e laudos de segurança.">
+    <title>Tendas Eldorado — Venda e Locação de Tendas Piramidais | Estruturas e Coberturas</title>
+    <meta name="description" content="Tendas Eldorado. Mensal e locação diária de tendas piramidais 3x3, 4x4, 5x5 e 10x10, com e sem balcão. Coberturas para eventos, feiras e indústrias. Lonas antichamas e laudos de segurança.">
 
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#021811">
@@ -12,7 +12,7 @@
 
     <!-- OpenGraph / Social Media -->
     <meta property="og:title" content="Tendas Eldorado — Venda e Locação de Tendas">
-    <meta property="og:description" content="Sua cobertura perfeita para todas as ocasiões. Locação mensal e diária de tendas piramidais de alta resistência.">
+    <meta property="og:description" content="Sua cobertura perfeita para todas as ocasiões. Mensal e locação diária de tendas piramidais 3x3, 4x4, 5x5 e 10x10, com e sem balcão de alta resistência.">
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
     <meta property="og:url" content="https://locacao-tendas.piccininidigitalsolutions.com.br">
 
@@ -88,7 +88,7 @@
             <!-- Menu de Navegação Desktop -->
             <nav class="hidden lg:flex items-center gap-7 text-sm font-semibold text-emerald-100/90">
                 <a href="#estruturas" class="hover:text-amber-400 transition">Estruturas</a>
-                <a href="#locacao-mensal" class="hover:text-amber-400 transition">Locação Mensal</a>
+                <a href="#locacao-mensal" class="hover:text-amber-400 transition">Mensal e Locação Diária</a>
                 <a href="#fotos-reais" class="hover:text-amber-400 transition">Fotos Reais</a>
                 <a href="#instagram" class="hover:text-amber-400 transition">Instagram</a>
                 <a href="#diferenciais" class="hover:text-amber-400 transition">Vantagens</a>
@@ -157,10 +157,10 @@
              class="lg:hidden bg-[#021811]/98 border-b border-emerald-700/50 px-4 py-5 shadow-2xl backdrop-blur-xl">
             <nav class="flex flex-col space-y-2">
                 <a href="#estruturas" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
-                    <span class="text-amber-400">⛺</span> Estruturas & Medidas
+                    <span class="text-amber-400">⛺</span> Estruturas (3x3, 4x4, 5x5, 10x10)
                 </a>
                 <a href="#locacao-mensal" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
-                    <span class="text-amber-400">📅</span> Locação Mensal & Diária
+                    <span class="text-amber-400">📅</span> Mensal e Locação Diária
                 </a>
                 <a href="#fotos-reais" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
                     <span class="text-amber-400">📸</span> Fotos Reais das Montagens
@@ -211,7 +211,7 @@
                 <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
                     <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full badge-gold text-amber-300 text-xs sm:text-sm font-bold tracking-wide">
                         <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                        <span>Sua Cobertura Perfeita para Todas as Ocasiões</span>
+                        <span>Tendas 3x3, 4x4, 5x5 e 10x10 • Com e Sem Balcão</span>
                     </div>
 
                     <h1 class="text-4xl sm:text-6xl lg:text-6xl font-black tracking-tight text-white leading-[1.1] glow-gold">
@@ -219,7 +219,7 @@
                     </h1>
 
                     <p class="text-base sm:text-lg text-emerald-100/90 max-w-xl font-normal leading-relaxed">
-                        Locação mensal e diária de tendas piramidais de alta durabilidade com lona blackout anti-chamas, proteção contra sol e chuva, montagem ágil e laudos de segurança. Atendemos São José do Rio Preto e toda a região.
+                        Mensal e locação diária de tendas piramidais nos tamanhos 3x3, 4x4, 5x5 e 10x10, com opções de tendas com balcão integrado para atendimento. Estruturas de alta durabilidade com lona blackout anti-chamas, proteção contra sol e chuva, montagem ágil e laudos de segurança.
                     </p>
 
                     <!-- Botões de Ação Principais -->
@@ -248,7 +248,7 @@
 
                         <!-- Botão Catálogo -->
                         <a href="#estruturas" class="w-full sm:w-auto px-6 py-4 rounded-xl bg-[#04281e] hover:bg-[#073c2e] border border-emerald-600/40 text-emerald-200 font-bold text-base transition flex items-center justify-center gap-2">
-                            Ver Medidas
+                            Ver Medidas (3x3 a 10x10)
                         </a>
                     </div>
 
@@ -260,11 +260,11 @@
                         </div>
                         <div>
                             <div class="text-2xl sm:text-3xl font-black text-white">Mensal</div>
-                            <div class="text-xs text-emerald-200/70 mt-0.5">E Diária c/ Desconto</div>
+                            <div class="text-xs text-emerald-200/70 mt-0.5">E Locação Diária</div>
                         </div>
                         <div>
-                            <div class="text-2xl sm:text-3xl font-black text-emerald-400">São José</div>
-                            <div class="text-xs text-emerald-200/70 mt-0.5">do Rio Preto & Região</div>
+                            <div class="text-2xl sm:text-3xl font-black text-emerald-400">3x3 a 10x10</div>
+                            <div class="text-xs text-emerald-200/70 mt-0.5">Com e Sem Balcão</div>
                         </div>
                     </div>
                 </div>
@@ -278,57 +278,57 @@
                         slides: [
                             {
                                 img: '{{ asset('images/1.jpeg') }}',
-                                tag: 'Foto 01 • Piramidal 10x10m',
-                                tagShort: 'Foto 01',
+                                tag: 'Piramidal 10x10m • 100m²',
+                                tagShort: '10x10m',
                                 badge: '100% Vão Livre',
-                                title: 'Tenda Piramidal 10x10m Reforçada',
-                                desc: 'Estrutura autoportante de alta resistência com lona blackout anti-chamas.',
+                                title: 'Tenda Piramidal 10x10m (100m²)',
+                                desc: 'Estrutura autoportante de grande porte sem pilares centrais, lona blackout e fixação técnica.',
                                 specs: ['Área: 100m²', 'Capacidade: 160 pessoas', 'Fixação técnica']
                             },
                             {
                                 img: '{{ asset('images/2.jpeg') }}',
-                                tag: 'Foto 02 • Módulos Acoplados',
-                                tagShort: 'Foto 02',
-                                badge: 'Fechamento Lateral',
-                                title: 'Módulos Conectados com Fechamento',
-                                desc: 'Proteção total contra sol, chuva e vento com cortinas com zíper e calhas.',
-                                specs: ['Calhas de vedação', 'Cortinas com zíper', 'Isolamento']
+                                tag: 'Tendas com Balcão • Feiras & Stands',
+                                tagShort: 'c/ Balcão',
+                                badge: 'Balcão Integrado',
+                                title: 'Tendas com Balcão de Atendimento',
+                                desc: 'Estrutura com balcão frontal ou lateral acoplado para bares, feiras e praça de alimentação.',
+                                specs: ['Balcão anatômico', 'Atendimento ágil', 'Opção 3x3, 4x4 e 5x5']
                             },
                             {
                                 img: '{{ asset('images/3.jpeg') }}',
-                                tag: 'Foto 03 • Cobertura Robusta',
-                                tagShort: 'Foto 03',
-                                badge: 'Grandes Estruturas',
-                                title: 'Cobertura Especial para Eventos',
-                                desc: 'Montagem ágil e estrutura homologada com laudos técnicos e segurança.',
-                                specs: ['Aço galvanizado', 'Lona antichamas', 'Montagem ágil']
+                                tag: 'Piramidal 5x5m • 25m²',
+                                tagShort: '5x5m',
+                                badge: 'Mais Pedida',
+                                title: 'Tenda Piramidal 5x5m (25m²)',
+                                desc: 'O tamanho ideal para eventos sociais, aniversários, empresas e recepções com montagem rápida.',
+                                specs: ['Área: 25m²', 'Capacidade: 40 pessoas', 'Simples ou c/ Balcão']
                             },
                             {
                                 img: '{{ asset('images/4.jpg') }}',
-                                tag: 'Foto 04 • Montagem Técnica',
-                                tagShort: 'Foto 04',
-                                badge: 'Estrutura Reforçada',
-                                title: 'Tendas Piramidais Profissionais',
-                                desc: 'Estrutura com ancoragem reforçada e acabamento impecável para eventos e armazenagem.',
-                                specs: ['Alta estabilidade', 'Lona térmica blackout', 'Montagem ágil']
+                                tag: 'Piramidal 4x4m • 16m²',
+                                tagShort: '4x4m',
+                                badge: 'Tamanho Médio',
+                                title: 'Tenda Piramidal 4x4m (16m²)',
+                                desc: 'Dimensão perfeita e versátil para pontos de venda, feiras gastronômicas e quiosques temporários.',
+                                specs: ['Área: 16m²', 'Com ou sem balcão', 'Lona antichamas']
                             },
                             {
                                 img: '{{ asset('images/5.jpg') }}',
-                                tag: 'Foto 05 • Área Coberta Ampla',
-                                tagShort: 'Foto 05',
-                                badge: 'Vão Livre Amplo',
-                                title: 'Soluções Integradas de Cobertura',
-                                desc: 'Perfeita para feiras, convenções, armazenagem e recepções em campo aberto.',
-                                specs: ['Fixação em solo ou asfalto', 'Proteção UV', 'Total segurança']
+                                tag: 'Tenda 3x3m • Versátil & Rápida',
+                                tagShort: '3x3m',
+                                badge: 'Montagem Express',
+                                title: 'Tenda 3x3m (Simples ou c/ Balcão)',
+                                desc: 'Ideal para stands promocionais, bilheterias, degustações e feiras com total praticidade.',
+                                specs: ['Área: 9m²', 'Opção com balcão', 'Estrutura reforçada']
                             },
                             {
                                 img: '{{ asset('images/6.jpg') }}',
-                                tag: 'Foto 06 • Padrão Premium',
-                                tagShort: 'Foto 06',
-                                badge: 'Acabamento Premium',
-                                title: 'Instalação Completa Tendas Eldorado',
-                                desc: 'Qualidade superior com pontualidade na entrega, laudo e equipe técnica qualificada.',
-                                specs: ['Equipe especializada', 'Laudo técnico', 'Atendimento regional']
+                                tag: 'Módulos Acoplados • Fechamento',
+                                tagShort: 'Módulos',
+                                badge: 'Galerias Contínuas',
+                                title: 'Módulos Acoplados com Fechamento Lateral',
+                                desc: 'União hermética com calhas e cortinas com zíper para cobertura contínua de qualquer tamanho.',
+                                specs: ['Calhas de união', 'Cortinas com zíper', 'Vedação total']
                             }
                         ],
                         init() {
@@ -479,7 +479,7 @@
         </div>
     </section>
 
-    <!-- SEÇÃO DESTAQUE: LOCAÇÃO MENSAL DE TENDAS PIRAMIDAIS -->
+    <!-- SEÇÃO DESTAQUE: MENSAL E LOCAÇÃO DIÁRIA DE TENDAS PIRAMIDAIS -->
     <section id="locacao-mensal" class="py-20 relative z-10 bg-[#032016] border-t border-b border-emerald-900/60">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -488,23 +488,23 @@
                 <div class="lg:col-span-5">
                     <div class="rounded-3xl overflow-hidden border-2 border-amber-400 shadow-2xl shadow-emerald-950/90 group relative">
                         <img src="{{ asset('images/banner_piramidal.jpg') }}" 
-                             alt="Locação Mensal de Tendas Piramidais Tendas Eldorado" 
+                             alt="Mensal e Locação Diária de Tendas Piramidais Tendas Eldorado" 
                              class="w-full h-auto object-cover group-hover:scale-105 transition duration-500">
                     </div>
                 </div>
 
-                <!-- Detalhes da Locação Mensal -->
+                <!-- Detalhes de Mensal e Locação Diária -->
                 <div class="lg:col-span-7 space-y-6">
                     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full badge-gold text-amber-300 text-xs font-bold uppercase tracking-wider">
                         <span>Melhor Custo-Benefício para Médio e Longo Prazo</span>
                     </div>
 
                     <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
-                        Locação Mensal de <span class="text-amber-400">Tendas Piramidais</span>
+                        Mensal e Locação Diária de <span class="text-amber-400">Tendas Piramidais</span>
                     </h2>
 
                     <p class="text-emerald-100/90 text-sm sm:text-base leading-relaxed">
-                        Precisa expandir seu galpão, cobrir pátio de triagem, estacionamento de revendedora ou proteger obras e eventos contínuos? A Tendas Eldorado oferece contratos flexíveis com o menor custo por metro quadrado da região.
+                        Precisa expandir seu galpão, cobrir pátio de triagem, estacionamento de revendedora ou proteger obras e eventos contínuos? A Tendas Eldorado oferece planos flexíveis em mensal e locação diária nos tamanhos <strong>3x3, 4x4, 5x5 e 10x10</strong>, além de <strong>tendas com balcão de atendimento</strong>, com o menor custo por metro quadrado.
                     </p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -519,18 +519,18 @@
                         <div class="p-4 rounded-2xl bg-[#021811] border border-emerald-700/50">
                             <div class="flex items-center gap-2.5 text-amber-400 font-bold text-sm mb-1">
                                 <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                <span>Fechamentos Laterais Disponíveis</span>
+                                <span>Balcões & Fechamentos Laterais</span>
                             </div>
-                            <p class="text-xs text-emerald-200/70">Cortinas com zíper e janelas transparentes para isolamento total contra intempéries.</p>
+                            <p class="text-xs text-emerald-200/70">Opção de tendas com balcão integrado para atendimento, cortinas com zíper e calhas de vedação.</p>
                         </div>
                     </div>
 
                     <div class="pt-2 flex flex-col sm:flex-row gap-3">
-                        <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Tenho+interesse+na+loca%C3%A7%C3%A3o+mensal+de+tendas+piramidais." 
+                        <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Tenho+interesse+em+mensal+e+loca%C3%A7%C3%A3o+di%C3%A1ria+de+tendas+piramidais." 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
-                            <span>Consultar Valores Mensais no WhatsApp</span>
+                            <span>Consultar Mensal e Locação Diária no WhatsApp</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
                         <a href="tel:1732179349" class="px-5 py-3.5 rounded-xl bg-[#021811] hover:bg-[#04281e] border border-emerald-700/60 text-emerald-100 font-bold text-sm transition flex items-center justify-center gap-2">
@@ -550,10 +550,10 @@
             <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
                 <span class="text-amber-400 font-bold text-xs uppercase tracking-widest">Catálogo Oficial</span>
                 <h2 class="text-3xl sm:text-5xl font-black text-white">Modelos & Estruturas para Locação</h2>
-                <p class="text-emerald-200/80 text-sm sm:text-base">Equipamentos higienizados, lonas antichamas e estrutura com fixação técnica certificada.</p>
+                <p class="text-emerald-200/80 text-sm sm:text-base">Tamanhos oficiais <strong>3x3, 4x4, 5x5 e 10x10</strong>, além de <strong>tendas com balcão de atendimento integrado</strong>. Equipamentos higienizados, lonas antichamas e fixação técnica certificada.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Card 1: Tenda Piramidal 10x10m -->
                 <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
                     <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 0 })">
@@ -573,7 +573,7 @@
                         <div>
                             <h3 class="text-xl font-bold text-white">Tenda Piramidal 10x10m</h3>
                             <p class="text-emerald-200/80 text-xs mt-2 leading-relaxed">
-                                Grande vão livre sem colunas centrais! Perfeita para casamentos, festivais, feiras de negócios, eventos automotivos e armazenagem industrial temporária.
+                                Grande vão livre de 100m² sem colunas centrais! Perfeita para casamentos, festivais, feiras de negócios, eventos automotivos e armazenagem industrial temporária.
                             </p>
                         </div>
                         <div class="pt-4 border-t border-emerald-800/80 space-y-3">
@@ -592,10 +592,165 @@
                     </div>
                 </div>
 
-                <!-- Card 2: Tendas Modulares em Fileira com Fechamento Lateral -->
+                <!-- Card 2: Tenda Piramidal 5x5m -->
                 <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 2 })">
+                        <img src="{{ asset('images/3.jpeg') }}" 
+                             alt="Tenda Piramidal 5x5m Tendas Eldorado" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-slate-950 rounded-full text-xs font-black shadow-md">
+                            5x5 Metros (25m²)
+                        </div>
+                        <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Clique para Ampliar HD</span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Tenda Piramidal 5x5m</h3>
+                            <p class="text-emerald-200/80 text-xs mt-2 leading-relaxed">
+                                O modelo clássico mais requisitado para eventos sociais, aniversários, confraternizações, áreas VIP e praças de alimentação. Disponível simples ou com balcão.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-emerald-800/80 space-y-3">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-emerald-300">Capacidade média:</span>
+                                <span class="text-amber-400 font-bold">35 a 45 pessoas</span>
+                            </div>
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+a+Tenda+Piramidal+5x5m." 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                <span>Orçar 5x5 no WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Tenda Piramidal 4x4m -->
+                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 3 })">
+                        <img src="{{ asset('images/4.jpg') }}" 
+                             alt="Tenda Piramidal 4x4m Tendas Eldorado" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-slate-950 rounded-full text-xs font-black shadow-md">
+                            4x4 Metros (16m²)
+                        </div>
+                        <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Clique para Ampliar HD</span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Tenda Piramidal 4x4m</h3>
+                            <p class="text-emerald-200/80 text-xs mt-2 leading-relaxed">
+                                Dimensão intermediária com excelente aproveitamento de área útil. Perfeita para ilhas gastronômicas, recepções, stands e eventos corporativos. Opção com ou sem balcão.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-emerald-800/80 space-y-3">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-emerald-300">Capacidade média:</span>
+                                <span class="text-amber-400 font-bold">20 a 30 pessoas</span>
+                            </div>
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+a+Tenda+Piramidal+4x4m." 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                <span>Orçar 4x4 no WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Tenda 3x3m -->
+                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 4 })">
+                        <img src="{{ asset('images/5.jpg') }}" 
+                             alt="Tenda 3x3m Tendas Eldorado" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-slate-950 rounded-full text-xs font-black shadow-md">
+                            3x3 Metros (9m²)
+                        </div>
+                        <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Clique para Ampliar HD</span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Tenda 3x3m (Simples ou c/ Balcão)</h3>
+                            <p class="text-emerald-200/80 text-xs mt-2 leading-relaxed">
+                                Estrutura prática, compacta e de montagem rápida. Ideal para feiras, stands de degustação, pontos de atendimento e bilheterias. Disponível também com balcão acoplado.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-emerald-800/80 space-y-3">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-emerald-300">Capacidade média:</span>
+                                <span class="text-amber-400 font-bold">10 a 15 pessoas</span>
+                            </div>
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+a+Tenda+3x3m." 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                <span>Orçar 3x3 no WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Tendas com Balcão de Atendimento (DESTAQUE NOVO) -->
+                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border-2 border-amber-400 shadow-xl shadow-amber-500/10 group">
                     <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 1 })">
                         <img src="{{ asset('images/2.jpeg') }}" 
+                             alt="Tendas com Balcão Integrado Tendas Eldorado" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 rounded-full text-xs font-black shadow-lg">
+                            Balcão Integrado
+                        </div>
+                        <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Clique para Ampliar HD</span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-bold mb-1 border border-amber-400/30">
+                                <span>✦ Especial Feiras & Bares</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white">Tendas com Balcão de Atendimento</h3>
+                            <p class="text-emerald-200/80 text-xs mt-2 leading-relaxed">
+                                Estrutura completa pronta para operação comercial! Balcão firme integrado na frente ou laterais da tenda (nos tamanhos 3x3, 4x4 e 5x5). Ideal para bares, caixa, bilheteria e alimentação.
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-emerald-800/80 space-y-3">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-emerald-300">Tamanhos c/ balcão:</span>
+                                <span class="text-amber-400 font-bold">3x3, 4x4 e 5x5 metros</span>
+                            </div>
+                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+Tendas+com+Balc%C3%A3o+de+Atendimento." 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md transition">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                <span>Orçar Tenda com Balcão</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Módulos Conectados em Fileira com Fechamento Lateral -->
+                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 1 })">
+                        <img src="{{ asset('images/tendas_fileira.jpg') }}" 
                              alt="Tendas Modulares Tendas Eldorado com fechamento lateral" 
                              class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
@@ -625,44 +780,6 @@
                                class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
                                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
                                 <span>Orçar Módulos no WhatsApp</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3: Tendas para Eventos & Cerimônias -->
-                <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
-                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 2 })">
-                        <img src="{{ asset('images/3.jpeg') }}" 
-                             alt="Tendas para Eventos Tendas Eldorado" 
-                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
-                        <div class="absolute top-4 right-4 px-3 py-1 bg-amber-500 text-slate-950 rounded-full text-xs font-black shadow-md">
-                            Festas & Feiras
-                        </div>
-                        <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] text-amber-300 font-bold border border-amber-400/40 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            <span>Clique para Ampliar HD</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-                        <div>
-                            <h3 class="text-xl font-bold text-white">Tendas para Eventos Sociais</h3>
-                            <p class="text-emerald-200/80 text-xs mt-2 leading-relaxed">
-                                Estrutura, conforto e proteção contra sol e chuva para casamentos, formaturas, confraternizações e feiras gastronômicas com lonas brancas impecáveis.
-                            </p>
-                        </div>
-                        <div class="pt-4 border-t border-emerald-800/80 space-y-3">
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="text-emerald-300">Montagem:</span>
-                                <span class="text-amber-400 font-bold">Rápida & Pontual</span>
-                            </div>
-                            <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+solicitar+or%C3%A7amento+para+evento." 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-5.805 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-                                <span>Orçar Evento no WhatsApp</span>
                             </a>
                         </div>
                     </div>
@@ -852,11 +969,11 @@
 
                 <!-- Banner Piramidal -->
                 <div class="rounded-3xl overflow-hidden group relative border border-emerald-700/50 shadow-xl bg-[#021811] h-72">
-                    <img src="{{ asset('images/banner_piramidal.jpg') }}" alt="Locação Mensal Tendas Piramidais" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                    <img src="{{ asset('images/banner_piramidal.jpg') }}" alt="Mensal e Locação Diária Tendas Piramidais" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent flex items-end p-5">
                         <div>
                             <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">Comunicação Oficial</span>
-                            <span class="text-sm font-bold text-white">Locação Mensal & Diária</span>
+                            <span class="text-sm font-bold text-white">Mensal e Locação Diária</span>
                         </div>
                     </div>
                 </div>
@@ -912,7 +1029,7 @@
                     </div>
 
                     <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-emerald-300">
-                        <span class="flex items-center gap-1">📍 Rua Pedro Martins 190, São José do Rio Preto</span>
+                        <span class="flex items-center gap-1">📍 Rua Pedro Martins, 190</span>
                         <span>•</span>
                         <span class="flex items-center gap-1">📞 (17) 3217-9349</span>
                         <span>•</span>
@@ -1025,8 +1142,13 @@
 
             <div class="space-y-4">
                 <div class="p-6 rounded-2xl glass-card">
-                    <h4 class="font-bold text-white text-base">Vocês atendem quais cidades além de São José do Rio Preto?</h4>
-                    <p class="text-emerald-200/80 text-sm mt-2">Atendemos toda a região metropolitana de São José do Rio Preto, Mirassol, Cedral, Bady Bassitt, Catanduva, Votuporanga e municípios vizinhos para locações diárias e mensais.</p>
+                    <h4 class="font-bold text-white text-base">Vocês atendem quais cidades e regiões?</h4>
+                    <p class="text-emerald-200/80 text-sm mt-2">Atendemos diversas cidades e municípios de toda a região para mensal e locação diária, com pontualidade na entrega, montagem especializada e desmontagem técnica.</p>
+                </div>
+
+                <div class="p-6 rounded-2xl glass-card">
+                    <h4 class="font-bold text-white text-base">Quais os tamanhos de tendas disponíveis? Vocês oferecem com balcão?</h4>
+                    <p class="text-emerald-200/80 text-sm mt-2">Trabalhamos com os tamanhos oficiais <strong>3x3m, 4x4m, 5x5m e 10x10m</strong>, além de <strong>tendas com balcão de atendimento integrado</strong> (opções em 3x3, 4x4 e 5x5), ideais para bares, feiras e praças de alimentação.</p>
                 </div>
 
                 <div class="p-6 rounded-2xl glass-card">
@@ -1035,13 +1157,13 @@
                 </div>
 
                 <div class="p-6 rounded-2xl glass-card">
-                    <h4 class="font-bold text-white text-base">Como funciona a locação mensal para empresas?</h4>
-                    <p class="text-emerald-200/80 text-sm mt-2">A locação mensal conta com valor reduzido por diária, manutenções preventivas programadas e substituição imediata em caso de qualquer eventualidade, sem custos surpresa.</p>
+                    <h4 class="font-bold text-white text-base">Como funciona a mensal e locação diária para empresas e eventos?</h4>
+                    <p class="text-emerald-200/80 text-sm mt-2">Em mensal e locação diária oferecemos condições diferenciadas com valor reduzido, manutenções preventivas programadas, flexibilidade contratual e substituição imediata em caso de qualquer eventualidade.</p>
                 </div>
 
                 <div class="p-6 rounded-2xl glass-card">
                     <h4 class="font-bold text-white text-base">Como faço para solicitar um orçamento agora?</h4>
-                    <p class="text-emerald-200/80 text-sm mt-2">Basta clicar no botão do WhatsApp no canto da tela ou chamar diretamente no número (17) 99142-9132 informando a data, local e a medida aproximada que deseja.</p>
+                    <p class="text-emerald-200/80 text-sm mt-2">Basta clicar no botão do WhatsApp no canto da tela ou chamar diretamente no número (17) 99142-9132 informando a data, local e a medida desejada (3x3, 4x4, 5x5, 10x10 ou com balcão).</p>
                 </div>
             </div>
         </div>
@@ -1086,7 +1208,7 @@
                 </div>
 
                 <div class="text-center md:text-left text-xs text-emerald-200/80 space-y-1">
-                    <div>📍 Rua Pedro Martins, 190 — São José do Rio Preto / SP</div>
+                    <div>📍 Rua Pedro Martins, 190</div>
                     <div>📞 (17) 3217-9349 | 📱 (17) 99142-9132</div>
                 </div>
 
@@ -1104,7 +1226,7 @@
             </div>
 
             <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-400/60 gap-4">
-                <p>&copy; {{ date('Y') }} Tendas Eldorado. Todos os direitos reservados. São José do Rio Preto / SP.</p>
+                <p>&copy; {{ date('Y') }} Tendas Eldorado. Todos os direitos reservados.</p>
                 <p>Estruturas e Coberturas de Alta Resistência.</p>
             </div>
         </div>
@@ -1192,7 +1314,7 @@
                     tag: 'Foto 06 • Padrão Premium',
                     badge: 'Acabamento Premium',
                     title: 'Instalação Completa Tendas Eldorado', 
-                    desc: 'Padrão premium em montagem de tendas, entrega pontual e suporte técnico completo em São José do Rio Preto e região.' 
+                    desc: 'Padrão premium em montagem de tendas, entrega pontual e suporte técnico completo para o seu evento ou empresa.' 
                 }
             ],
             init() {
