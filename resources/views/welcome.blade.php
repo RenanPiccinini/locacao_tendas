@@ -286,7 +286,7 @@
                                 specs: ['Área: 100m²', 'Capacidade: 160 pessoas', 'Fixação técnica']
                             },
                             {
-                                img: '{{ asset('images/2.jpeg') }}',
+                                img: '{{ asset('images/4.jpg') }}',
                                 tag: 'Tendas com Balcão • Feiras & Stands',
                                 tagShort: 'c/ Balcão',
                                 badge: 'Balcão Integrado',
@@ -304,7 +304,7 @@
                                 specs: ['Área: 25m²', 'Capacidade: 40 pessoas', 'Simples ou c/ Balcão']
                             },
                             {
-                                img: '{{ asset('images/4.jpg') }}',
+                                img: '{{ asset('images/2.jpeg') }}',
                                 tag: 'Piramidal 4x4m • 16m²',
                                 tagShort: '4x4m',
                                 badge: 'Tamanho Médio',
@@ -632,8 +632,8 @@
 
                 <!-- Card 3: Tenda Piramidal 4x4m -->
                 <div class="rounded-3xl overflow-hidden glass-card flex flex-col border border-emerald-700/40 group">
-                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 3 })">
-                        <img src="{{ asset('images/4.jpg') }}" 
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 1 })">
+                        <img src="{{ asset('images/2.jpeg') }}" 
                              alt="Tenda Piramidal 4x4m Tendas Eldorado" 
                              class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
@@ -708,8 +708,8 @@
 
                 <!-- Card 5: Tendas com Balcão de Atendimento (DESTAQUE NOVO) -->
                 <div class="rounded-3xl overflow-hidden glass-card flex flex-col border-2 border-amber-400 shadow-xl shadow-amber-500/10 group">
-                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 1 })">
-                        <img src="{{ asset('images/2.jpeg') }}" 
+                    <div class="relative h-64 overflow-hidden cursor-pointer" @click="$dispatch('open-lightbox', { index: 3 })">
+                        <img src="{{ asset('images/4.jpg') }}" 
                              alt="Tendas com Balcão Integrado Tendas Eldorado" 
                              class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#021811] via-transparent to-transparent opacity-60"></div>
@@ -1283,10 +1283,10 @@
                 },
                 { 
                     img: '{{ asset('images/2.jpeg') }}', 
-                    tag: 'Foto 02 • Módulos Acoplados',
-                    badge: 'Fechamento Lateral',
-                    title: 'Módulos Conectados com Fechamento Lateral', 
-                    desc: 'Sistema modular acoplado com cortinas de lona reforçadas, calhas estruturais de drenagem e vedação hermética contra vento e chuva.' 
+                    tag: 'Foto 02 • Tenda Piramidal 4x4m',
+                    badge: '16m² Área Útil',
+                    title: 'Tenda Piramidal 4x4m Modular', 
+                    desc: 'Estrutura intermediária de alta versatilidade com calhas estruturais de drenagem e vedação hermética contra vento e chuva.' 
                 },
                 { 
                     img: '{{ asset('images/3.jpeg') }}', 
@@ -1297,10 +1297,10 @@
                 },
                 { 
                     img: '{{ asset('images/4.jpg') }}', 
-                    tag: 'Foto 04 • Montagem Técnica',
-                    badge: 'Estrutura Reforçada',
-                    title: 'Tendas Piramidais Profissionais', 
-                    desc: 'Montagem técnica oficial com ancoragem reforçada, máxima resistência e acabamento impecável para feiras, indústria e eventos.' 
+                    tag: 'Foto 04 • Balcão Integrado',
+                    badge: 'Tendas com Balcão',
+                    title: 'Tendas com Balcão de Atendimento', 
+                    desc: 'Estrutura profissional com balcão firme integrado para bares, atendimento ao público, feiras gastronômicas e bilheterias.' 
                 },
                 { 
                     img: '{{ asset('images/5.jpg') }}', 
