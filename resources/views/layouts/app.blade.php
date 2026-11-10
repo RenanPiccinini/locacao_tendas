@@ -120,9 +120,22 @@
                 </div>
 
                 <!-- Page Content -->
-                <main class="flex-1 pb-12">
+                <main class="flex-1 pb-8">
                     {{ $slot }}
                 </main>
+
+                <!-- Rodapé do Sistema -->
+                <footer class="py-3 px-4 sm:px-6 lg:px-8 border-t border-gray-200 dark:border-[#083d2c] bg-white/40 dark:bg-[#021811]/60 text-xs text-gray-500 dark:text-emerald-400/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div>
+                        &copy; {{ date('Y') }} Tendas Eldorado — Sistema Operacional de Locações & Montagens
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-medium text-gray-600 dark:text-emerald-300/80">Desenvolvido por</span>
+                        <a href="https://piccininidigitalsolutions.com.br/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center group transition" title="Piccinini Digital Solutions">
+                            <img src="{{ asset('images/pds_logo.png') }}" alt="Piccinini Digital Solutions" class="h-7 w-auto rounded bg-white p-0.5 object-contain shadow-xs group-hover:scale-105 transition-transform duration-200">
+                        </a>
+                    </div>
+                </footer>
             </div>
         </div>
 

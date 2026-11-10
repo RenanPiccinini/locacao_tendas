@@ -1227,6 +1227,12 @@
 
             <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-400/60 gap-4">
                 <p>&copy; {{ date('Y') }} Tendas Eldorado. Todos os direitos reservados.</p>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-emerald-300/80 font-medium">Desenvolvido por</span>
+                    <a href="https://piccininidigitalsolutions.com.br/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center group transition" title="Piccinini Digital Solutions - Criação de sites e sistemas personalizados">
+                        <img src="{{ asset('images/pds_logo.png') }}" alt="Piccinini Digital Solutions" class="h-9 w-auto rounded-lg bg-white p-0.5 shadow-xs group-hover:scale-105 transition-transform duration-200">
+                    </a>
+                </div>
                 <p>Estruturas e Coberturas de Alta Resistência.</p>
             </div>
         </div>
