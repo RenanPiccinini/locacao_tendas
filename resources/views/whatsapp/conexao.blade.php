@@ -148,26 +148,6 @@
 
         </div>
     </div>
-                        <summary class="font-bold text-gray-800 cursor-pointer hover:text-blue-600 flex items-center gap-1.5 select-none">
-                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            Como configurar o Cron Job no painel da Hostinger (Clique para ver)
-                        </summary>
-                        <div class="mt-3 p-3.5 bg-slate-900 text-slate-200 rounded-lg space-y-2">
-                            <p>No <strong>hPanel da Hostinger &gt; Cron Jobs</strong>, crie a tarefa a cada minuto (<code>* * * * *</code>) com o comando:</p>
-                            <code class="block p-2 bg-black/60 rounded text-emerald-400 font-mono select-all">
-                                cd /home/u639274314/domains/locacao-tendas.piccininidigitalsolutions.com.br/public_html &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1
-                            </code>
-                            <p class="text-gray-400">Ou utilize a URL do Web Cron:</p>
-                            <code class="block p-2 bg-black/60 rounded text-blue-300 font-mono select-all">
-                                curl -s -L "https://locacao-tendas.piccininidigitalsolutions.com.br/cron/scheduler" &gt;/dev/null 2&gt;&amp;1
-                            </code>
-                        </div>
-                    </details>
-                </div>
-            </div>
-
-        </div>
-    </div>
 
     <script>
         const badgeStatus = document.getElementById('badge-status');

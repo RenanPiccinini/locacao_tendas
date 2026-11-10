@@ -115,10 +115,12 @@
                         </div>
                     </div>
 
-                    <button type="button" onclick="document.getElementById('modal-gerar-nova-os').classList.remove('hidden')" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition shadow-xs flex items-center gap-1.5 w-fit">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        + Gerar Nova O.S.
-                    </button>
+                    @if(Auth::user()->isAdmin())
+                        <button type="button" onclick="document.getElementById('modal-gerar-nova-os').classList.remove('hidden')" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition shadow-xs flex items-center gap-1.5 w-fit">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            + Gerar Nova O.S.
+                        </button>
+                    @endif
                 </div>
 
                 @if($pedido->ordensServico->isEmpty())
@@ -126,7 +128,7 @@
                         Nenhuma Ordem de Serviço gerada para este pedido ainda.
                     </div>
                 @else
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                         @foreach($pedido->ordensServico as $os)
                             <div class="p-4 rounded-xl border border-gray-200 dark:border-[#083d2c] bg-gray-50/70 dark:bg-[#021811] flex flex-col justify-between gap-3 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-600 transition">
                                 <div class="space-y-2">
@@ -193,80 +195,86 @@
             </div>
 
             <!-- Dados do Pedido, Cliente e Contrato -->
-            <div class="grid grid-cols-1 {{ auth()->user()->isMontador() ? 'lg:grid-cols-2' : 'lg:grid-cols-3' }} gap-6">
+            <div class="grid grid-cols-1 {{ auth()->user()->isMontador() ? 'lg:grid-cols-2' : 'md:grid-cols-2 xl:grid-cols-3' }} gap-6">
                 <!-- Informações do Cliente & Local -->
-                <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors">
-                    <h3 class="font-bold text-lg text-gray-900 dark:text-white border-b border-gray-100 dark:border-[#083d2c] pb-2">Informações do Cliente & Local</h3>
+                <div class="bg-white dark:bg-[#031d14] p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors">
+                    <h3 class="font-bold text-base sm:text-lg text-gray-900 dark:text-white border-b border-gray-100 dark:border-[#083d2c] pb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        <span>Informações do Cliente & Local</span>
+                    </h3>
                     
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 dark:text-emerald-300/70">Nome:</span>
-                            <span class="font-bold text-gray-900 dark:text-white">{{ $pedido->cliente->nome }}</span>
+                    <div class="space-y-2.5 text-xs sm:text-sm">
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Nome:</span>
+                            <span class="font-bold text-gray-900 dark:text-white text-right break-words">{{ $pedido->cliente->nome }}</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 dark:text-emerald-300/70">Telefone / WhatsApp:</span>
-                            <span class="font-semibold text-emerald-600 dark:text-amber-400">{{ $pedido->cliente->telefone }}</span>
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Telefone / WhatsApp:</span>
+                            <span class="font-semibold text-emerald-600 dark:text-amber-400 text-right break-words">{{ $pedido->cliente->telefone }}</span>
                         </div>
                         @if($pedido->nome_responsavel)
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-emerald-300/70">Responsável / Solicitante:</span>
-                                <span class="font-semibold text-gray-900 dark:text-white">{{ $pedido->nome_responsavel }}</span>
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Responsável / Solicitante:</span>
+                                <span class="font-semibold text-gray-900 dark:text-white text-right break-words">{{ $pedido->nome_responsavel }}</span>
                             </div>
                         @endif
                         @if($pedido->telefone_responsavel)
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-emerald-300/70">Telefone Responsável:</span>
-                                <span class="font-semibold text-emerald-600 dark:text-amber-400">{{ $pedido->telefone_responsavel }}</span>
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Telefone Responsável:</span>
+                                <span class="font-semibold text-emerald-600 dark:text-amber-400 text-right break-words">{{ $pedido->telefone_responsavel }}</span>
                             </div>
                         @endif
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 dark:text-emerald-300/70">Endereço de Montagem:</span>
-                            <span class="font-medium text-gray-900 dark:text-white text-right">{{ $pedido->endereco_instalacao }}</span>
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Endereço de Montagem:</span>
+                            <span class="font-medium text-gray-900 dark:text-white text-right break-words">{{ $pedido->endereco_instalacao }}</span>
                         </div>
                         @if($pedido->cidade_instalacao)
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-emerald-300/70">Cidade:</span>
-                                <span class="font-medium text-gray-900 dark:text-white">{{ $pedido->cidade_instalacao }}</span>
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Cidade:</span>
+                                <span class="font-medium text-gray-900 dark:text-white text-right break-words">{{ $pedido->cidade_instalacao }}</span>
                             </div>
                         @endif
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 dark:text-emerald-300/70">Observações:</span>
-                            <span class="font-medium text-gray-800 dark:text-emerald-100 text-right">{{ $pedido->observacoes ?: 'Nenhuma' }}</span>
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Observações:</span>
+                            <span class="font-medium text-gray-800 dark:text-emerald-100 text-right break-words">{{ $pedido->observacoes ?: 'Nenhuma' }}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Datas e Montador -->
-                <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors">
-                    <h3 class="font-bold text-lg text-gray-900 dark:text-white border-b border-gray-100 dark:border-[#083d2c] pb-2">Programação e Montador</h3>
+                <div class="bg-white dark:bg-[#031d14] p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors">
+                    <h3 class="font-bold text-base sm:text-lg text-gray-900 dark:text-white border-b border-gray-100 dark:border-[#083d2c] pb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span>Programação e Montador</span>
+                    </h3>
                     
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 dark:text-emerald-300/70">Data de Instalação:</span>
-                            <span class="font-bold text-emerald-700 dark:text-emerald-400">{{ $pedido->data_instalacao->format('d/m/Y') }} às {{ $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : 'A combinar' }}</span>
+                    <div class="space-y-2.5 text-xs sm:text-sm">
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Data de Instalação:</span>
+                            <span class="font-bold text-emerald-700 dark:text-emerald-400 text-right">{{ $pedido->data_instalacao->format('d/m/Y') }} às {{ $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : 'A combinar' }}</span>
                         </div>
                         @if($pedido->data_evento)
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-emerald-300/70">Data do Evento:</span>
-                                <span class="font-bold text-amber-600 dark:text-amber-400">{{ $pedido->data_evento->format('d/m/Y') }}</span>
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Data do Evento:</span>
+                                <span class="font-bold text-amber-600 dark:text-amber-400 text-right">{{ $pedido->data_evento->format('d/m/Y') }}</span>
                             </div>
                         @endif
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 dark:text-emerald-300/70">Data de Retirada:</span>
-                            <span class="font-bold text-purple-700 dark:text-purple-400">{{ $pedido->data_retirada->format('d/m/Y') }} às {{ $pedido->hora_retirada ? substr($pedido->hora_retirada, 0, 5) : 'A combinar' }}</span>
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Data de Retirada:</span>
+                            <span class="font-bold text-purple-700 dark:text-purple-400 text-right">{{ $pedido->data_retirada->format('d/m/Y') }} às {{ $pedido->hora_retirada ? substr($pedido->hora_retirada, 0, 5) : 'A combinar' }}</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 dark:text-emerald-300/70">Montador Responsável:</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">{{ $pedido->montador ? $pedido->montador->name : 'Nenhum' }}</span>
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Montador Responsável:</span>
+                            <span class="font-semibold text-gray-900 dark:text-white text-right">{{ $pedido->montador ? $pedido->montador->name : 'Nenhum' }}</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 dark:text-emerald-300/70">WhatsApp Montador:</span>
-                            <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ $pedido->montador->whatsapp ?? 'Não informado' }}</span>
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">WhatsApp Montador:</span>
+                            <span class="font-semibold text-emerald-600 dark:text-emerald-400 text-right">{{ $pedido->montador->whatsapp ?? 'Não informado' }}</span>
                         </div>
                         @if(!auth()->user()->isMontador() && $pedido->valor_total)
-                            <div class="flex justify-between border-t border-gray-100 dark:border-[#083d2c] pt-2">
-                                <span class="text-gray-500 dark:text-emerald-300/70 font-semibold">Valor da Locação:</span>
-                                <span class="font-black text-gray-900 dark:text-white text-base">R$ {{ number_format($pedido->valor_total, 2, ',', '.') }}</span>
+                            <div class="flex items-start justify-between gap-3 border-t border-gray-100 dark:border-[#083d2c] pt-2">
+                                <span class="text-gray-500 dark:text-emerald-300/70 font-semibold shrink-0">Valor da Locação:</span>
+                                <span class="font-black text-gray-900 dark:text-white text-sm sm:text-base text-right">R$ {{ number_format($pedido->valor_total, 2, ',', '.') }}</span>
                             </div>
                         @endif
                     </div>
@@ -274,37 +282,37 @@
 
                 @if(!auth()->user()->isMontador())
                     <!-- Contrato de Locação Digital -->
-                    <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors flex flex-col justify-between">
+                    <div class="bg-white dark:bg-[#031d14] p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] space-y-4 transition-colors flex flex-col justify-between md:col-span-2 xl:col-span-1">
                         <div>
                             <div class="flex items-center justify-between border-b border-gray-100 dark:border-[#083d2c] pb-2">
-                                <h3 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-                                    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                    Contrato de Locação
+                                <h3 class="font-bold text-base sm:text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span>Contrato de Locação</span>
                                 </h3>
                                 <span class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
                                     Nº {{ sprintf('%04d', $pedido->id) }}
                                 </span>
                             </div>
 
-                            <div class="space-y-2 text-sm pt-3">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 dark:text-emerald-300/70">Cliente:</span>
-                                    <span class="font-bold text-gray-900 dark:text-white truncate max-w-[170px]" title="{{ $pedido->cliente->nome }}">{{ $pedido->cliente->nome }}</span>
+                            <div class="space-y-2.5 text-xs sm:text-sm pt-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Cliente:</span>
+                                    <span class="font-bold text-gray-900 dark:text-white text-right truncate max-w-[200px]" title="{{ $pedido->cliente->nome }}">{{ $pedido->cliente->nome }}</span>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 dark:text-emerald-300/70">Total da Locação:</span>
-                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">
+                                <div class="flex items-start justify-between gap-3">
+                                    <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Total da Locação:</span>
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-right">
                                         {{ $pedido->valor_total ? 'R$ ' . number_format($pedido->valor_total, 2, ',', '.') : 'A combinar / Sem valor' }}
                                     </span>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 dark:text-emerald-300/70">Período:</span>
+                                <div class="flex items-start justify-between gap-3">
+                                    <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Período:</span>
                                     <span class="font-medium text-gray-800 dark:text-emerald-100 text-xs text-right">
                                         {{ $pedido->data_instalacao->format('d/m/Y') }} a {{ $pedido->data_retirada->format('d/m/Y') }}
                                     </span>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 dark:text-emerald-300/70">Status:</span>
+                                <div class="flex items-start justify-between gap-3">
+                                    <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Status:</span>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30">
                                         Dinâmico do Pedido
                                     </span>
@@ -312,19 +320,18 @@
                             </div>
                         </div>
 
-                        <div class="pt-3 flex flex-col gap-2 border-t border-gray-100 dark:border-[#083d2c]">
+                        <div class="pt-3 flex flex-col sm:flex-row xl:flex-col gap-2 border-t border-gray-100 dark:border-[#083d2c]">
                             <a href="{{ route('pedidos.contrato.ver', $pedido) }}" target="_blank" class="w-full text-center px-3 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold rounded-lg text-xs shadow-xs transition flex items-center justify-center gap-1.5">
                                 <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                Visualizar Contrato (PDF)
+                                <span>Visualizar Contrato (PDF)</span>
                             </a>
                             <a href="{{ route('pedidos.contrato.download', $pedido) }}" class="w-full text-center px-3 py-2 bg-gray-100 dark:bg-[#063325] hover:bg-gray-200 dark:hover:bg-[#0a4835] text-gray-800 dark:text-emerald-100 font-semibold rounded-lg text-xs transition flex items-center justify-center gap-1.5 border border-transparent dark:border-emerald-700/40">
                                 <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                Baixar Contrato em PDF
+                                <span>Baixar Contrato em PDF</span>
                             </a>
                         </div>
                     </div>
                 @endif
-            </div>
             </div>
 
             <!-- Tendas Alugadas -->

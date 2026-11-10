@@ -1004,8 +1004,6 @@
             </div>
         </div>
     </section>
-        </div>
-    </section>
 
     <!-- DESTAQUE INSTAGRAM: PERFIL OFICIAL -->
     <section id="instagram" class="py-20 relative z-10 border-t border-emerald-950 bg-[#021811]">
