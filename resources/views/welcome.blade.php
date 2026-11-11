@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tendas Eldorado — Venda e Locação de Tendas Piramidais | Estruturas e Coberturas</title>
-    <meta name="description" content="Tendas Eldorado. Mensal e locação diária de tendas piramidais 3x3, 4x4, 5x5 e 10x10, com e sem balcão. Coberturas para eventos, feiras e indústrias. Lonas antichamas e laudos de segurança.">
+    <meta name="description" content="Tendas Eldorado. Mensal e locação diária de tendas piramidais com e sem balcão. Coberturas para eventos, feiras e indústrias. Lonas antichamas e laudos de segurança.">
 
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#021811">
@@ -12,7 +12,7 @@
 
     <!-- OpenGraph / Social Media -->
     <meta property="og:title" content="Tendas Eldorado — Venda e Locação de Tendas">
-    <meta property="og:description" content="Sua cobertura perfeita para todas as ocasiões. Mensal e locação diária de tendas piramidais 3x3, 4x4, 5x5 e 10x10, com e sem balcão de alta resistência.">
+    <meta property="og:description" content="Sua cobertura perfeita para todas as ocasiões. Mensal e locação diária de tendas piramidais com e sem balcão de alta resistência.">
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
     <meta property="og:url" content="https://locacao-tendas.piccininidigitalsolutions.com.br">
 
@@ -88,27 +88,14 @@
             <!-- Menu de Navegação Desktop -->
             <nav class="hidden lg:flex items-center gap-7 text-sm font-semibold text-emerald-100/90">
                 <a href="#estruturas" class="hover:text-amber-400 transition">Estruturas</a>
-                <a href="#locacao-mensal" class="hover:text-amber-400 transition">Mensal e Locação Diária</a>
+                <a href="#locacao-mensal" class="hover:text-amber-400 transition">Mensal/Diária</a>
                 <a href="#fotos-reais" class="hover:text-amber-400 transition">Fotos Reais</a>
                 <a href="#instagram" class="hover:text-amber-400 transition">Instagram</a>
-                <a href="#diferenciais" class="hover:text-amber-400 transition">Vantagens</a>
                 <a href="#faq" class="hover:text-amber-400 transition">Dúvidas</a>
             </nav>
 
-            <!-- Ações Rápidas: Instagram + WhatsApp + Login + Botão Mobile -->
+            <!-- Ações Rápidas: WhatsApp + Login + Botão Mobile -->
             <div class="flex items-center gap-2 sm:gap-3">
-                <!-- Botão Ver Instagram -->
-                <a href="https://www.instagram.com/tendaseldorado/" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-white insta-gradient hover:opacity-95 shadow-md shadow-pink-900/30 transition transform hover:scale-105"
-                   title="Siga @tendaseldorado no Instagram">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                    <span class="hidden sm:inline">Instagram</span>
-                </a>
-
                 <!-- Botão WhatsApp Header -->
                 <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Vim+pelo+site+da+Tendas+Eldorado+e+gostaria+de+solicitar+um+or%C3%A7amento." 
                    target="_blank" 
@@ -157,19 +144,16 @@
              class="lg:hidden bg-[#021811]/98 border-b border-emerald-700/50 px-4 py-5 shadow-2xl backdrop-blur-xl">
             <nav class="flex flex-col space-y-2">
                 <a href="#estruturas" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
-                    <span class="text-amber-400">⛺</span> Estruturas (3x3, 4x4, 5x5, 10x10)
+                    <span class="text-amber-400">⛺</span> Estruturas
                 </a>
                 <a href="#locacao-mensal" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
-                    <span class="text-amber-400">📅</span> Mensal e Locação Diária
+                    <span class="text-amber-400">📅</span> Mensal/Diária
                 </a>
                 <a href="#fotos-reais" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
                     <span class="text-amber-400">📸</span> Fotos Reais das Montagens
                 </a>
                 <a href="#instagram" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
                     <span class="text-pink-400">📸</span> Instagram Oficial @tendaseldorado
-                </a>
-                <a href="#diferenciais" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
-                    <span class="text-amber-400">🌟</span> Vantagens & Laudos de Segurança
                 </a>
                 <a href="#faq" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-emerald-100 hover:bg-[#04291c] hover:text-amber-400 transition">
                     <span class="text-amber-400">❓</span> Perguntas Frequentes (FAQ)
@@ -209,17 +193,12 @@
                 
                 <!-- Coluna de Texto Principal -->
                 <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full badge-gold text-amber-300 text-xs sm:text-sm font-bold tracking-wide">
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                        <span>Tendas 3x3, 4x4, 5x5 e 10x10 • Com e Sem Balcão</span>
-                    </div>
-
                     <h1 class="text-4xl sm:text-6xl lg:text-6xl font-black tracking-tight text-white leading-[1.1] glow-gold">
                         Tendas Piramidais para <span class="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500">Eventos & Indústrias</span>
                     </h1>
 
                     <p class="text-base sm:text-lg text-emerald-100/90 max-w-xl font-normal leading-relaxed">
-                        Mensal e locação diária de tendas piramidais nos tamanhos 3x3, 4x4, 5x5 e 10x10, com opções de tendas com balcão integrado para atendimento. Estruturas de alta durabilidade com lona blackout anti-chamas, proteção contra sol e chuva, montagem ágil e laudos de segurança.
+                        Mensal e locação diária de tendas piramidais, com opções de tendas com balcão integrado para atendimento. Estruturas de alta durabilidade com lona blackout anti-chamas, proteção contra sol e chuva, montagem ágil e laudos de segurança.
                     </p>
 
                     <!-- Botões de Ação Principais -->
@@ -235,36 +214,21 @@
                             <span>Orçamento no WhatsApp</span>
                         </a>
 
-                        <!-- Botão Instagram -->
-                        <a href="https://www.instagram.com/tendaseldorado/" 
-                           target="_blank" 
-                           rel="noopener noreferrer" 
-                           class="w-full sm:w-auto px-6 py-4 rounded-xl insta-gradient text-white font-bold text-base shadow-xl shadow-pink-950/50 hover:opacity-95 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                            </svg>
-                            <span>Ver Instagram</span>
-                        </a>
-
                         <!-- Botão Catálogo -->
                         <a href="#estruturas" class="w-full sm:w-auto px-6 py-4 rounded-xl bg-[#04281e] hover:bg-[#073c2e] border border-emerald-600/40 text-emerald-200 font-bold text-base transition flex items-center justify-center gap-2">
-                            Ver Medidas (3x3 a 10x10)
+                            Ver Medidas
                         </a>
                     </div>
 
                     <!-- Indicadores Rápidos -->
-                    <div class="grid grid-cols-3 gap-4 pt-6 border-t border-emerald-900/60">
+                    <div class="grid grid-cols-2 gap-6 pt-6 border-t border-emerald-900/60 max-w-sm mx-auto lg:mx-0">
                         <div>
                             <div class="text-2xl sm:text-3xl font-black text-amber-400">100%</div>
                             <div class="text-xs text-emerald-200/70 mt-0.5">Proteção Sol & Chuva</div>
                         </div>
                         <div>
-                            <div class="text-2xl sm:text-3xl font-black text-white">Mensal</div>
-                            <div class="text-xs text-emerald-200/70 mt-0.5">E Locação Diária</div>
-                        </div>
-                        <div>
-                            <div class="text-2xl sm:text-3xl font-black text-emerald-400">3x3 a 10x10</div>
-                            <div class="text-xs text-emerald-200/70 mt-0.5">Com e Sem Balcão</div>
+                            <div class="text-2xl sm:text-3xl font-black text-white">Mensal/Diária</div>
+                            <div class="text-xs text-emerald-200/70 mt-0.5">Locação Flexível</div>
                         </div>
                     </div>
                 </div>
@@ -292,7 +256,7 @@
                                 badge: 'Balcão Integrado',
                                 title: 'Tendas com Balcão de Atendimento',
                                 desc: 'Estrutura com balcão frontal ou lateral acoplado para bares, feiras e praça de alimentação.',
-                                specs: ['Balcão anatômico', 'Atendimento ágil', 'Opção 3x3, 4x4 e 5x5']
+                                specs: ['Balcão anatômico', 'Atendimento ágil', 'Tamanho 4x4']
                             },
                             {
                                 img: '{{ asset('images/3.jpeg') }}',
@@ -728,13 +692,13 @@
                             </div>
                             <h3 class="text-xl font-bold text-white">Tendas com Balcão de Atendimento</h3>
                             <p class="text-emerald-200/80 text-xs mt-2 leading-relaxed">
-                                Estrutura completa pronta para operação comercial! Balcão firme integrado na frente ou laterais da tenda (nos tamanhos 3x3, 4x4 e 5x5). Ideal para bares, caixa, bilheteria e alimentação.
+                                Estrutura completa pronta para operação comercial! Balcão firme integrado na frente ou laterais da tenda (no tamanho 4x4). Ideal para bares, caixa, bilheteria e alimentação.
                             </p>
                         </div>
                         <div class="pt-4 border-t border-emerald-800/80 space-y-3">
                             <div class="flex items-center justify-between text-xs">
                                 <span class="text-emerald-300">Tamanhos c/ balcão:</span>
-                                <span class="text-amber-400 font-bold">3x3, 4x4 e 5x5 metros</span>
+                                <span class="text-amber-400 font-bold">4x4 metros</span>
                             </div>
                             <a href="https://wa.me/5517991429132?text=Ol%C3%A1!+Gostaria+de+or%C3%A7ar+Tendas+com+Balc%C3%A3o+de+Atendimento." 
                                target="_blank" 
@@ -1046,86 +1010,6 @@
                         </a>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- TECNOLOGIA & DIFERENCIAIS -->
-    <section id="diferenciais" class="py-24 relative z-10 border-t border-emerald-950 bg-[#032016]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                
-                <div class="space-y-6">
-                    <span class="text-amber-400 font-bold text-xs uppercase tracking-widest">Excelência em Atendimento</span>
-                    <h2 class="text-3xl sm:text-5xl font-black text-white leading-tight">
-                        Sistema 100% Conectado com o WhatsApp da Equipe
-                    </h2>
-                    <p class="text-emerald-200/80 text-sm sm:text-base leading-relaxed">
-                        Nossa plataforma revoluciona o setor de locação de coberturas. Toda a comunicação entre o atendimento e os montadores de campo acontece em tempo real de forma automática.
-                    </p>
-
-                    <div class="space-y-4 pt-2">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-1 border border-emerald-500/30">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-white text-sm">Ordem de Serviço Direta no WhatsApp</h4>
-                                <p class="text-emerald-200/70 text-xs">Ao confirmar o pedido, o montador recebe a O.S. completa com endereço, cliente e itens no celular.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-1 border border-amber-500/30">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-white text-sm">Vistoria e Fotos em Tempo Real</h4>
-                                <p class="text-emerald-200/70 text-xs">Montador fotografa a tenda instalada e o sistema programa a O.S. de retirada automaticamente.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0 mt-1 border border-teal-500/30">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-white text-sm">Lembretes Toda Segunda e no Dia da Montagem</h4>
-                                <p class="text-emerald-200/70 text-xs">Robô automático avisa toda a equipe sobre os compromissos semanais e horários do dia.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card Visual do Fluxo -->
-                <div class="p-8 rounded-3xl glass-card border border-amber-400/30 shadow-2xl relative">
-                    <div class="space-y-4">
-                        <div class="p-4 rounded-xl bg-[#021811] border border-emerald-800/80 flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 font-black flex items-center justify-center border border-amber-400/40">1</div>
-                            <div class="text-xs">
-                                <div class="font-bold text-white">Pedido Fechado</div>
-                                <div class="text-emerald-200/70">Tendas reservadas no estoque e O.S. gerada na hora</div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 rounded-xl bg-[#021811] border border-emerald-800/80 flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center border border-emerald-400/40">2</div>
-                            <div class="text-xs">
-                                <div class="font-bold text-white">Notificação no WhatsApp</div>
-                                <div class="text-emerald-200/70">Montador avisado com detalhes do pedido e mapa</div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 rounded-xl bg-[#021811] border border-emerald-800/80 flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-teal-500/20 text-teal-300 font-black flex items-center justify-center border border-teal-400/40">3</div>
-                            <div class="text-xs">
-                                <div class="font-bold text-white">Fotos & Retorno Automático</div>
-                                <div class="text-emerald-200/70">Instalação concluída com fotos e devolução ao estoque pós-coleta</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>
