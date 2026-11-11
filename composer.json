@@ -70,7 +70,7 @@
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
         "pre-install-cmd": [
-            "@php -r \"@is_dir('/home/u639274314/.composer/cache') && @shell_exec('rm -rf /home/u639274314/.composer/cache');\""
+            "@php scripts/clean-composer-cache.php"
         ]
     },
     "extra": {
@@ -84,6 +84,7 @@
             "*": "dist"
         },
         "cache-dir": ".composer-cache",
+        "cache-vcs-dir": ".composer-cache/vcs",
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
