@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrdemServicoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PropostaController;
 use App\Http\Controllers\TendaController;
 use App\Http\Controllers\WhatsappController;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +79,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('pedidos/{pedido}/contrato', [ContratoController::class, 'verPedido'])->name('pedidos.contrato.ver');
     Route::get('pedidos/{pedido}/contrato/download', [ContratoController::class, 'downloadPedido'])->name('pedidos.contrato.download');
     Route::post('pedidos/{pedido}/gerar-contrato', [ContratoController::class, 'gerarPedido'])->name('pedidos.contrato.gerar');
+
+    // Propostas de Locação (Acessível para Administradores e Montadores)
+    Route::resource('propostas', PropostaController::class);
+    Route::get('propostas/{proposta}/pdf', [PropostaController::class, 'pdf'])->name('propostas.pdf');
+    Route::get('propostas/{proposta}/download', [PropostaController::class, 'download'])->name('propostas.download');
 
     // Consulta de CEP (Integração com ViaCEP com proxy e fallback de rede)
     Route::get('consulta-cep/{cep}', function (string $cep) {

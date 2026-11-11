@@ -148,6 +148,9 @@
                     <a href="{{ route('pedidos.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('pedidos.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                         Pedidos & O.S.
                     </a>
+                    <a href="{{ route('propostas.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('propostas.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
+                        Propostas
+                    </a>
                     <a href="{{ route('calendario.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('calendario.*') ? 'bg-gradient-to-r from-emerald-800 to-emerald-700 text-amber-300 font-bold border-l-4 border-amber-400' : 'text-emerald-100/80 hover:bg-[#073827]' }}">
                         Calendário
                     </a>

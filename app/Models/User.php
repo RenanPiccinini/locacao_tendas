@@ -58,4 +58,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Pedido::class, 'montador_id');
     }
+
+    public function propostas(): HasMany
+    {
+        return $this->hasMany(Proposta::class);
+    }
 }

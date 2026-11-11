@@ -37,6 +37,11 @@ class Cliente extends Model
         return $this->hasMany(Pedido::class);
     }
 
+    public function propostas(): HasMany
+    {
+        return $this->hasMany(Proposta::class);
+    }
+
     /**
      * Alias para permitir acessar e definir 'rua' como sinônimo de 'endereco'
      */
