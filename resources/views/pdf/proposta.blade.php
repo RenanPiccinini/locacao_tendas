@@ -390,17 +390,20 @@
     <!-- RODAPÉ DE ASSINATURA -->
     <table class="signatures">
         <tr>
-            <td style="vertical-align: bottom;">
-                <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #111;">
+            <td style="vertical-align: top;">
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #111; height: 16px; line-height: 16px;">
                     {{ $dataAssinaturaAutomatica }}
                 </div>
                 <div class="sig-line"></div>
                 <div class="sig-label">DATA</div>
             </td>
-            <td style="vertical-align: bottom;">
-                <div style="height: 19px;"></div>
+            <td style="vertical-align: top;">
+                <div style="height: 16px; margin-bottom: 5px;"></div>
                 <div class="sig-line"></div>
                 <div class="sig-label">ASSINATURA</div>
+                <div style="font-size: 9.5px; font-weight: bold; color: #111; margin-top: 3px; letter-spacing: 0.3px;">
+                    MARCIA REGINA SABINO GIBERTONI
+                </div>
             </td>
         </tr>
     </table>

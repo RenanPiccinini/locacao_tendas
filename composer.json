@@ -68,6 +68,9 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "pre-install-cmd": [
+            "@php -r \"@is_dir('/home/u639274314/.composer/cache') && @shell_exec('rm -rf /home/u639274314/.composer/cache');\""
         ]
     },
     "extra": {
@@ -77,7 +80,10 @@
     },
     "config": {
         "optimize-autoloader": true,
-        "preferred-install": "dist",
+        "preferred-install": {
+            "*": "dist"
+        },
+        "cache-dir": ".composer-cache",
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
