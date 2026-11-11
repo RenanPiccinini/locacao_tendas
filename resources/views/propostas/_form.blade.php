@@ -286,48 +286,32 @@
         </div>
     </div>
 
-    <!-- SEÇÃO 4: PERÍODO(S) -->
+    <!-- SEÇÃO 4: DATA DO EVENTO -->
     <div class="border-t border-gray-200 dark:border-[#083d2c] pt-6 space-y-4">
         <div class="flex items-center gap-2">
             <span class="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">4</span>
-            <h3 class="font-bold text-gray-900 dark:text-white text-base">Período(s)</h3>
+            <h3 class="font-bold text-gray-900 dark:text-white text-base">Data do Evento</h3>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Saída -->
-            <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c] space-y-2">
-                <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-amber-400">Saída</div>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="date" name="data_saida" value="{{ old('data_saida', $p?->data_saida?->format('Y-m-d')) }}" class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-xs">
-                    <input type="time" name="hora_saida" value="{{ old('hora_saida', $p?->hora_saida ?? '08:00') }}" class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-xs">
-                </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
+            <!-- De: -->
+            <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c] space-y-1.5">
+                <label class="block text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-amber-400">De (Data Inicial)</label>
+                <input type="date"
+                       name="data_inicio"
+                       id="data_inicio"
+                       value="{{ old('data_inicio', $p?->data_inicio?->format('Y-m-d') ?? ($p?->data_saida?->format('Y-m-d') ?? '')) }}"
+                       class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
             </div>
 
-            <!-- Início -->
-            <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c] space-y-2">
-                <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-amber-400">Início</div>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="date" name="data_inicio" value="{{ old('data_inicio', $p?->data_inicio?->format('Y-m-d')) }}" class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-xs">
-                    <input type="time" name="hora_inicio" value="{{ old('hora_inicio', $p?->hora_inicio ?? '08:00') }}" class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-xs">
-                </div>
-            </div>
-
-            <!-- Fim -->
-            <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c] space-y-2">
-                <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-amber-400">Fim</div>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="date" name="data_fim" value="{{ old('data_fim', $p?->data_fim?->format('Y-m-d')) }}" class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-xs">
-                    <input type="time" name="hora_fim" value="{{ old('hora_fim', $p?->hora_fim ?? '08:00') }}" class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-xs">
-                </div>
-            </div>
-
-            <!-- Retorno -->
-            <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c] space-y-2">
-                <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-amber-400">Retorno</div>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="date" name="data_retorno" value="{{ old('data_retorno', $p?->data_retorno?->format('Y-m-d')) }}" class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-xs">
-                    <input type="time" name="hora_retorno" value="{{ old('hora_retorno', $p?->hora_retorno ?? '08:00') }}" class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-xs">
-                </div>
+            <!-- Até: -->
+            <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c] space-y-1.5">
+                <label class="block text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-amber-400">Até (Data Final)</label>
+                <input type="date"
+                       name="data_fim"
+                       id="data_fim"
+                       value="{{ old('data_fim', $p?->data_fim?->format('Y-m-d') ?? ($p?->data_retorno?->format('Y-m-d') ?? '')) }}"
+                       class="w-full bg-white dark:bg-[#031d14] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm">
             </div>
         </div>
     </div>
@@ -412,31 +396,7 @@
         </div>
 
         <!-- Totais Financeiros -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-700 dark:text-emerald-200 mb-1">Total (R$)</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-gray-500 dark:text-amber-400">R$</span>
-                    <input type="text"
-                           name="valor_total"
-                           x-model="valorTotal"
-                           @input="valorTotal = formatarMoeda($event.target.value); atualizarTotalGeral()"
-                           class="w-full pl-9 bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm font-bold">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-700 dark:text-emerald-200 mb-1">Total Desconto (R$)</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-gray-500 dark:text-amber-400">R$</span>
-                    <input type="text"
-                           name="valor_desconto"
-                           x-model="valorDesconto"
-                           @input="valorDesconto = formatarMoeda($event.target.value); atualizarTotalGeral()"
-                           class="w-full pl-9 bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm font-bold">
-                </div>
-            </div>
-
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 max-w-md">
             <div>
                 <label class="block text-xs font-bold uppercase text-emerald-700 dark:text-amber-400 mb-1">Total Geral (R$)</label>
                 <div class="relative">
@@ -444,13 +404,15 @@
                     <input type="text"
                            name="valor_total_geral"
                            x-model="valorTotalGeral"
-                           @input="valorTotalGeral = formatarMoeda($event.target.value)"
+                           @input="valorTotalGeral = formatarMoeda($event.target.value); valorTotal = valorTotalGeral"
                            class="w-full pl-9 bg-emerald-50/70 dark:bg-[#021811] border-emerald-400 dark:border-amber-400/50 text-emerald-900 dark:text-amber-300 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm font-extrabold">
                 </div>
+                <input type="hidden" name="valor_total" :value="valorTotalGeral">
+                <input type="hidden" name="valor_desconto" value="0,00">
             </div>
         </div>
         <p class="text-[11px] text-gray-400 dark:text-emerald-400/60">
-            Ao alterar os itens acima, o <strong>Total</strong> é somado automaticamente pela multiplicação (Qtd × Valor/Período), mas você também pode ajustar os totais manualmente.
+            Ao alterar os itens acima, o <strong>Total Geral</strong> é somado automaticamente pela multiplicação (Qtd × Valor/Período), mas você também pode ajustá-lo manualmente.
         </p>
     </div>
 
@@ -540,14 +502,12 @@
                     soma += qtd * val;
                 }
                 this.valorTotal = this.numeroParaBR(soma);
-                this.atualizarTotalGeral();
+                this.valorTotalGeral = this.numeroParaBR(soma);
             },
 
             atualizarTotalGeral() {
                 const total = this.parseMoeda(this.valorTotal);
-                const desconto = this.parseMoeda(this.valorDesconto);
-                const geral = Math.max(0, total - desconto);
-                this.valorTotalGeral = this.numeroParaBR(geral);
+                this.valorTotalGeral = this.numeroParaBR(total);
             },
 
             parseMoeda(val) {

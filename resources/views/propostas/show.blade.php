@@ -131,25 +131,21 @@
                 </div>
             </div>
 
-            <!-- Períodos -->
+            <!-- Data do Evento -->
             <div class="bg-white dark:bg-[#031d14] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c]">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-emerald-300 mb-4">Período(s)</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="p-3 rounded-lg bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c]">
-                        <div class="text-[11px] font-bold uppercase text-gray-500 dark:text-emerald-300/70">Saída</div>
-                        <div class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">{{ $fmtPeriodo($proposta->data_saida, $proposta->hora_saida) }}</div>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-emerald-300 mb-4">Data do Evento</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
+                    <div class="p-3.5 rounded-lg bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c]">
+                        <div class="text-[11px] font-bold uppercase text-gray-500 dark:text-emerald-300/70">De (Data Inicial)</div>
+                        <div class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">
+                            {{ $proposta->data_inicio ? $proposta->data_inicio->format('d/m/Y') : ($proposta->data_saida ? $proposta->data_saida->format('d/m/Y') : '—') }}
+                        </div>
                     </div>
-                    <div class="p-3 rounded-lg bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c]">
-                        <div class="text-[11px] font-bold uppercase text-gray-500 dark:text-emerald-300/70">Início</div>
-                        <div class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">{{ $fmtPeriodo($proposta->data_inicio, $proposta->hora_inicio) }}</div>
-                    </div>
-                    <div class="p-3 rounded-lg bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c]">
-                        <div class="text-[11px] font-bold uppercase text-gray-500 dark:text-emerald-300/70">Fim</div>
-                        <div class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">{{ $fmtPeriodo($proposta->data_fim, $proposta->hora_fim) }}</div>
-                    </div>
-                    <div class="p-3 rounded-lg bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c]">
-                        <div class="text-[11px] font-bold uppercase text-gray-500 dark:text-emerald-300/70">Retorno</div>
-                        <div class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">{{ $fmtPeriodo($proposta->data_retorno, $proposta->hora_retorno) }}</div>
+                    <div class="p-3.5 rounded-lg bg-gray-50 dark:bg-[#021811] border border-gray-200 dark:border-[#083d2c]">
+                        <div class="text-[11px] font-bold uppercase text-gray-500 dark:text-emerald-300/70">Até (Data Final)</div>
+                        <div class="text-sm font-bold text-gray-900 dark:text-white mt-0.5">
+                            {{ $proposta->data_fim ? $proposta->data_fim->format('d/m/Y') : ($proposta->data_retorno ? $proposta->data_retorno->format('d/m/Y') : '—') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -186,18 +182,10 @@
                     </table>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 bg-gray-50 dark:bg-[#02140e] border-t border-gray-100 dark:border-[#083d2c] text-sm">
-                    <div class="text-center p-3 rounded-lg bg-white dark:bg-[#031d14] border border-gray-200 dark:border-[#083d2c]">
-                        <span class="text-xs text-gray-500 dark:text-emerald-300/70 block">Total</span>
-                        <strong class="text-base text-gray-900 dark:text-white">R$ {{ number_format((float) $proposta->valor_total, 2, ',', '.') }}</strong>
-                    </div>
-                    <div class="text-center p-3 rounded-lg bg-white dark:bg-[#031d14] border border-gray-200 dark:border-[#083d2c]">
-                        <span class="text-xs text-gray-500 dark:text-emerald-300/70 block">Total Desconto</span>
-                        <strong class="text-base text-amber-600 dark:text-amber-400">R$ {{ number_format((float) $proposta->valor_desconto, 2, ',', '.') }}</strong>
-                    </div>
-                    <div class="text-center p-3 rounded-lg bg-emerald-50 dark:bg-[#04291c] border border-emerald-200 dark:border-emerald-700/60">
-                        <span class="text-xs text-emerald-700 dark:text-emerald-300 block font-bold">Total Geral</span>
-                        <strong class="text-lg text-emerald-800 dark:text-amber-300">R$ {{ number_format((float) $proposta->valor_total_geral, 2, ',', '.') }}</strong>
+                <div class="p-6 bg-gray-50 dark:bg-[#02140e] border-t border-gray-100 dark:border-[#083d2c] text-sm flex justify-end">
+                    <div class="text-right p-4 rounded-xl bg-emerald-50 dark:bg-[#04291c] border border-emerald-200 dark:border-emerald-700/60 min-w-[240px]">
+                        <span class="text-xs text-emerald-700 dark:text-emerald-300 block font-bold uppercase tracking-wider">Total Geral</span>
+                        <strong class="text-2xl text-emerald-900 dark:text-amber-300 font-black">R$ {{ number_format((float) ($proposta->valor_total_geral ?: $proposta->valor_total), 2, ',', '.') }}</strong>
                     </div>
                 </div>
             </div>
@@ -217,6 +205,11 @@
                         {!! !empty(trim((string) $proposta->observacoes)) ? nl2br(e($proposta->observacoes)) : '<span class="text-gray-400 dark:text-emerald-400/50">Sem observações.</span>' !!}
                     </div>
                 </div>
+            </div>
+
+            <!-- Validade da Proposta -->
+            <div class="text-center py-3 text-xs font-bold text-gray-600 dark:text-emerald-300 uppercase tracking-wider border-t border-gray-200 dark:border-[#083d2c]">
+                Validade da proposta: 30 dias
             </div>
 
         </div>

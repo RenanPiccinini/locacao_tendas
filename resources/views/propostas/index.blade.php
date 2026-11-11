@@ -69,7 +69,7 @@
                                 <th class="px-6 py-4">Nº / Data</th>
                                 <th class="px-6 py-4">Identificação</th>
                                 <th class="px-6 py-4">Para (Destinatário)</th>
-                                <th class="px-6 py-4">Período</th>
+                                <th class="px-6 py-4">Data do Evento</th>
                                 <th class="px-6 py-4">Total Geral</th>
                                 <th class="px-6 py-4">Status</th>
                                 <th class="px-6 py-4 text-right">Ações</th>
@@ -109,13 +109,22 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-xs whitespace-nowrap">
-                                        @if($proposta->data_saida || $proposta->data_retorno)
+                                        @if($proposta->data_inicio || $proposta->data_fim)
                                             <div>
-                                                <span class="font-semibold text-gray-700 dark:text-emerald-300">Saída:</span>
+                                                <span class="font-semibold text-gray-700 dark:text-emerald-300">De:</span>
+                                                {{ $proposta->data_inicio?->format('d/m/Y') ?? '—' }}
+                                            </div>
+                                            <div>
+                                                <span class="font-semibold text-gray-700 dark:text-emerald-300">Até:</span>
+                                                {{ $proposta->data_fim?->format('d/m/Y') ?? '—' }}
+                                            </div>
+                                        @elseif($proposta->data_saida || $proposta->data_retorno)
+                                            <div>
+                                                <span class="font-semibold text-gray-700 dark:text-emerald-300">De:</span>
                                                 {{ $proposta->data_saida?->format('d/m/Y') ?? '—' }}
                                             </div>
                                             <div>
-                                                <span class="font-semibold text-gray-700 dark:text-emerald-300">Retorno:</span>
+                                                <span class="font-semibold text-gray-700 dark:text-emerald-300">Até:</span>
                                                 {{ $proposta->data_retorno?->format('d/m/Y') ?? '—' }}
                                             </div>
                                         @else
@@ -126,11 +135,6 @@
                                         <div class="font-extrabold text-emerald-700 dark:text-amber-400">
                                             R$ {{ number_format((float) $proposta->valor_total_geral, 2, ',', '.') }}
                                         </div>
-                                        @if((float) $proposta->valor_desconto > 0)
-                                            <div class="text-[11px] text-gray-400 dark:text-emerald-300/60">
-                                                Desc: R$ {{ number_format((float) $proposta->valor_desconto, 2, ',', '.') }}
-                                            </div>
-                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $proposta->status_color }}">

@@ -183,26 +183,24 @@ class PropostaTest extends TestCase
         $this->assertStringContainsString('Inscrição Estadual:', $html);
         $this->assertStringContainsString('SAMARA', $html);
         $this->assertStringContainsString('17991447381', $html);
-        $this->assertStringContainsString('Período(s)', $html);
-        $this->assertStringContainsString('07/12/2026 08:00', $html);
-        $this->assertStringContainsString('09/12/2026 08:00', $html);
-        $this->assertStringContainsString('24/12/2026 08:00', $html);
+        $this->assertStringContainsString('Data do Evento', $html);
+        $this->assertStringContainsString('<strong>De:</strong> 09/12/2026', $html);
+        $this->assertStringContainsString('<strong>Até:</strong> 09/12/2026', $html);
         $this->assertStringContainsString('Produto(s)', $html);
         $this->assertStringContainsString('Qtd', $html);
         $this->assertStringContainsString('Valor/Período', $html);
         $this->assertStringContainsString('TENDA - 10 X 10 metros', $html);
         $this->assertStringContainsString('R$ 1.250,00', $html);
-        $this->assertStringContainsString('R$ 2.500,00', $html);
-        $this->assertStringContainsString('Total Desconto:', $html);
-        $this->assertStringContainsString('R$ 150,00', $html);
-        $this->assertStringContainsString('Total Geral:', $html);
-        $this->assertStringContainsString('R$ 2.350,00', $html);
+        $this->assertStringNotContainsString('Total Desconto:', $html);
+        $this->assertStringContainsString('<strong>Total Geral:</strong> R$ 2.350,00', $html);
         $this->assertStringContainsString('Pagamento(s)', $html);
         $this->assertStringContainsString('50% na assinatura e 50% após a instalação.', $html);
         $this->assertStringContainsString('Observações:', $html);
         $this->assertStringContainsString('Inclui montagem, ancoragem e desmontagem completa.', $html);
         $this->assertStringContainsString('DATA', $html);
+        $this->assertStringContainsString('10/11/2026', $html);
         $this->assertStringContainsString('ASSINATURA', $html);
+        $this->assertStringContainsString('Validade da proposta: 30 dias', $html);
     }
 
     public function test_admin_edita_atualiza_calcula_totais_e_exclui_proposta(): void

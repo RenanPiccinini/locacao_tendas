@@ -303,23 +303,31 @@
         </tr>
     </table>
 
-    <!-- BOX 4: PERÍODO(S) -->
+    @php
+        $dataEventoInicio = $proposta->data_inicio 
+            ? \Carbon\Carbon::parse($proposta->data_inicio)->format('d/m/Y') 
+            : ($proposta->data_saida ? \Carbon\Carbon::parse($proposta->data_saida)->format('d/m/Y') : '—');
+
+        $dataEventoFim = $proposta->data_fim 
+            ? \Carbon\Carbon::parse($proposta->data_fim)->format('d/m/Y') 
+            : ($proposta->data_retorno ? \Carbon\Carbon::parse($proposta->data_retorno)->format('d/m/Y') : '—');
+
+        $dataAssinaturaAutomatica = $proposta->data_proposta
+            ? \Carbon\Carbon::parse($proposta->data_proposta)->format('d/m/Y')
+            : ($proposta->created_at ? $proposta->created_at->format('d/m/Y') : now()->format('d/m/Y'));
+    @endphp
+
+    <!-- BOX 4: DATA DO EVENTO -->
     <table class="box">
         <tr>
-            <td colspan="4" class="box-title-center">Período(s)</td>
+            <td colspan="2" class="box-title-center">Data do Evento</td>
         </tr>
         <tr>
-            <td class="periodo-col border-right" style="width: 25%;">
-                <strong>Saída:</strong> {{ $saidaStr }}
+            <td class="periodo-col border-right" style="width: 50%; text-align: center; font-size: 11px;">
+                <strong>De:</strong> {{ $dataEventoInicio }}
             </td>
-            <td class="periodo-col border-right" style="width: 25%;">
-                <strong>Início:</strong> {{ $inicioStr }}
-            </td>
-            <td class="periodo-col border-right" style="width: 25%;">
-                <strong>Fim:</strong> {{ $fimStr }}
-            </td>
-            <td class="periodo-col" style="width: 25%;">
-                <strong>Retorno:</strong> {{ $retornoStr }}
+            <td class="periodo-col" style="width: 50%; text-align: center; font-size: 11px;">
+                <strong>Até:</strong> {{ $dataEventoFim }}
             </td>
         </tr>
     </table>
@@ -346,17 +354,11 @@
         @endif
     </table>
 
-    <!-- BOX 6: TOTAIS -->
+    <!-- BOX 6: TOTAL GERAL -->
     <table class="box">
         <tr>
-            <td class="total-col border-right" style="width: 33.33%;">
-                <strong>Total:</strong> R$ {{ number_format((float) $proposta->valor_total, 2, ',', '.') }}
-            </td>
-            <td class="total-col border-right" style="width: 33.34%;">
-                <strong>Total Desconto:</strong> R$ {{ number_format((float) $proposta->valor_desconto, 2, ',', '.') }}
-            </td>
-            <td class="total-col" style="width: 33.33%;">
-                <strong>Total Geral:</strong> R$ {{ number_format((float) $proposta->valor_total_geral, 2, ',', '.') }}
+            <td class="total-col" style="width: 100%; text-align: center; font-size: 11.5px;">
+                <strong>Total Geral:</strong> R$ {{ number_format((float) ($proposta->valor_total_geral ?: $proposta->valor_total), 2, ',', '.') }}
             </td>
         </tr>
     </table>
@@ -388,16 +390,25 @@
     <!-- RODAPÉ DE ASSINATURA -->
     <table class="signatures">
         <tr>
-            <td>
+            <td style="vertical-align: bottom;">
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #111;">
+                    {{ $dataAssinaturaAutomatica }}
+                </div>
                 <div class="sig-line"></div>
                 <div class="sig-label">DATA</div>
             </td>
-            <td>
+            <td style="vertical-align: bottom;">
+                <div style="height: 19px;"></div>
                 <div class="sig-line"></div>
                 <div class="sig-label">ASSINATURA</div>
             </td>
         </tr>
     </table>
+
+    <!-- VALIDADE DA PROPOSTA -->
+    <div style="margin-top: 22px; text-align: center; font-size: 10.5px; font-weight: bold; color: #222; text-transform: uppercase; letter-spacing: 0.5px;">
+        Validade da proposta: 30 dias
+    </div>
 
 </body>
 </html>
