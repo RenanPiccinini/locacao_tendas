@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Services\WhatsappService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class EnviarLembretesWhatsapp extends Command
 {
@@ -51,6 +53,12 @@ class EnviarLembretesWhatsapp extends Command
         $enviados = 0;
 
         foreach ($montadores as $montador) {
+            $lockKey = "lembrete_whatsapp_semana_{$montador->id}_" . $inicioSemana->format('Y_W');
+            if (Cache::has($lockKey)) {
+                $this->info("Lembrete semanal já enviado para {$montador->name} nesta semana ({$inicioSemana->format('d/m')}). Evitando repetição.");
+                continue;
+            }
+
             $pedidosInstalacao = Pedido::with(['cliente', 'tendas'])
                 ->where('montador_id', $montador->id)
                 ->whereDate('data_instalacao', '>=', $inicioSemana->format('Y-m-d'))
@@ -113,6 +121,7 @@ class EnviarLembretesWhatsapp extends Command
             $msg .= "📲 Acesse o sistema pelo celular para registrar *'Tenda instalada'* e *'Tenda retirada'*!";
 
             $this->whatsapp->enviarMensagem($montador->whatsapp, $msg);
+            Cache::put($lockKey, true, now()->addDays(7));
             $this->info("Lembrete semanal enviado para: {$montador->name}");
             $enviados++;
         }
@@ -137,6 +146,12 @@ class EnviarLembretesWhatsapp extends Command
             ->get();
 
         foreach ($montadores as $montador) {
+            $lockKey = "lembrete_whatsapp_dia_{$montador->id}_{$hojeStr}";
+            if (Cache::has($lockKey)) {
+                $this->info("Lembrete diário já enviado para {$montador->name} hoje ({$hojeStr}). Evitando repetição.");
+                continue;
+            }
+
             $pedidosInstalacao = Pedido::with(['cliente', 'tendas'])
                 ->where('montador_id', $montador->id)
                 ->whereDate('data_instalacao', $hojeStr)
@@ -195,6 +210,7 @@ class EnviarLembretesWhatsapp extends Command
             $msg .= "📲 Ao concluir cada serviço, acesse o sistema no celular para registrar *'Tenda instalada'* ou *'Tenda retirada'*!";
 
             $this->whatsapp->enviarMensagem($montador->whatsapp, $msg);
+            Cache::put($lockKey, true, now()->addDays(1));
             $this->info("Lembrete diário enviado para {$montador->name}");
             $enviados++;
         }

@@ -204,18 +204,26 @@ class PedidoController extends Controller
                 }
             }
 
-            // 1. Gera a primeira OS automaticamente quando cria o pedido (notifica o montador na OS inicial)
+            // 1. Gera a primeira OS automaticamente quando cria o pedido (notifica o montador SOMENTE se marcado)
+            $gerarOsAgora = $request->has('tem_campo_gerar_os')
+                ? $request->boolean('gerar_os_agora')
+                : $request->boolean('gerar_os_agora', true);
+
             $primeiraOs = $this->criarNovaOsParaPedido($pedido, 'instalacao', [
                 'status' => 'pendente',
-                'observacoes_montador' => 'Ordem de Serviço inicial gerada automaticamente na criação do Pedido #' . $pedido->id,
-            ], true);
+                'observacoes_montador' => 'Ordem de Serviço inicial gerada na criação do Pedido #' . $pedido->id,
+            ], $gerarOsAgora);
 
             $pedido->update(['status' => 'os_gerada']);
 
             DB::commit();
 
+            $msgSucesso = $gerarOsAgora
+                ? "Pedido criado com sucesso! 1ª Ordem de Serviço ({$primeiraOs->numero_os}) gerada e montador notificado no WhatsApp."
+                : "Pedido criado com sucesso! Notificação não enviada no momento (o montador receberá apenas nas próximas notificações programadas).";
+
             return redirect()->route('pedidos.show', $pedido)
-                ->with('success', "Pedido criado com sucesso! 1ª Ordem de Serviço ({$primeiraOs->numero_os}) gerada automaticamente.");
+                ->with('success', $msgSucesso);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Erro ao salvar pedido: ' . $e->getMessage());
@@ -334,7 +342,7 @@ class PedidoController extends Controller
                     $osRecente = $pedido->ordensServico()->latest()->first();
                     if ($osRecente) {
                         try {
-                            app(WhatsappService::class)->notificarNovaOsMontador($osRecente);
+                            $this->notificarMontadorNovaOs($pedido, $osRecente);
                         } catch (\Throwable $e) {
                             Log::warning("Erro ao notificar novo montador no WhatsApp: " . $e->getMessage());
                         }
@@ -667,7 +675,7 @@ class PedidoController extends Controller
             Log::info("Aviso WhatsApp para a O.S. {$os->numero_os} (#{$os->id}) já foi enviado. Evitando envio repetido.");
             return;
         }
-        Cache::put($lockKey, true, now()->addMinutes(60));
+        Cache::put($lockKey, true, now()->addDays(30));
 
         $dataInst = Carbon::parse($pedido->data_instalacao)->format('d/m/Y');
         $horaInst = $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : 'A combinar';

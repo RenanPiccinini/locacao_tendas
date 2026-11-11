@@ -34,13 +34,13 @@ class WhatsappService
                 $numeroLimpo = '55' . $numeroLimpo;
             }
 
-            // Mecanismo anti-duplicidade: bloqueia reenvio da mesmíssima mensagem para o mesmo número em curto intervalo (60 segundos)
+            // Mecanismo anti-duplicidade: bloqueia reenvio da mesmíssima mensagem para o mesmo número em curto intervalo (15 minutos)
             $dedupKey = 'wa_msg_dedup_' . md5($numeroLimpo . ':' . trim($mensagem));
             if (Cache::has($dedupKey)) {
                 Log::warning("Envio repetido de mensagem idêntica para {$numeroLimpo} bloqueado pelo sistema anti-duplicidade.");
                 return true;
             }
-            Cache::put($dedupKey, true, now()->addSeconds(60));
+            Cache::put($dedupKey, true, now()->addMinutes(15));
 
             $url = "{$this->baseUrl}/message/sendText/{$this->instance}";
 

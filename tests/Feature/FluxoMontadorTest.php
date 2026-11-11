@@ -203,6 +203,12 @@ class FluxoMontadorTest extends TestCase
         $this->assertCount(1, $mensagens);
         $this->assertEquals('17991111111', $mensagens[0]['numero']);
         $this->assertStringContainsString('AGENDA DA SEMANA', $mensagens[0]['msg']);
+
+        // 3. Testa trava anti-repetição: segunda execução NÃO deve re-enviar
+        $mensagensRepetidas = [];
+        $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia'])->assertExitCode(0);
+        $this->artisan('lembretes:whatsapp', ['--tipo' => 'semana'])->assertExitCode(0);
+        $this->assertCount(0, $mensagensRepetidas, 'Lembretes não devem ser repetidos no mesmo dia ou semana.');
     }
 
     public function test_servir_arquivo_storage_e_exibicao_fotos_com_lightbox(): void
@@ -326,6 +332,47 @@ class FluxoMontadorTest extends TestCase
         $this->assertCount(1, $mensagensEnviadas);
         $this->assertEquals('17999991111', $mensagensEnviadas[0]['numero']); // Foi para o WhatsApp PRINCIPAL!
         $this->assertStringContainsString('TENDA RETIRADA & ESTOQUE ATUALIZADO', $mensagensEnviadas[0]['msg']);
+    }
+
+    public function test_criar_pedido_com_gerar_os_desmarcado_nao_notifica_montador_na_criacao(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $montador = User::factory()->create(['role' => 'montador', 'whatsapp' => '17998887766']);
+        $cliente = Cliente::create(['nome' => 'Cliente Futuro', 'telefone' => '17997776655', 'endereco' => 'Avenida Principal, 100']);
+        $tenda = Tenda::create([
+            'nome' => 'Tenda 5x5m',
+            'tamanho' => '5x5',
+            'quantidade_total' => 4,
+            'quantidade_disponivel' => 4,
+            'valor_diaria' => 200.00,
+        ]);
+
+        $mensagensEnviadas = [];
+        $mockWpp = $this->createMock(WhatsappService::class);
+        $mockWpp->method('enviarMensagem')
+            ->willReturnCallback(function ($numero, $msg) use (&$mensagensEnviadas) {
+                $mensagensEnviadas[] = ['numero' => $numero, 'msg' => $msg];
+                return true;
+            });
+        $this->app->instance(WhatsappService::class, $mockWpp);
+
+        // Cria pedido para a próxima semana com gerar_os_agora DESMARCADO
+        $this->actingAs($admin)->post(route('pedidos.store'), [
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montador->id,
+            'data_instalacao' => now()->addDays(7)->format('Y-m-d'),
+            'data_retirada' => now()->addDays(9)->format('Y-m-d'),
+            'endereco_instalacao' => 'Avenida Principal, 100',
+            'tendas_selecionadas' => [$tenda->id],
+            'quantidades' => [$tenda->id => 1],
+            'tem_campo_gerar_os' => '1',
+            'gerar_os_agora' => '0', // Desmarcado
+        ]);
+
+        $pedido = Pedido::where('cliente_id', $cliente->id)->first();
+        $this->assertNotNull($pedido);
+        // Montador NÃO deve ter recebido nenhuma notificação no momento do cadastro!
+        $this->assertCount(0, $mensagensEnviadas, 'Montador não pode receber WhatsApp na criação quando a opção estiver desmarcada.');
     }
 }
 

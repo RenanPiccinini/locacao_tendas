@@ -240,6 +240,7 @@
 
                 <!-- PASSO 5: GERAÇÃO AUTOMÁTICA DA O.S. -->
                 <div class="p-4 bg-emerald-50 dark:bg-[#04291c] rounded-xl border border-emerald-100 dark:border-[#083d2c] flex items-center gap-3">
+                    <input type="hidden" name="tem_campo_gerar_os" value="1">
                     <input type="checkbox" id="gerar_os_agora" name="gerar_os_agora" value="1" checked class="rounded text-emerald-600 focus:ring-amber-400 w-4 h-4 cursor-pointer">
                     <label for="gerar_os_agora" class="text-sm font-medium text-emerald-950 dark:text-emerald-200 cursor-pointer select-none">
                         <strong>Gerar 1ª Ordem de Serviço automaticamente</strong> e notificar o montador no WhatsApp
