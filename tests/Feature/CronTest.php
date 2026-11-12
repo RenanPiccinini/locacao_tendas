@@ -55,6 +55,8 @@ class CronTest extends TestCase
         $resHome->assertSee('Tenda 3x3m');
         $resHome->assertDontSee('Tenda 3x3m (Simples ou c/ Balcão)');
         $resHome->assertDontSee('Fechamentos laterais retráteis com trilho e zíper de vedação.');
+        $resHome->assertDontSee('Tenda Piramidal c/ Fechamento');
+        $resHome->assertDontSee('Ver Mais Fotos no Instagram @tendaseldorado');
     }
 }
 
