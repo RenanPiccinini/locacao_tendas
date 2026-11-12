@@ -132,7 +132,7 @@ class EnviarLembretesWhatsapp extends Command
     }
 
     /**
-     * Lembrete diário às 08h00 com as montagens e retiradas de hoje para cada montador
+     * Lembrete diário às 07h00 com as montagens e retiradas de hoje para cada montador
      */
     protected function enviarLembreteDiario(): void
     {

@@ -127,7 +127,7 @@
                     var p = info.event.extendedProps || {};
                     var urlPedido = p.pedido_url || info.event.url || (p.pedido_id ? ('/pedidos/' + p.pedido_id) : '#');
                     
-                    document.getElementById('evento-titulo').textContent = info.event.title || '';
+                    document.getElementById('evento-titulo').textContent = p.pedido_id ? ('Pedido #' + p.pedido_id) : (info.event.title || '');
                     document.getElementById('evento-cliente').textContent = p.cliente_nome || p.cliente || '-';
                     document.getElementById('evento-endereco').textContent = p.endereco || '-';
                     document.getElementById('evento-montador').textContent = p.montador_nome || p.montador || 'Não definido';

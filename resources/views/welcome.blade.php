@@ -281,7 +281,7 @@
                                 tag: 'Tenda 3x3m • Versátil & Rápida',
                                 tagShort: '3x3m',
                                 badge: 'Montagem Express',
-                                title: 'Tenda 3x3m (Simples ou c/ Balcão)',
+                                title: 'Tenda 3x3m',
                                 desc: 'Ideal para stands promocionais, bilheterias, degustações e feiras com total praticidade.',
                                 specs: ['Área: 9m²', 'Opção com balcão', 'Estrutura reforçada']
                             },
@@ -649,7 +649,7 @@
                     </div>
                     <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
                         <div>
-                            <h3 class="text-xl font-bold text-white">Tenda 3x3m (Simples ou c/ Balcão)</h3>
+                            <h3 class="text-xl font-bold text-white">Tenda 3x3m</h3>
                             <p class="text-emerald-200/80 text-xs mt-2 leading-relaxed">
                                 Estrutura prática, compacta e de montagem rápida. Ideal para feiras, stands de degustação, pontos de atendimento e bilheterias. Disponível também com balcão acoplado.
                             </p>
@@ -842,7 +842,7 @@
                             </div>
                             <h3 class="text-lg font-bold text-white">Módulos Conectados & Calhas</h3>
                             <p class="text-xs text-emerald-200/80 mt-2 leading-relaxed">
-                                Sistema modular acoplável com calhas de união para criação de pavilhões contínuos. Fechamentos laterais retráteis com trilho e zíper de vedação.
+                                Sistema modular acoplável com calhas de união para criação de pavilhões contínuos.
                             </p>
                         </div>
                         <div class="pt-4 border-t border-emerald-800/80 flex items-center justify-between gap-3">

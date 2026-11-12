@@ -35,5 +35,26 @@ class CronTest extends TestCase
         $responseSemana->assertStatus(200);
         $responseSemana->assertJson(['success' => true, 'tipo' => 'semana']);
     }
+
+    public function test_horario_lembretes_e_textos_da_home_atualizados(): void
+    {
+        $admin = \App\Models\User::factory()->create(['role' => 'admin']);
+
+        $resWhatsapp = $this->actingAs($admin)->get(route('whatsapp.conexao'));
+        $resWhatsapp->assertOk();
+        $resWhatsapp->assertSee('Toda Segunda-feira às 07h00');
+        $resWhatsapp->assertSee('Todos os dias às 07h00');
+        $resWhatsapp->assertDontSee('às 08h00');
+
+        $consoleContent = file_get_contents(base_path('routes/console.php'));
+        $this->assertStringContainsString("weeklyOn(1, '07:00')", $consoleContent);
+        $this->assertStringContainsString("dailyAt('07:00')", $consoleContent);
+
+        $resHome = $this->get(route('home'));
+        $resHome->assertOk();
+        $resHome->assertSee('Tenda 3x3m');
+        $resHome->assertDontSee('Tenda 3x3m (Simples ou c/ Balcão)');
+        $resHome->assertDontSee('Fechamentos laterais retráteis com trilho e zíper de vedação.');
+    }
 }
 
