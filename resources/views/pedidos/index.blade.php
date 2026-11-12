@@ -113,8 +113,8 @@
                     <table class="w-full text-left text-sm text-gray-600 dark:text-emerald-100/90 min-w-[760px]">
                         <thead class="bg-gray-50 dark:bg-[#02140e] text-xs uppercase font-semibold text-gray-700 dark:text-emerald-300 border-b border-gray-100 dark:border-[#083d2c]">
                             @php
-                                $ordemAtual = request('ordem', 'desc') === 'asc' ? 'asc' : 'desc';
-                                $proximaOrdem = $ordemAtual === 'desc' ? 'asc' : 'desc';
+                                $ordemAtual = request('ordem', 'asc') === 'desc' ? 'desc' : 'asc';
+                                $proximaOrdem = $ordemAtual === 'asc' ? 'desc' : 'asc';
                             @endphp
                             <tr>
                                 <th class="px-6 py-4">ID</th>

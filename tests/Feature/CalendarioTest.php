@@ -21,6 +21,7 @@ class CalendarioTest extends TestCase
         $response->assertOk();
         $response->assertSee('Calendário de Instalações e Retiradas');
         $response->assertSee('Ver Pedido Completo');
+        $response->assertSee('displayEventTime: false');
     }
 
     public function test_eventos_do_calendario_retornam_urls_e_dados_completos(): void
@@ -64,7 +65,7 @@ class CalendarioTest extends TestCase
         $this->assertCount(2, $eventos); // 1 montagem + 1 retirada
 
         foreach ($eventos as $evento) {
-            $this->assertEquals("#{$pedido->id}", $evento['title']);
+            $this->assertEquals("Pedido #{$pedido->id}", $evento['title']);
             $this->assertArrayHasKey('url', $evento);
             $this->assertEquals(route('pedidos.show', $pedido), $evento['url']);
 

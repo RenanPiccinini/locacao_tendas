@@ -408,22 +408,22 @@ class FluxoMontadorTest extends TestCase
             'status' => 'os_gerada',
         ]);
 
-        // Listagem padrão: ordenada por data de instalação (descendente: 20/11, 15/11, 10/11)
-        $resDesc = $this->actingAs($admin)->get(route('pedidos.index'));
-        $resDesc->assertStatus(200);
-        $resDesc->assertSeeInOrder([
-            'Cliente Instalacao Dia 20',
-            'Cliente Instalacao Dia 15',
-            'Cliente Instalacao Dia 10',
-        ]);
-
-        // Listagem ascendente via toggle
-        $resAsc = $this->actingAs($admin)->get(route('pedidos.index', ['ordem' => 'asc']));
+        // Listagem padrão: ordenada por data de instalação (ascendente, igual ao Dashboard: 10/11, 15/11, 20/11)
+        $resAsc = $this->actingAs($admin)->get(route('pedidos.index'));
         $resAsc->assertStatus(200);
         $resAsc->assertSeeInOrder([
             'Cliente Instalacao Dia 10',
             'Cliente Instalacao Dia 15',
             'Cliente Instalacao Dia 20',
+        ]);
+
+        // Listagem descendente via toggle
+        $resDesc = $this->actingAs($admin)->get(route('pedidos.index', ['ordem' => 'desc']));
+        $resDesc->assertStatus(200);
+        $resDesc->assertSeeInOrder([
+            'Cliente Instalacao Dia 20',
+            'Cliente Instalacao Dia 15',
+            'Cliente Instalacao Dia 10',
         ]);
 
         // Dentro do pedido (show e edit): botão "Novo Pedido de Locação" apontando para pedidos.create

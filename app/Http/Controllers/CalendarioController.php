@@ -47,7 +47,7 @@ class CalendarioController extends Controller
             // Evento 1: Instalação
             $eventos[] = [
                 'id' => "inst-{$pedido->id}",
-                'title' => "#{$pedido->id}",
+                'title' => "Pedido #{$pedido->id}",
                 'start' => $pedido->data_instalacao->format('Y-m-d') . ($pedido->hora_instalacao ? 'T' . $pedido->hora_instalacao : ''),
                 'allDay' => empty($pedido->hora_instalacao),
                 'backgroundColor' => '#059669', // Verde Esmeralda
@@ -72,7 +72,7 @@ class CalendarioController extends Controller
             // Evento 2: Retirada
             $eventos[] = [
                 'id' => "ret-{$pedido->id}",
-                'title' => "#{$pedido->id}",
+                'title' => "Pedido #{$pedido->id}",
                 'start' => $pedido->data_retirada->format('Y-m-d') . ($pedido->hora_retirada ? 'T' . $pedido->hora_retirada : ''),
                 'allDay' => empty($pedido->hora_retirada),
                 'backgroundColor' => '#9333ea', // Roxo

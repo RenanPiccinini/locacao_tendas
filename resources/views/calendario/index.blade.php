@@ -106,6 +106,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 locale: 'pt-br',
                 initialView: 'dayGridMonth',
+                displayEventTime: false,
                 headerToolbar: window.innerWidth < 768 ? {
                     left: 'prev,next',
                     center: 'title',
