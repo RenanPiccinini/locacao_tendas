@@ -51,7 +51,11 @@ class WhatsappController extends Controller
     public function testarLembrete(Request $request): JsonResponse
     {
         $tipo = $request->input('tipo', 'dia');
-        \Illuminate\Support\Facades\Artisan::call('lembretes:whatsapp', ['--tipo' => $tipo]);
+        $params = ['--tipo' => $tipo];
+        if ($tipo === 'dia') {
+            $params['--forcar'] = true;
+        }
+        \Illuminate\Support\Facades\Artisan::call('lembretes:whatsapp', $params);
         $output = \Illuminate\Support\Facades\Artisan::output();
 
         return response()->json([

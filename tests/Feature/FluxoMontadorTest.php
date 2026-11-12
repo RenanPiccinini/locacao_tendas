@@ -166,17 +166,42 @@ class FluxoMontadorTest extends TestCase
             'valor_diaria' => 200,
         ]);
 
-        $hoje = Carbon::now('America/Sao_Paulo')->format('Y-m-d');
+        $hoje = Carbon::now('America/Sao_Paulo');
+        $hojeStr = $hoje->format('Y-m-d');
+        $inicioSemana = $hoje->copy()->startOfWeek(Carbon::MONDAY);
 
+        // Pedido do Montador A para hoje (instalação)
         $pedido = Pedido::create([
             'cliente_id' => $cliente->id,
             'montador_id' => $montadorA->id,
-            'data_instalacao' => $hoje,
-            'data_retirada' => Carbon::now('America/Sao_Paulo')->addDays(1)->format('Y-m-d'),
+            'data_instalacao' => $hojeStr,
+            'data_retirada' => $hoje->copy()->addDays(1)->format('Y-m-d'),
             'endereco_instalacao' => 'Rua Principal, 50',
             'status' => 'os_gerada',
         ]);
         $pedido->tendas()->attach($tenda->id, ['quantidade' => 2]);
+
+        // Pedido já instalado com retirada hoje NÃO deve aparecer nos lembretes (somente instalações!)
+        $pedidoRetiradaHoje = Pedido::create([
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montadorA->id,
+            'data_instalacao' => $hoje->copy()->subDays(2)->format('Y-m-d'),
+            'data_retirada' => $hojeStr,
+            'endereco_instalacao' => 'Rua Retirada, 99',
+            'status' => 'instalado',
+        ]);
+        $pedidoRetiradaHoje->tendas()->attach($tenda->id, ['quantidade' => 1]);
+
+        // Pedido da próxima semana NÃO deve entrar no semanal nem no diário
+        $pedidoProximaSemana = Pedido::create([
+            'cliente_id' => $cliente->id,
+            'montador_id' => $montadorA->id,
+            'data_instalacao' => $inicioSemana->copy()->addDays(10)->format('Y-m-d'),
+            'data_retirada' => $inicioSemana->copy()->addDays(12)->format('Y-m-d'),
+            'endereco_instalacao' => 'Rua Futura, 200',
+            'status' => 'os_gerada',
+        ]);
+        $pedidoProximaSemana->tendas()->attach($tenda->id, ['quantidade' => 1]);
 
         $mensagens = [];
         $mockWpp = $this->createMock(WhatsappService::class);
@@ -187,14 +212,17 @@ class FluxoMontadorTest extends TestCase
             });
         $this->app->instance(WhatsappService::class, $mockWpp);
 
-        // 1. Testa disparo diário
-        $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia'])->assertExitCode(0);
+        // 1. Testa disparo diário (--forcar garante execução mesmo se o teste rodar na segunda-feira)
+        $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia', '--forcar' => true])->assertExitCode(0);
 
-        // Deve enviar apenas para o Montador A (que tem pedido hoje), e NUNCA para o Montador B
+        // Deve enviar apenas para o Montador A (somente instalação de hoje), NUNCA para Montador B nem retiradas/futuros
         $this->assertCount(1, $mensagens);
         $this->assertEquals('17991111111', $mensagens[0]['numero']);
-        $this->assertStringContainsString('AGENDA DE HOJE', $mensagens[0]['msg']);
-        $this->assertStringContainsString('Tenda Piramidal 10x10', $mensagens[0]['msg']);
+        $this->assertStringContainsString('INSTALAÇÕES DE HOJE', $mensagens[0]['msg']);
+        $this->assertStringContainsString('Rua Principal, 50', $mensagens[0]['msg']);
+        $this->assertStringNotContainsString('RETIRADAS', $mensagens[0]['msg']);
+        $this->assertStringNotContainsString('Rua Retirada, 99', $mensagens[0]['msg']);
+        $this->assertStringNotContainsString('Rua Futura, 200', $mensagens[0]['msg']);
 
         // 2. Testa disparo semanal
         $mensagens = [];
@@ -203,12 +231,25 @@ class FluxoMontadorTest extends TestCase
         $this->assertCount(1, $mensagens);
         $this->assertEquals('17991111111', $mensagens[0]['numero']);
         $this->assertStringContainsString('AGENDA DA SEMANA', $mensagens[0]['msg']);
+        $this->assertStringContainsString('INSTALAÇÕES DA SEMANA', $mensagens[0]['msg']);
+        $this->assertStringNotContainsString('RETIRADAS', $mensagens[0]['msg']);
+        $this->assertStringNotContainsString('Rua Futura, 200', $mensagens[0]['msg']);
 
         // 3. Testa trava anti-repetição: segunda execução NÃO deve re-enviar
-        $mensagensRepetidas = [];
-        $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia'])->assertExitCode(0);
+        $mensagens = [];
+        $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia', '--forcar' => true])->assertExitCode(0);
         $this->artisan('lembretes:whatsapp', ['--tipo' => 'semana'])->assertExitCode(0);
-        $this->assertCount(0, $mensagensRepetidas, 'Lembretes não devem ser repetidos no mesmo dia ou semana.');
+        $this->assertCount(0, $mensagens, 'Lembretes não devem ser repetidos no mesmo dia ou semana.');
+
+        // 4. Na segunda-feira sem --forcar, o lembrete diário é pulado automaticamente (pois o semanal já envia tudo)
+        Carbon::setTestNow($inicioSemana->copy()->setTime(7, 0));
+        try {
+            $mensagens = [];
+            $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia'])->assertExitCode(0);
+            $this->assertCount(0, $mensagens, 'Na segunda-feira o lembrete diário automático não deve ser enviado.');
+        } finally {
+            Carbon::setTestNow();
+        }
     }
 
     public function test_servir_arquivo_storage_e_exibicao_fotos_com_lightbox(): void

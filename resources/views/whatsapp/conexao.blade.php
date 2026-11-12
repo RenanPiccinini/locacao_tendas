@@ -110,17 +110,17 @@
                             Toda Segunda-feira às 07h00
                         </div>
                         <p class="text-gray-600 dark:text-emerald-200/70">
-                            Dispara para cada montador a <strong>agenda completa da semana</strong> contendo todas as montagens e retiradas agendadas de segunda a domingo.
+                            Dispara para cada montador a <strong>agenda completa da semana</strong> contendo todas as instalações agendadas de segunda a domingo destinadas a ele.
                         </p>
                     </div>
 
                     <div class="p-3.5 bg-gray-50 dark:bg-[#02140e] rounded-lg border border-gray-200 dark:border-[#083d2c]">
                         <div class="font-bold text-gray-800 dark:text-white text-sm mb-1 flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-                            Todos os dias às 07h00
+                            Terça a Domingo às 07h00
                         </div>
                         <p class="text-gray-600 dark:text-emerald-200/70">
-                            Dispara para cada montador o <strong>resumo exclusivo das suas tendas do dia</strong> (montagens e retiradas programadas para hoje).
+                            Dispara para cada montador <strong>somente as instalações do dia atual</strong> destinadas a ele (na segunda-feira não repete, pois o semanal já envia toda a semana).
                         </p>
                     </div>
                 </div>
@@ -135,11 +135,11 @@
                         <div class="mt-3 p-3.5 bg-slate-900 text-slate-200 rounded-lg space-y-2">
                             <p>No <strong>hPanel da Hostinger &gt; Cron Jobs</strong>, crie a tarefa a cada minuto (<code>* * * * *</code>) com o comando:</p>
                             <code class="block p-2 bg-black/60 rounded text-emerald-400 font-mono select-all">
-                                cd /home/u639274314/domains/locacao-tendas.piccininidigitalsolutions.com.br/public_html &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1
+                                cd /home/u639274314/domains/tendaseldorado.com.br/public_html &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1
                             </code>
-                            <p class="text-gray-400">Ou utilize a URL do Web Cron:</p>
+                            <p class="text-gray-400">Ou utilize a URL do Web Cron (recomendado para garantir PHP 8.3+):</p>
                             <code class="block p-2 bg-black/60 rounded text-emerald-400 font-mono select-all">
-                                curl -s -L "https://locacao-tendas.piccininidigitalsolutions.com.br/cron/scheduler" &gt;/dev/null 2&gt;&amp;1
+                                curl -s -L "https://tendaseldorado.com.br/cron/scheduler" &gt;/dev/null 2&gt;&amp;1
                             </code>
                         </div>
                     </details>

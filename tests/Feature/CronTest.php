@@ -43,12 +43,13 @@ class CronTest extends TestCase
         $resWhatsapp = $this->actingAs($admin)->get(route('whatsapp.conexao'));
         $resWhatsapp->assertOk();
         $resWhatsapp->assertSee('Toda Segunda-feira às 07h00');
-        $resWhatsapp->assertSee('Todos os dias às 07h00');
+        $resWhatsapp->assertSee('Terça a Domingo às 07h00');
         $resWhatsapp->assertDontSee('às 08h00');
 
         $consoleContent = file_get_contents(base_path('routes/console.php'));
         $this->assertStringContainsString("weeklyOn(1, '07:00')", $consoleContent);
-        $this->assertStringContainsString("dailyAt('07:00')", $consoleContent);
+        $this->assertStringContainsString('->days([0, 2, 3, 4, 5, 6])', $consoleContent);
+        $this->assertStringContainsString("->at('07:00')", $consoleContent);
 
         $resHome = $this->get(route('home'));
         $resHome->assertOk();
