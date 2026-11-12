@@ -30,7 +30,12 @@ class PedidoController extends Controller
 
     public function index(Request $request, DisponibilidadeService $disponibilidadeService): View
     {
-        $query = Pedido::with(['cliente', 'montador', 'tendas', 'ordensServico'])->latest();
+        $ordem = $request->input('ordem') === 'asc' ? 'asc' : 'desc';
+
+        $query = Pedido::with(['cliente', 'montador', 'tendas', 'ordensServico'])
+            ->orderBy('data_instalacao', $ordem)
+            ->orderBy('hora_instalacao', $ordem)
+            ->orderBy('id', $ordem);
 
         if (auth()->user()->isMontador()) {
             $query->where('montador_id', auth()->id());

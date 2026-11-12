@@ -203,7 +203,70 @@
         $retornoStr = $formatarDataHora($proposta->data_retorno, $proposta->hora_retorno);
 
         $temPagamentos = !empty(trim((string) $proposta->pagamentos));
+        $temObservacoes = !empty(trim((string) $proposta->observacoes));
+        $temIdentificacao = !empty(trim((string) $proposta->identificacao));
         $temItens = $proposta->itens->isNotEmpty();
+        $totalGeral = (float) ($proposta->valor_total_geral ?: $proposta->valor_total);
+        $temTotalGeral = $totalGeral > 0;
+
+        $renderLinhaCampos = function (array $campos): string {
+            $partes = [];
+            foreach ($campos as $label => $valor) {
+                $texto = trim((string) ($valor ?? ''));
+                if ($texto !== '') {
+                    $partes[] = '<strong>' . e($label) . ':</strong> ' . e($texto);
+                }
+            }
+
+            return implode(' - ', $partes);
+        };
+
+        $linhasDe = array_values(array_filter([
+            $renderLinhaCampos([
+                'Razão Social' => $proposta->de_razao_social,
+                'Fantasia' => $proposta->de_fantasia,
+            ]),
+            $renderLinhaCampos([
+                'CNPJ' => $proposta->de_cnpj,
+                'IE' => $proposta->de_ie,
+                'IM' => $proposta->de_im,
+            ]),
+            $renderLinhaCampos([
+                'CEP' => $proposta->de_cep,
+                'Endereço' => $proposta->de_endereco,
+                'Bairro' => $proposta->de_bairro,
+                'Cidade' => $proposta->de_cidade,
+                'UF' => $proposta->de_uf,
+            ]),
+            $renderLinhaCampos([
+                'Consultor' => $proposta->de_consultor,
+                'Celular' => $proposta->de_celular,
+                'Email' => $proposta->de_email,
+            ]),
+        ]));
+
+        $linhasPara = array_values(array_filter([
+            $renderLinhaCampos([
+                'Razão Social' => $proposta->para_razao_social,
+                'Fantasia' => $proposta->para_fantasia,
+            ]),
+            $renderLinhaCampos([
+                'CNPJ' => $proposta->para_cnpj_cpf,
+                'Inscrição Estadual' => $proposta->para_ie,
+            ]),
+            $renderLinhaCampos([
+                'CEP' => $proposta->para_cep,
+                'Endereço' => $proposta->para_endereco,
+                'Bairro' => $proposta->para_bairro,
+                'Cidade' => $proposta->para_cidade,
+                'UF' => $proposta->para_uf,
+            ]),
+            $renderLinhaCampos([
+                'Solicitante' => $proposta->para_solicitante,
+                'Celular' => $proposta->para_celular,
+                'Email' => $proposta->para_email,
+            ]),
+        ]));
     @endphp
 
     <!-- Topo: Data/Hora e Sistema -->
@@ -234,114 +297,97 @@
         </tr>
         <tr>
             <td class="info-body">
-                <div style="margin-bottom: 2px;">{{ $dataPropostaExtenso }}</div>
-                <div><strong>Identificação:</strong> {{ $proposta->identificacao }}</div>
+                <div style="{{ $temIdentificacao ? 'margin-bottom: 2px;' : '' }}">{{ $dataPropostaExtenso }}</div>
+                @if($temIdentificacao)
+                    <div><strong>Identificação:</strong> {{ $proposta->identificacao }}</div>
+                @endif
             </td>
         </tr>
     </table>
 
-    <!-- BOX 2: DE -->
-    <table class="box">
-        <tr>
-            <td class="box-title-left">De:</td>
-        </tr>
-        <tr>
-            <td class="info-body">
-                <div>
-                    <strong>Razão Social:</strong> {{ $proposta->de_razao_social }}
-                    - <strong>Fantasia:</strong> {{ $proposta->de_fantasia }}
-                </div>
-                <div>
-                    <strong>CNPJ:</strong> {{ $proposta->de_cnpj }}
-                    - <strong>IE:</strong> {{ $proposta->de_ie }}
-                    - <strong>IM:</strong> {{ $proposta->de_im }}
-                </div>
-                <div>
-                    <strong>CEP:</strong> {{ $proposta->de_cep }}
-                    - <strong>Endereço:</strong> {{ $proposta->de_endereco }}
-                    - <strong>Bairro:</strong> {{ $proposta->de_bairro }}
-                    - <strong>Cidade:</strong> {{ $proposta->de_cidade }}
-                    - <strong>UF:</strong> {{ $proposta->de_uf }}
-                </div>
-                <div>
-                    <strong>Consultor:</strong> {{ $proposta->de_consultor }}
-                    - <strong>Celular:</strong> {{ $proposta->de_celular }}
-                    - <strong>Email:</strong> {{ $proposta->de_email }}
-                </div>
-            </td>
-        </tr>
-    </table>
+    @if(!empty($linhasDe))
+        <!-- BOX 2: DE -->
+        <table class="box">
+            <tr>
+                <td class="box-title-left">De:</td>
+            </tr>
+            <tr>
+                <td class="info-body">
+                    @foreach($linhasDe as $linha)
+                        <div>{!! $linha !!}</div>
+                    @endforeach
+                </td>
+            </tr>
+        </table>
+    @endif
 
-    <!-- BOX 3: PARA -->
-    <table class="box">
-        <tr>
-            <td class="box-title-left">Para:</td>
-        </tr>
-        <tr>
-            <td class="info-body">
-                <div>
-                    <strong>Razão Social:</strong> {{ $proposta->para_razao_social }}
-                    - <strong>Fantasia:</strong> {{ $proposta->para_fantasia }}
-                </div>
-                <div>
-                    <strong>CNPJ:</strong> {{ $proposta->para_cnpj_cpf }}
-                    - <strong>Inscrição Estadual:</strong> {{ $proposta->para_ie }}
-                </div>
-                <div>
-                    <strong>CEP:</strong> {{ $proposta->para_cep }}
-                    - <strong>Endereço:</strong> {{ $proposta->para_endereco }}
-                    - <strong>Bairro:</strong> {{ $proposta->para_bairro }}
-                    - <strong>Cidade:</strong> {{ $proposta->para_cidade }}
-                    - <strong>UF:</strong> {{ $proposta->para_uf }}
-                </div>
-                <div>
-                    <strong>Solicitante:</strong> {{ $proposta->para_solicitante }}
-                    - <strong>Celular:</strong> {{ $proposta->para_celular }}
-                    - <strong>Email:</strong> {{ $proposta->para_email }}
-                </div>
-            </td>
-        </tr>
-    </table>
+    @if(!empty($linhasPara))
+        <!-- BOX 3: PARA -->
+        <table class="box">
+            <tr>
+                <td class="box-title-left">Para:</td>
+            </tr>
+            <tr>
+                <td class="info-body">
+                    @foreach($linhasPara as $linha)
+                        <div>{!! $linha !!}</div>
+                    @endforeach
+                </td>
+            </tr>
+        </table>
+    @endif
 
     @php
-        $dataEventoInicio = $proposta->data_inicio 
-            ? \Carbon\Carbon::parse($proposta->data_inicio)->format('d/m/Y') 
-            : ($proposta->data_saida ? \Carbon\Carbon::parse($proposta->data_saida)->format('d/m/Y') : '—');
+        $dataEventoInicio = $proposta->data_inicio
+            ? \Carbon\Carbon::parse($proposta->data_inicio)->format('d/m/Y')
+            : ($proposta->data_saida ? \Carbon\Carbon::parse($proposta->data_saida)->format('d/m/Y') : null);
 
-        $dataEventoFim = $proposta->data_fim 
-            ? \Carbon\Carbon::parse($proposta->data_fim)->format('d/m/Y') 
-            : ($proposta->data_retorno ? \Carbon\Carbon::parse($proposta->data_retorno)->format('d/m/Y') : '—');
+        $dataEventoFim = $proposta->data_fim
+            ? \Carbon\Carbon::parse($proposta->data_fim)->format('d/m/Y')
+            : ($proposta->data_retorno ? \Carbon\Carbon::parse($proposta->data_retorno)->format('d/m/Y') : null);
 
         $dataAssinaturaAutomatica = $proposta->data_proposta
             ? \Carbon\Carbon::parse($proposta->data_proposta)->format('d/m/Y')
             : ($proposta->created_at ? $proposta->created_at->format('d/m/Y') : now()->format('d/m/Y'));
     @endphp
 
-    <!-- BOX 4: DATA DO EVENTO -->
-    <table class="box">
-        <tr>
-            <td colspan="2" class="box-title-center">Data do Evento</td>
-        </tr>
-        <tr>
-            <td class="periodo-col border-right" style="width: 50%; text-align: center; font-size: 11px;">
-                <strong>De:</strong> {{ $dataEventoInicio }}
-            </td>
-            <td class="periodo-col" style="width: 50%; text-align: center; font-size: 11px;">
-                <strong>Até:</strong> {{ $dataEventoFim }}
-            </td>
-        </tr>
-    </table>
-
-    <!-- BOX 5: PRODUTO(S) / QTD / VALOR/PERÍODO -->
-    <table class="box">
-        <thead>
+    @if($dataEventoInicio || $dataEventoFim)
+        <!-- BOX 4: DATA DO EVENTO -->
+        <table class="box">
             <tr>
-                <th class="th-col border-right {{ $temItens ? 'th-bottom' : '' }}" style="width: 52%;">Produto(s)</th>
-                <th class="th-col border-right {{ $temItens ? 'th-bottom' : '' }}" style="width: 14%;">Qtd</th>
-                <th class="th-col {{ $temItens ? 'th-bottom' : '' }}" style="width: 34%;">Valor/Período</th>
+                <td colspan="{{ ($dataEventoInicio && $dataEventoFim) ? 2 : 1 }}" class="box-title-center">Data do Evento</td>
             </tr>
-        </thead>
-        @if($temItens)
+            <tr>
+                @if($dataEventoInicio && $dataEventoFim)
+                    <td class="periodo-col border-right" style="width: 50%; text-align: center; font-size: 11px;">
+                        <strong>De:</strong> {{ $dataEventoInicio }}
+                    </td>
+                    <td class="periodo-col" style="width: 50%; text-align: center; font-size: 11px;">
+                        <strong>Até:</strong> {{ $dataEventoFim }}
+                    </td>
+                @elseif($dataEventoInicio)
+                    <td class="periodo-col" style="width: 100%; text-align: center; font-size: 11px;">
+                        <strong>De:</strong> {{ $dataEventoInicio }}
+                    </td>
+                @else
+                    <td class="periodo-col" style="width: 100%; text-align: center; font-size: 11px;">
+                        <strong>Até:</strong> {{ $dataEventoFim }}
+                    </td>
+                @endif
+            </tr>
+        </table>
+    @endif
+
+    @if($temItens)
+        <!-- BOX 5: PRODUTO(S) / QTD / VALOR/PERÍODO -->
+        <table class="box">
+            <thead>
+                <tr>
+                    <th class="th-col border-right th-bottom" style="width: 52%;">Produto(s)</th>
+                    <th class="th-col border-right th-bottom" style="width: 14%;">Qtd</th>
+                    <th class="th-col th-bottom" style="width: 34%;">Valor/Período</th>
+                </tr>
+            </thead>
             <tbody>
                 @foreach($proposta->itens as $item)
                     <tr class="{{ $loop->last ? 'last-row' : '' }}">
@@ -351,59 +397,60 @@
                     </tr>
                 @endforeach
             </tbody>
-        @endif
-    </table>
+        </table>
+    @endif
 
-    <!-- BOX 6: TOTAL GERAL -->
-    <table class="box">
-        <tr>
-            <td class="total-col" style="width: 100%; text-align: center; font-size: 11.5px;">
-                <strong>Total Geral:</strong> R$ {{ number_format((float) ($proposta->valor_total_geral ?: $proposta->valor_total), 2, ',', '.') }}
-            </td>
-        </tr>
-    </table>
+    @if($temTotalGeral)
+        <!-- BOX 6: TOTAL GERAL -->
+        <table class="box">
+            <tr>
+                <td class="total-col" style="width: 100%; text-align: center; font-size: 11.5px;">
+                    <strong>Total Geral:</strong> R$ {{ number_format($totalGeral, 2, ',', '.') }}
+                </td>
+            </tr>
+        </table>
+    @endif
 
-    <!-- BOX 7: PAGAMENTO(S) -->
-    <table class="box">
-        <tr>
-            <td class="{{ $temPagamentos ? 'box-title-center' : 'box-title-center-no-border' }}">Pagamento(s)</td>
-        </tr>
-        @if($temPagamentos)
+    @if($temPagamentos)
+        <!-- BOX 7: PAGAMENTO(S) -->
+        <table class="box">
+            <tr>
+                <td class="box-title-center">Pagamento(s)</td>
+            </tr>
             <tr>
                 <td class="info-body">{!! nl2br(e($proposta->pagamentos)) !!}</td>
             </tr>
-        @endif
-    </table>
+        </table>
+    @endif
 
-    <!-- BOX 8: OBSERVAÇÕES -->
-    <table class="box">
-        <tr>
-            <td class="obs-cell">
-                <div style="margin-bottom: 4px;"><strong>Observações:</strong></div>
-                @if(!empty(trim((string) $proposta->observacoes)))
+    @if($temObservacoes)
+        <!-- BOX 8: OBSERVAÇÕES -->
+        <table class="box">
+            <tr>
+                <td class="obs-cell">
+                    <div style="margin-bottom: 4px;"><strong>Observações:</strong></div>
                     <div>{!! nl2br(e($proposta->observacoes)) !!}</div>
-                @endif
-            </td>
-        </tr>
-    </table>
+                </td>
+            </tr>
+        </table>
+    @endif
 
     <!-- RODAPÉ DE ASSINATURA -->
     <table class="signatures">
         <tr>
             <td style="vertical-align: top;">
-                <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #111; height: 16px; line-height: 16px;">
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #111; height: 22px; line-height: 22px;">
                     {{ $dataAssinaturaAutomatica }}
                 </div>
                 <div class="sig-line"></div>
                 <div class="sig-label">DATA</div>
             </td>
             <td style="vertical-align: top;">
-                <div style="height: 16px; margin-bottom: 5px;"></div>
+                <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 14px; font-weight: normal; margin-bottom: 5px; color: #111; height: 22px; line-height: 22px;">
+                    Marcia Regina Sabino Gibertoni
+                </div>
                 <div class="sig-line"></div>
                 <div class="sig-label">ASSINATURA</div>
-                <div style="font-size: 9.5px; font-weight: bold; color: #111; margin-top: 3px; letter-spacing: 0.3px;">
-                    MARCIA REGINA SABINO GIBERTONI
-                </div>
             </td>
         </tr>
     </table>

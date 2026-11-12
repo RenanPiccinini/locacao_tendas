@@ -7,7 +7,15 @@
                 </h2>
                 <p class="text-sm text-gray-500 dark:text-emerald-400/80">Altere datas, tendas, local ou montador — a Ordem de Serviço (OS) será atualizada automaticamente</p>
             </div>
-            <a href="{{ route('pedidos.show', $pedido) }}" class="text-sm font-semibold text-emerald-700 dark:text-amber-400 hover:text-emerald-900 dark:hover:text-amber-300">&larr; Voltar ao Pedido</a>
+            <div class="flex items-center gap-3">
+                @if(Auth::user()->isAdmin())
+                    <a href="{{ route('pedidos.create') }}" class="inline-flex items-center px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-lg shadow-xs text-xs transition gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <span>Novo Pedido de Locação</span>
+                    </a>
+                @endif
+                <a href="{{ route('pedidos.show', $pedido) }}" class="text-sm font-semibold text-emerald-700 dark:text-amber-400 hover:text-emerald-900 dark:hover:text-amber-300">&larr; Voltar ao Pedido</a>
+            </div>
         </div>
     </x-slot>
 

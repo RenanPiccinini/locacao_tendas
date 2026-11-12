@@ -263,4 +263,71 @@ class PropostaTest extends TestCase
         $resDelete->assertRedirect(route('propostas.index'));
         $this->assertDatabaseMissing('propostas', ['id' => $proposta->id]);
     }
+
+    public function test_proposta_pdf_oculta_campos_nao_preenchidos_usa_novo_endereco_e_exibe_assinatura_acima_do_pontilhado(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $dadosPadrao = Proposta::dadosPadraoLocadora($admin);
+        $this->assertEquals('Rua Pedro Martins, 190', $dadosPadrao['de_endereco']);
+        $this->assertEquals('Distrito Industrial Adail Vetorasso', $dadosPadrao['de_bairro']);
+        $this->assertEquals('15046-773', $dadosPadrao['de_cep']);
+
+        $this->actingAs($admin)->post(route('propostas.store'), [
+            'numero' => '101',
+            'data_proposta' => '2026-11-12',
+            'de_razao_social' => $dadosPadrao['de_razao_social'],
+            'de_fantasia' => $dadosPadrao['de_fantasia'],
+            'de_cnpj' => $dadosPadrao['de_cnpj'],
+            'de_ie' => $dadosPadrao['de_ie'],
+            'de_im' => '',
+            'de_cep' => $dadosPadrao['de_cep'],
+            'de_endereco' => $dadosPadrao['de_endereco'],
+            'de_bairro' => $dadosPadrao['de_bairro'],
+            'de_cidade' => $dadosPadrao['de_cidade'],
+            'de_uf' => $dadosPadrao['de_uf'],
+            'para_razao_social' => 'CARLA SILVA',
+            'itens' => [
+                [
+                    'descricao' => 'Tenda Piramidal 3 x 3m',
+                    'quantidade' => 1,
+                    'valor_periodo' => '100,00',
+                ],
+            ],
+            'valor_total_geral' => '100,00',
+        ]);
+
+        $proposta = Proposta::where('numero', '101')->firstOrFail();
+        $html = view('pdf.proposta', ['proposta' => $proposta])->render();
+
+        // Novo endereço De:
+        $this->assertStringContainsString('Rua Pedro Martins, 190', $html);
+        $this->assertStringContainsString('Distrito Industrial Adail Vetorasso', $html);
+        $this->assertStringContainsString('15046-773', $html);
+
+        // Campos preenchidos aparecem
+        $this->assertStringContainsString('CARLA SILVA', $html);
+        $this->assertStringContainsString('Tenda Piramidal 3 x 3m', $html);
+        $this->assertStringContainsString('R$ 100,00', $html);
+
+        // Campos não preenchidos NÃO devem aparecer
+        $this->assertStringNotContainsString('Identificação:', $html);
+        $this->assertStringNotContainsString('IM:', $html);
+        $this->assertSame(1, substr_count($html, 'Fantasia:')); // apenas em "De:", oculto em "Para:"
+        $this->assertStringNotContainsString('Inscrição Estadual:', $html);
+        $this->assertStringNotContainsString('Solicitante:', $html);
+        $this->assertStringNotContainsString('Data do Evento', $html);
+        $this->assertStringNotContainsString('Pagamento(s)', $html);
+        $this->assertStringNotContainsString('Observações:', $html);
+
+        // Assinatura da Marcia acima da linha pontilhada (antes de sig-line e ASSINATURA)
+        $posAssinaturaMarcia = strpos($html, 'Marcia Regina Sabino Gibertoni');
+        $posUltimaSigLine = strrpos($html, 'class="sig-line"');
+        $posLabelAssinatura = strpos($html, '<div class="sig-label">ASSINATURA</div>');
+        $this->assertNotFalse($posAssinaturaMarcia);
+        $this->assertNotFalse($posUltimaSigLine);
+        $this->assertNotFalse($posLabelAssinatura);
+        $this->assertLessThan($posUltimaSigLine, $posAssinaturaMarcia);
+        $this->assertLessThan($posLabelAssinatura, $posUltimaSigLine);
+    }
 }

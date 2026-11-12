@@ -46,6 +46,9 @@
             <!-- Filtros -->
             <div class="bg-white dark:bg-[#031d14] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-[#083d2c] flex flex-col md:flex-row gap-4 items-center justify-between transition-colors">
                 <form method="GET" action="{{ route('pedidos.index') }}" class="flex flex-wrap items-center gap-3 w-full">
+                    @if(request()->filled('ordem'))
+                        <input type="hidden" name="ordem" value="{{ request('ordem') }}">
+                    @endif
                     <input type="text" name="busca" value="{{ request('busca') }}" placeholder="Buscar por cliente ou telefone..." class="border-gray-300 dark:border-emerald-700/60 dark:bg-[#021811] dark:text-white placeholder-gray-400 dark:placeholder-emerald-400/40 focus:border-amber-400 focus:ring-amber-400/20 rounded-lg text-sm px-3 py-2 w-full sm:w-56">
 
                     <select name="status" class="border-gray-300 dark:border-emerald-700/60 dark:bg-[#021811] dark:text-white focus:border-amber-400 focus:ring-amber-400/20 rounded-lg text-sm px-3 py-2">
@@ -109,10 +112,21 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-gray-600 dark:text-emerald-100/90 min-w-[760px]">
                         <thead class="bg-gray-50 dark:bg-[#02140e] text-xs uppercase font-semibold text-gray-700 dark:text-emerald-300 border-b border-gray-100 dark:border-[#083d2c]">
+                            @php
+                                $ordemAtual = request('ordem', 'desc') === 'asc' ? 'asc' : 'desc';
+                                $proximaOrdem = $ordemAtual === 'desc' ? 'asc' : 'desc';
+                            @endphp
                             <tr>
                                 <th class="px-6 py-4">ID</th>
                                 <th class="px-6 py-4">Cliente</th>
-                                <th class="px-6 py-4">Datas (Instalação / Retirada)</th>
+                                <th class="px-6 py-4">
+                                    <a href="{{ route('pedidos.index', array_merge(request()->except('ordem', 'page'), ['ordem' => $proximaOrdem])) }}"
+                                       class="inline-flex items-center gap-1 hover:text-amber-500 transition"
+                                       title="Alternar ordenação por data de instalação">
+                                        <span>Datas (Instalação / Retirada)</span>
+                                        <span class="text-[11px]">{{ $ordemAtual === 'asc' ? '↑' : '↓' }}</span>
+                                    </a>
+                                </th>
                                 <th class="px-6 py-4">Tendas</th>
                                 <th class="px-6 py-4">Montador</th>
                                 <th class="px-6 py-4">Status</th>

@@ -374,5 +374,68 @@ class FluxoMontadorTest extends TestCase
         // Montador NÃO deve ter recebido nenhuma notificação no momento do cadastro!
         $this->assertCount(0, $mensagensEnviadas, 'Montador não pode receber WhatsApp na criação quando a opção estiver desmarcada.');
     }
+
+    public function test_listagem_pedidos_ordena_por_data_instalacao_e_exibe_botao_novo_pedido_dentro_do_pedido(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $clienteA = Cliente::create(['nome' => 'Cliente Instalacao Dia 10', 'telefone' => '17991110001', 'endereco' => 'Rua A, 1']);
+        $clienteB = Cliente::create(['nome' => 'Cliente Instalacao Dia 20', 'telefone' => '17991110002', 'endereco' => 'Rua B, 2']);
+        $clienteC = Cliente::create(['nome' => 'Cliente Instalacao Dia 15', 'telefone' => '17991110003', 'endereco' => 'Rua C, 3']);
+
+        // Criados fora de ordem cronológica de instalação
+        $pedidoDia10 = Pedido::create([
+            'cliente_id' => $clienteA->id,
+            'data_instalacao' => '2026-11-10',
+            'hora_instalacao' => '08:00',
+            'data_retirada' => '2026-11-12',
+            'endereco_instalacao' => 'Rua A, 1',
+            'status' => 'os_gerada',
+        ]);
+        $pedidoDia20 = Pedido::create([
+            'cliente_id' => $clienteB->id,
+            'data_instalacao' => '2026-11-20',
+            'hora_instalacao' => '14:00',
+            'data_retirada' => '2026-11-22',
+            'endereco_instalacao' => 'Rua B, 2',
+            'status' => 'os_gerada',
+        ]);
+        $pedidoDia15 = Pedido::create([
+            'cliente_id' => $clienteC->id,
+            'data_instalacao' => '2026-11-15',
+            'hora_instalacao' => '10:00',
+            'data_retirada' => '2026-11-17',
+            'endereco_instalacao' => 'Rua C, 3',
+            'status' => 'os_gerada',
+        ]);
+
+        // Listagem padrão: ordenada por data de instalação (descendente: 20/11, 15/11, 10/11)
+        $resDesc = $this->actingAs($admin)->get(route('pedidos.index'));
+        $resDesc->assertStatus(200);
+        $resDesc->assertSeeInOrder([
+            'Cliente Instalacao Dia 20',
+            'Cliente Instalacao Dia 15',
+            'Cliente Instalacao Dia 10',
+        ]);
+
+        // Listagem ascendente via toggle
+        $resAsc = $this->actingAs($admin)->get(route('pedidos.index', ['ordem' => 'asc']));
+        $resAsc->assertStatus(200);
+        $resAsc->assertSeeInOrder([
+            'Cliente Instalacao Dia 10',
+            'Cliente Instalacao Dia 15',
+            'Cliente Instalacao Dia 20',
+        ]);
+
+        // Dentro do pedido (show e edit): botão "Novo Pedido de Locação" apontando para pedidos.create
+        $resShow = $this->actingAs($admin)->get(route('pedidos.show', $pedidoDia10));
+        $resShow->assertStatus(200);
+        $resShow->assertSee('Novo Pedido de Locação');
+        $resShow->assertSee(route('pedidos.create'));
+
+        $resEdit = $this->actingAs($admin)->get(route('pedidos.edit', $pedidoDia10));
+        $resEdit->assertStatus(200);
+        $resEdit->assertSee('Novo Pedido de Locação');
+        $resEdit->assertSee(route('pedidos.create'));
+    }
 }
 
