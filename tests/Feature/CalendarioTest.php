@@ -83,5 +83,54 @@ class CalendarioTest extends TestCase
             $this->assertNotEmpty($props['tipo_label']);
         }
     }
+
+    public function test_pedido_concluido_ou_cancelado_some_do_calendario_mas_permanece_em_outras_telas(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $cliente = Cliente::create(['nome' => 'Cliente Concluido', 'telefone' => '17999998888', 'endereco' => 'Rua X, 1']);
+        
+        $pedidoAtivo = Pedido::create([
+            'cliente_id' => $cliente->id,
+            'data_instalacao' => now()->format('Y-m-d'),
+            'data_retirada' => now()->addDays(2)->format('Y-m-d'),
+            'endereco_instalacao' => 'Rua Ativa, 10',
+            'status' => 'os_gerada',
+        ]);
+
+        $pedidoConcluido = Pedido::create([
+            'cliente_id' => $cliente->id,
+            'data_instalacao' => now()->format('Y-m-d'),
+            'data_retirada' => now()->addDays(2)->format('Y-m-d'),
+            'endereco_instalacao' => 'Rua Concluida, 20',
+            'status' => 'concluido',
+        ]);
+
+        $pedidoCancelado = Pedido::create([
+            'cliente_id' => $cliente->id,
+            'data_instalacao' => now()->format('Y-m-d'),
+            'data_retirada' => now()->addDays(2)->format('Y-m-d'),
+            'endereco_instalacao' => 'Rua Cancelada, 30',
+            'status' => 'cancelado',
+        ]);
+
+        // No calendário: apenas o pedido ativo deve aparecer!
+        $respCal = $this->actingAs($admin)->getJson(route('calendario.eventos'));
+        $respCal->assertOk();
+        $eventos = $respCal->json();
+
+        $idsNosEventos = array_column(array_column($eventos, 'extendedProps'), 'pedido_id');
+        $this->assertContains($pedidoAtivo->id, $idsNosEventos);
+        $this->assertNotContains($pedidoConcluido->id, $idsNosEventos);
+        $this->assertNotContains($pedidoCancelado->id, $idsNosEventos);
+
+        // Nas outras páginas (pedidos.index, pedidos.show, etc): o pedido concluído continua aparecendo normalmente
+        $respIndex = $this->actingAs($admin)->get(route('pedidos.index'));
+        $respIndex->assertOk();
+        $respIndex->assertSee('Cliente Concluido');
+
+        $respShow = $this->actingAs($admin)->get(route('pedidos.show', $pedidoConcluido));
+        $respShow->assertOk();
+        $respShow->assertSee('Rua Concluida, 20');
+    }
 }
 

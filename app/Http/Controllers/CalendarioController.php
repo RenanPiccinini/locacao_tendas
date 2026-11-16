@@ -18,7 +18,8 @@ class CalendarioController extends Controller
     {
         $user = auth()->user();
 
-        $query = Pedido::with(['cliente', 'montador', 'tendas']);
+        $query = Pedido::with(['cliente', 'montador', 'tendas'])
+            ->whereNotIn('status', ['concluido', 'cancelado']);
 
         // Se for montador, vê apenas as instalações/retiradas dele!
         // Admin vê de todos!
