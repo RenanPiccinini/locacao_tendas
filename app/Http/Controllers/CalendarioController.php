@@ -47,7 +47,7 @@ class CalendarioController extends Controller
             // Evento 1: Instalação
             $eventos[] = [
                 'id' => "inst-{$pedido->id}",
-                'title' => "Pedido #{$pedido->id}",
+                'title' => "Instalação #{$pedido->id}",
                 'start' => $pedido->data_instalacao->format('Y-m-d') . ($pedido->hora_instalacao ? 'T' . $pedido->hora_instalacao : ''),
                 'allDay' => empty($pedido->hora_instalacao),
                 'backgroundColor' => '#059669', // Verde Esmeralda
@@ -57,7 +57,7 @@ class CalendarioController extends Controller
                     'pedido_id' => $pedido->id,
                     'pedido_url' => $urlPedido,
                     'tipo' => 'instalacao',
-                    'tipo_label' => 'Montagem / Instalação',
+                    'tipo_label' => 'Instalação',
                     'cliente' => $clienteNome,
                     'cliente_nome' => $clienteNome,
                     'cliente_telefone' => $pedido->cliente?->telefone ?? '',
@@ -69,10 +69,10 @@ class CalendarioController extends Controller
                 ]
             ];
 
-            // Evento 2: Retirada
+            // Evento 2: Desmontagem
             $eventos[] = [
                 'id' => "ret-{$pedido->id}",
-                'title' => "Pedido #{$pedido->id}",
+                'title' => "Desmontagem #{$pedido->id}",
                 'start' => $pedido->data_retirada->format('Y-m-d') . ($pedido->hora_retirada ? 'T' . $pedido->hora_retirada : ''),
                 'allDay' => empty($pedido->hora_retirada),
                 'backgroundColor' => '#9333ea', // Roxo
@@ -82,7 +82,7 @@ class CalendarioController extends Controller
                     'pedido_id' => $pedido->id,
                     'pedido_url' => $urlPedido,
                     'tipo' => 'retirada',
-                    'tipo_label' => 'Retirada / Devolução',
+                    'tipo_label' => 'Desmontagem',
                     'cliente' => $clienteNome,
                     'cliente_nome' => $clienteNome,
                     'cliente_telefone' => $pedido->cliente?->telefone ?? '',

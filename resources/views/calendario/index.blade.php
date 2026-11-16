@@ -23,7 +23,7 @@
                     </div>
                     <div class="flex items-center gap-1.5 text-gray-700 dark:text-emerald-200">
                         <span class="w-3.5 h-3.5 rounded-full bg-purple-600 inline-block"></span>
-                        <span>Retirada</span>
+                        <span>Desmontagem</span>
                     </div>
                 </div>
 
@@ -128,7 +128,8 @@
                     var p = info.event.extendedProps || {};
                     var urlPedido = p.pedido_url || info.event.url || (p.pedido_id ? ('/pedidos/' + p.pedido_id) : '#');
                     
-                    document.getElementById('evento-titulo').textContent = p.pedido_id ? ('Pedido #' + p.pedido_id) : (info.event.title || '');
+                    var tituloEvento = info.event.title || (p.tipo === 'instalacao' ? ('Instalação #' + p.pedido_id) : ('Desmontagem #' + p.pedido_id));
+                    document.getElementById('evento-titulo').textContent = tituloEvento;
                     document.getElementById('evento-cliente').textContent = p.cliente_nome || p.cliente || '-';
                     document.getElementById('evento-endereco').textContent = p.endereco || '-';
                     document.getElementById('evento-montador').textContent = p.montador_nome || p.montador || 'Não definido';
@@ -141,10 +142,10 @@
                     var badgeTipo = document.getElementById('evento-badge-tipo');
                     var tipoLimpo = (p.tipo || '').toLowerCase();
                     if (tipoLimpo === 'instalacao' || tipoLimpo.includes('montag') || tipoLimpo.includes('instala')) {
-                        badgeTipo.textContent = p.tipo_label || 'Montagem / Instalação';
+                        badgeTipo.textContent = p.tipo_label || 'Instalação';
                         badgeTipo.className = 'px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
                     } else {
-                        badgeTipo.textContent = p.tipo_label || 'Retirada / Devolução';
+                        badgeTipo.textContent = p.tipo_label || 'Desmontagem';
                         badgeTipo.className = 'px-2.5 py-0.5 rounded text-xs font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300';
                     }
 

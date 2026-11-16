@@ -64,8 +64,11 @@ class CalendarioTest extends TestCase
         $this->assertNotEmpty($eventos);
         $this->assertCount(2, $eventos); // 1 montagem + 1 retirada
 
+        $titulos = array_column($eventos, 'title');
+        $this->assertContains("Instalação #{$pedido->id}", $titulos);
+        $this->assertContains("Desmontagem #{$pedido->id}", $titulos);
+
         foreach ($eventos as $evento) {
-            $this->assertEquals("Pedido #{$pedido->id}", $evento['title']);
             $this->assertArrayHasKey('url', $evento);
             $this->assertEquals(route('pedidos.show', $pedido), $evento['url']);
 
