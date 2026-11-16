@@ -224,7 +224,7 @@ class FluxoMontadorTest extends TestCase
         $this->assertStringNotContainsString('Rua Retirada, 99', $mensagens[0]['msg']);
         $this->assertStringNotContainsString('Rua Futura, 200', $mensagens[0]['msg']);
 
-        // 2. Testa disparo semanal
+        // 2. Testa disparo semanal (inclui montagens e desmontagens da semana na mesma mensagem)
         $mensagens = [];
         $this->artisan('lembretes:whatsapp', ['--tipo' => 'semana'])->assertExitCode(0);
 
@@ -232,7 +232,9 @@ class FluxoMontadorTest extends TestCase
         $this->assertEquals('17991111111', $mensagens[0]['numero']);
         $this->assertStringContainsString('AGENDA DA SEMANA', $mensagens[0]['msg']);
         $this->assertStringContainsString('INSTALAÇÕES DA SEMANA', $mensagens[0]['msg']);
-        $this->assertStringNotContainsString('RETIRADAS', $mensagens[0]['msg']);
+        $this->assertStringContainsString('Rua Principal, 50', $mensagens[0]['msg']);
+        $this->assertStringContainsString('DESMONTAGENS DA SEMANA', $mensagens[0]['msg']);
+        $this->assertStringContainsString('Rua Retirada, 99', $mensagens[0]['msg']);
         $this->assertStringNotContainsString('Rua Futura, 200', $mensagens[0]['msg']);
 
         // 3. Testa trava anti-repetição: segunda execução NÃO deve re-enviar

@@ -70,32 +70,75 @@ class EnviarLembretesWhatsapp extends Command
                 ->orderBy('hora_instalacao')
                 ->get();
 
-            if ($pedidosInstalacao->isEmpty()) {
+            $pedidosDesmontagem = Pedido::with(['cliente', 'tendas'])
+                ->where('montador_id', $montador->id)
+                ->whereDate('data_retirada', '>=', $inicioSemana->format('Y-m-d'))
+                ->whereDate('data_retirada', '<=', $fimSemana->format('Y-m-d'))
+                ->whereNotIn('status', ['concluido', 'cancelado'])
+                ->orderBy('data_retirada')
+                ->orderBy('hora_retirada')
+                ->get();
+
+            if ($pedidosInstalacao->isEmpty() && $pedidosDesmontagem->isEmpty()) {
                 continue;
             }
 
-            $msg = "🗓️ *AGENDA DA SEMANA - TENDAS ELDORADO*\n"
-                 . "Olá *{$montador->name}*, confira suas instalações programadas para esta semana ({$inicioSemana->format('d/m')} a {$fimSemana->format('d/m')}):\n\n";
-
-            $msg .= "⛺ *INSTALAÇÕES DA SEMANA:*\n";
-            foreach ($pedidosInstalacao as $p) {
-                $data = Carbon::parse($p->data_instalacao)->locale('pt_BR')->translatedFormat('d/m (D)');
-                $hora = $p->hora_instalacao ? substr($p->hora_instalacao, 0, 5) : 'Horário livre';
-                $tendas = $p->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome}")->implode(', ');
-
-                $resp = '';
-                if ($p->nome_responsavel) {
-                    $resp = "  Contato: {$p->nome_responsavel}" . ($p->telefone_responsavel ? " ({$p->telefone_responsavel})" : "") . "\n";
-                }
-
-                $msg .= "• *{$data} às {$hora}* (Pedido #{$p->id})\n"
-                      . "  Cliente: {$p->cliente->nome} ({$p->cliente->telefone})\n"
-                      . $resp
-                      . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
-                      . "  Tendas: {$tendas}\n\n";
+            $msg = "🗓️ *AGENDA DA SEMANA - TENDAS ELDORADO*\n";
+            if ($pedidosInstalacao->isNotEmpty() && $pedidosDesmontagem->isNotEmpty()) {
+                $msg .= "Olá *{$montador->name}*, confira suas instalações e desmontagens programadas para esta semana ({$inicioSemana->format('d/m')} a {$fimSemana->format('d/m')}):\n\n";
+            } elseif ($pedidosDesmontagem->isNotEmpty()) {
+                $msg .= "Olá *{$montador->name}*, confira suas desmontagens programadas para esta semana ({$inicioSemana->format('d/m')} a {$fimSemana->format('d/m')}):\n\n";
+            } else {
+                $msg .= "Olá *{$montador->name}*, confira suas instalações programadas para esta semana ({$inicioSemana->format('d/m')} a {$fimSemana->format('d/m')}):\n\n";
             }
 
-            $msg .= "📲 Acesse o sistema pelo celular para registrar *'Tenda instalada'*!";
+            if ($pedidosInstalacao->isNotEmpty()) {
+                $msg .= "⛺ *INSTALAÇÕES DA SEMANA:*\n";
+                foreach ($pedidosInstalacao as $p) {
+                    $data = Carbon::parse($p->data_instalacao)->locale('pt_BR')->translatedFormat('d/m (D)');
+                    $hora = $p->hora_instalacao ? substr($p->hora_instalacao, 0, 5) : 'Horário livre';
+                    $tendas = $p->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome}")->implode(', ');
+
+                    $resp = '';
+                    if ($p->nome_responsavel) {
+                        $resp = "  Contato: {$p->nome_responsavel}" . ($p->telefone_responsavel ? " ({$p->telefone_responsavel})" : "") . "\n";
+                    }
+
+                    $msg .= "• *{$data} às {$hora}* (Pedido #{$p->id})\n"
+                          . "  Cliente: {$p->cliente->nome} ({$p->cliente->telefone})\n"
+                          . $resp
+                          . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
+                          . "  Tendas: {$tendas}\n\n";
+                }
+            }
+
+            if ($pedidosDesmontagem->isNotEmpty()) {
+                $msg .= "🔄 *DESMONTAGENS DA SEMANA:*\n";
+                foreach ($pedidosDesmontagem as $p) {
+                    $dataRet = Carbon::parse($p->data_retirada)->locale('pt_BR')->translatedFormat('d/m (D)');
+                    $horaRet = $p->hora_retirada ? substr($p->hora_retirada, 0, 5) : 'Horário livre';
+                    $tendasRet = $p->tendas->map(fn($t) => "{$t->pivot->quantidade}x {$t->nome}")->implode(', ');
+
+                    $respRet = '';
+                    if ($p->nome_responsavel) {
+                        $respRet = "  Contato: {$p->nome_responsavel}" . ($p->telefone_responsavel ? " ({$p->telefone_responsavel})" : "") . "\n";
+                    }
+
+                    $msg .= "• *{$dataRet} às {$horaRet}* (Pedido #{$p->id})\n"
+                          . "  Cliente: {$p->cliente->nome} ({$p->cliente->telefone})\n"
+                          . $respRet
+                          . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
+                          . "  Tendas: {$tendasRet}\n\n";
+                }
+            }
+
+            if ($pedidosInstalacao->isNotEmpty() && $pedidosDesmontagem->isNotEmpty()) {
+                $msg .= "📲 Acesse o sistema pelo celular para registrar *'Tenda instalada'* e *'Tenda retirada'*!";
+            } elseif ($pedidosDesmontagem->isNotEmpty()) {
+                $msg .= "📲 Acesse o sistema pelo celular para registrar *'Tenda retirada'*!";
+            } else {
+                $msg .= "📲 Acesse o sistema pelo celular para registrar *'Tenda instalada'*!";
+            }
 
             if ($this->whatsapp->enviarMensagem($montador->whatsapp, $msg)) {
                 Cache::put($lockKey, true, $fimSemana);
@@ -107,7 +150,7 @@ class EnviarLembretesWhatsapp extends Command
         }
 
         if ($enviados === 0) {
-            $this->info("Nenhum montador com instalações agendadas para esta semana.");
+            $this->info("Nenhum montador com instalações ou desmontagens agendadas para esta semana.");
         }
     }
 
