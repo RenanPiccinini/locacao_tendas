@@ -212,19 +212,13 @@ class FluxoMontadorTest extends TestCase
             });
         $this->app->instance(WhatsappService::class, $mockWpp);
 
-        // 1. Testa disparo diário (--forcar garante execução mesmo se o teste rodar na segunda-feira)
-        $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia', '--forcar' => true])->assertExitCode(0);
+        // 1. Testa que o disparo diário está desativado (comentado) e não envia mensagens
+        $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia', '--forcar' => true])
+            ->expectsOutputToContain('Notificação diária desativada temporariamente')
+            ->assertExitCode(0);
+        $this->assertCount(0, $mensagens, 'Disparo diário desativado não deve enviar mensagens.');
 
-        // Deve enviar apenas para o Montador A (somente instalação de hoje), NUNCA para Montador B nem retiradas/futuros
-        $this->assertCount(1, $mensagens);
-        $this->assertEquals('17991111111', $mensagens[0]['numero']);
-        $this->assertStringContainsString('INSTALAÇÕES DE HOJE', $mensagens[0]['msg']);
-        $this->assertStringContainsString('Rua Principal, 50', $mensagens[0]['msg']);
-        $this->assertStringNotContainsString('RETIRADAS', $mensagens[0]['msg']);
-        $this->assertStringNotContainsString('Rua Retirada, 99', $mensagens[0]['msg']);
-        $this->assertStringNotContainsString('Rua Futura, 200', $mensagens[0]['msg']);
-
-        // 2. Testa disparo semanal (inclui montagens e desmontagens da semana na mesma mensagem)
+        // 2. Testa disparo semanal (ativo: inclui montagens e desmontagens da semana na mesma mensagem)
         $mensagens = [];
         $this->artisan('lembretes:whatsapp', ['--tipo' => 'semana'])->assertExitCode(0);
 
@@ -237,21 +231,10 @@ class FluxoMontadorTest extends TestCase
         $this->assertStringContainsString('Rua Retirada, 99', $mensagens[0]['msg']);
         $this->assertStringNotContainsString('Rua Futura, 200', $mensagens[0]['msg']);
 
-        // 3. Testa trava anti-repetição: segunda execução NÃO deve re-enviar
+        // 3. Testa trava anti-repetição semanal: segunda execução NÃO deve re-enviar
         $mensagens = [];
-        $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia', '--forcar' => true])->assertExitCode(0);
         $this->artisan('lembretes:whatsapp', ['--tipo' => 'semana'])->assertExitCode(0);
-        $this->assertCount(0, $mensagens, 'Lembretes não devem ser repetidos no mesmo dia ou semana.');
-
-        // 4. Na segunda-feira sem --forcar, o lembrete diário é pulado automaticamente (pois o semanal já envia tudo)
-        Carbon::setTestNow($inicioSemana->copy()->setTime(7, 0));
-        try {
-            $mensagens = [];
-            $this->artisan('lembretes:whatsapp', ['--tipo' => 'dia'])->assertExitCode(0);
-            $this->assertCount(0, $mensagens, 'Na segunda-feira o lembrete diário automático não deve ser enviado.');
-        } finally {
-            Carbon::setTestNow();
-        }
+        $this->assertCount(0, $mensagens, 'Lembretes semanais não devem ser repetidos na mesma semana.');
     }
 
     public function test_servir_arquivo_storage_e_exibicao_fotos_com_lightbox(): void

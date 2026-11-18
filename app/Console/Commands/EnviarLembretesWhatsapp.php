@@ -32,7 +32,11 @@ class EnviarLembretesWhatsapp extends Command
         if ($tipo === 'semana') {
             $this->enviarLembreteSemanal();
         } else {
-            $this->enviarLembreteDiario();
+            // NOTIFICAÇÃO DIÁRIA DESATIVADA TEMPORARIAMENTE:
+            // O sistema mantém apenas a notificação semanal toda segunda-feira.
+            // Para reativar o lembrete diário no futuro, basta descomentar a linha abaixo:
+            // $this->enviarLembreteDiario();
+            $this->info('Notificação diária desativada temporariamente. Utilizando somente o lembrete semanal de segunda-feira.');
         }
 
         return Command::SUCCESS;
