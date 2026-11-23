@@ -22,17 +22,28 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-            <!-- Atalhos de Visualização Rápida (Todas as Ordens x Somente do Dia) -->
+            <!-- Atalhos de Visualização Rápida (Todas as Ordens x Somente do Dia x Ver pedidos concluídos) -->
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('pedidos.index', array_merge(request()->except('filtro_dia', 'page'), ['filtro_dia' => 'todos'])) }}" 
-                       class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ request('filtro_dia', 'todos') === 'todos' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'bg-white dark:bg-[#031d14] border border-gray-200 dark:border-emerald-800/40 text-gray-700 dark:text-emerald-200 hover:bg-gray-50 dark:hover:bg-[#063325]' }}">
+                <div class="flex flex-wrap items-center gap-2">
+                    @php
+                        $isConcluidos = request('status') === 'concluido';
+                        $isHoje = request('filtro_dia') === 'hoje' && !$isConcluidos;
+                        $isTodos = !$isConcluidos && !$isHoje && !request()->filled('status');
+                    @endphp
+
+                    <a href="{{ route('pedidos.index', array_merge(request()->except('status', 'filtro_dia', 'page'), ['filtro_dia' => 'todos'])) }}" 
+                       class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ $isTodos ? 'bg-amber-400 text-slate-950 shadow-sm' : 'bg-white dark:bg-[#031d14] border border-gray-200 dark:border-emerald-800/40 text-gray-700 dark:text-emerald-200 hover:bg-gray-50 dark:hover:bg-[#063325]' }}">
                         <span>Todas as Ordens / Pedidos</span>
                     </a>
-                    <a href="{{ route('pedidos.index', array_merge(request()->except('filtro_dia', 'page'), ['filtro_dia' => 'hoje'])) }}" 
-                       class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ request('filtro_dia') === 'hoje' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'bg-white dark:bg-[#031d14] border border-gray-200 dark:border-emerald-800/40 text-gray-700 dark:text-emerald-200 hover:bg-gray-50 dark:hover:bg-[#063325]' }}">
-                        <span class="w-2 h-2 rounded-full {{ request('filtro_dia') === 'hoje' ? 'bg-slate-950' : 'bg-emerald-400 animate-pulse' }}"></span>
+                    <a href="{{ route('pedidos.index', array_merge(request()->except('status', 'filtro_dia', 'page'), ['filtro_dia' => 'hoje'])) }}" 
+                       class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ $isHoje ? 'bg-amber-400 text-slate-950 shadow-sm' : 'bg-white dark:bg-[#031d14] border border-gray-200 dark:border-emerald-800/40 text-gray-700 dark:text-emerald-200 hover:bg-gray-50 dark:hover:bg-[#063325]' }}">
+                        <span class="w-2 h-2 rounded-full {{ $isHoje ? 'bg-slate-950' : 'bg-emerald-400 animate-pulse' }}"></span>
                         <span>Somente do Dia (Hoje)</span>
+                    </a>
+                    <a href="{{ route('pedidos.index', array_merge(request()->except('status', 'filtro_dia', 'page'), ['status' => 'concluido'])) }}" 
+                       class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 {{ $isConcluidos ? 'bg-amber-400 text-slate-950 shadow-sm' : 'bg-white dark:bg-[#031d14] border border-gray-200 dark:border-emerald-800/40 text-gray-700 dark:text-emerald-200 hover:bg-gray-50 dark:hover:bg-[#063325]' }}">
+                        <span class="w-2 h-2 rounded-full {{ $isConcluidos ? 'bg-slate-950' : 'bg-emerald-500' }}"></span>
+                        <span>Ver pedidos concluídos</span>
                     </a>
                 </div>
 
@@ -52,7 +63,7 @@
                     <input type="text" name="busca" value="{{ request('busca') }}" placeholder="Buscar por cliente ou telefone..." class="border-gray-300 dark:border-emerald-700/60 dark:bg-[#021811] dark:text-white placeholder-gray-400 dark:placeholder-emerald-400/40 focus:border-amber-400 focus:ring-amber-400/20 rounded-lg text-sm px-3 py-2 w-full sm:w-56">
 
                     <select name="status" class="border-gray-300 dark:border-emerald-700/60 dark:bg-[#021811] dark:text-white focus:border-amber-400 focus:ring-amber-400/20 rounded-lg text-sm px-3 py-2">
-                        <option value="">Todos os status</option>
+                        <option value="">Status em aberto</option>
                         <option value="pendente" {{ request('status') === 'pendente' ? 'selected' : '' }}>Pendente</option>
                         <option value="os_gerada" {{ request('status') === 'os_gerada' ? 'selected' : '' }}>O.S. Gerada</option>
                         <option value="em_instalacao" {{ request('status') === 'em_instalacao' ? 'selected' : '' }}>Em Instalação</option>

@@ -51,6 +51,9 @@ class PedidoController extends Controller
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        } else {
+            // Por padrão na listagem, não listar pedidos concluídos (somente os outros status)
+            $query->where('status', '!=', 'concluido');
         }
 
         if ($request->filled('busca')) {

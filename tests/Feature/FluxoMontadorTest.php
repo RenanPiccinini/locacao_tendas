@@ -463,5 +463,73 @@ class FluxoMontadorTest extends TestCase
         $resEdit->assertSee('Novo Pedido de Locação');
         $resEdit->assertSee(route('pedidos.create'));
     }
+
+    public function test_listagem_pedidos_exclui_concluidos_por_padrao_e_botao_ver_concluidos_filtra_somente_concluidos(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $clienteAtivo = Cliente::create([
+            'nome' => 'Cliente Pedido Ativo',
+            'telefone' => '17991110001',
+            'endereco' => 'Rua Ativa, 1',
+        ]);
+
+        $clienteConcluido1 = Cliente::create([
+            'nome' => 'Cliente Concluido Primeiro',
+            'telefone' => '17991110002',
+            'endereco' => 'Rua Concluida, 2',
+        ]);
+
+        $clienteConcluido2 = Cliente::create([
+            'nome' => 'Cliente Concluido Segundo',
+            'telefone' => '17991110003',
+            'endereco' => 'Rua Concluida, 3',
+        ]);
+
+        $pedidoAtivo = Pedido::create([
+            'cliente_id' => $clienteAtivo->id,
+            'data_instalacao' => '2026-11-12',
+            'hora_instalacao' => '08:00',
+            'data_retirada' => '2026-11-14',
+            'endereco_instalacao' => 'Rua Ativa, 1',
+            'status' => 'os_gerada',
+        ]);
+
+        $pedidoConcluido1 = Pedido::create([
+            'cliente_id' => $clienteConcluido1->id,
+            'data_instalacao' => '2026-11-10',
+            'hora_instalacao' => '08:00',
+            'data_retirada' => '2026-11-11',
+            'endereco_instalacao' => 'Rua Concluida, 2',
+            'status' => 'concluido',
+        ]);
+
+        $pedidoConcluido2 = Pedido::create([
+            'cliente_id' => $clienteConcluido2->id,
+            'data_instalacao' => '2026-11-15',
+            'hora_instalacao' => '08:00',
+            'data_retirada' => '2026-11-16',
+            'endereco_instalacao' => 'Rua Concluida, 3',
+            'status' => 'concluido',
+        ]);
+
+        // 1. Listagem padrão: exibe o pedido ativo e NÃO exibe os pedidos concluídos
+        $resPadrao = $this->actingAs($admin)->get(route('pedidos.index'));
+        $resPadrao->assertStatus(200);
+        $resPadrao->assertSee('Ver pedidos concluídos');
+        $resPadrao->assertSee('Cliente Pedido Ativo');
+        $resPadrao->assertDontSee('Cliente Concluido Primeiro');
+        $resPadrao->assertDontSee('Cliente Concluido Segundo');
+
+        // 2. Clicar em "Ver pedidos concluídos" (status=concluido):
+        // Exibe SOMENTE os concluídos, na mesma ordem (data_instalacao asc: dia 10 antes do dia 15), e oculta o ativo
+        $resConcluidos = $this->actingAs($admin)->get(route('pedidos.index', ['status' => 'concluido']));
+        $resConcluidos->assertStatus(200);
+        $resConcluidos->assertDontSee('Cliente Pedido Ativo');
+        $resConcluidos->assertSeeInOrder([
+            'Cliente Concluido Primeiro',
+            'Cliente Concluido Segundo',
+        ]);
+    }
 }
 

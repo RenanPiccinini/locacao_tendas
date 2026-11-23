@@ -87,10 +87,11 @@ class CalendarioTest extends TestCase
     public function test_pedido_concluido_ou_cancelado_some_do_calendario_mas_permanece_em_outras_telas(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        $cliente = Cliente::create(['nome' => 'Cliente Concluido', 'telefone' => '17999998888', 'endereco' => 'Rua X, 1']);
+        $clienteAtivo = Cliente::create(['nome' => 'Cliente Ativo', 'telefone' => '17999998888', 'endereco' => 'Rua X, 1']);
+        $clienteConcluido = Cliente::create(['nome' => 'Cliente Concluido', 'telefone' => '17999997777', 'endereco' => 'Rua Y, 2']);
         
         $pedidoAtivo = Pedido::create([
-            'cliente_id' => $cliente->id,
+            'cliente_id' => $clienteAtivo->id,
             'data_instalacao' => now()->format('Y-m-d'),
             'data_retirada' => now()->addDays(2)->format('Y-m-d'),
             'endereco_instalacao' => 'Rua Ativa, 10',
@@ -98,7 +99,7 @@ class CalendarioTest extends TestCase
         ]);
 
         $pedidoConcluido = Pedido::create([
-            'cliente_id' => $cliente->id,
+            'cliente_id' => $clienteConcluido->id,
             'data_instalacao' => now()->format('Y-m-d'),
             'data_retirada' => now()->addDays(2)->format('Y-m-d'),
             'endereco_instalacao' => 'Rua Concluida, 20',
@@ -106,7 +107,7 @@ class CalendarioTest extends TestCase
         ]);
 
         $pedidoCancelado = Pedido::create([
-            'cliente_id' => $cliente->id,
+            'cliente_id' => $clienteAtivo->id,
             'data_instalacao' => now()->format('Y-m-d'),
             'data_retirada' => now()->addDays(2)->format('Y-m-d'),
             'endereco_instalacao' => 'Rua Cancelada, 30',
@@ -123,10 +124,16 @@ class CalendarioTest extends TestCase
         $this->assertNotContains($pedidoConcluido->id, $idsNosEventos);
         $this->assertNotContains($pedidoCancelado->id, $idsNosEventos);
 
-        // Nas outras páginas (pedidos.index, pedidos.show, etc): o pedido concluído continua aparecendo normalmente
+        // Na listagem padrão de pedidos: pedidos concluídos não são exibidos por padrão
         $respIndex = $this->actingAs($admin)->get(route('pedidos.index'));
         $respIndex->assertOk();
-        $respIndex->assertSee('Cliente Concluido');
+        $respIndex->assertSee('Cliente Ativo');
+        $respIndex->assertDontSee('Cliente Concluido');
+
+        // Na aba "Ver pedidos concluídos" (status=concluido): o pedido concluído é exibido normalmente
+        $respConcluidos = $this->actingAs($admin)->get(route('pedidos.index', ['status' => 'concluido']));
+        $respConcluidos->assertOk();
+        $respConcluidos->assertSee('Cliente Concluido');
 
         $respShow = $this->actingAs($admin)->get(route('pedidos.show', $pedidoConcluido));
         $respShow->assertOk();
