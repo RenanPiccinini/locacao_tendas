@@ -108,8 +108,11 @@ class EnviarLembretesWhatsapp extends Command
                         $resp = "  Contato: {$p->nome_responsavel}" . ($p->telefone_responsavel ? " ({$p->telefone_responsavel})" : "") . "\n";
                     }
 
+                    $evento = $p->evento ? "  Evento: {$p->evento}\n" : "";
+
                     $msg .= "• *{$data} às {$hora}* (Pedido #{$p->id})\n"
                           . "  Cliente: {$p->cliente->nome} ({$p->cliente->telefone})\n"
+                          . $evento
                           . $resp
                           . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
                           . "  Tendas: {$tendas}\n\n";
@@ -128,8 +131,11 @@ class EnviarLembretesWhatsapp extends Command
                         $respRet = "  Contato: {$p->nome_responsavel}" . ($p->telefone_responsavel ? " ({$p->telefone_responsavel})" : "") . "\n";
                     }
 
+                    $eventoRet = $p->evento ? "  Evento: {$p->evento}\n" : "";
+
                     $msg .= "• *{$dataRet} às {$horaRet}* (Pedido #{$p->id})\n"
                           . "  Cliente: {$p->cliente->nome} ({$p->cliente->telefone})\n"
+                          . $eventoRet
                           . $respRet
                           . "  Local: {$p->endereco_instalacao}" . ($p->cidade_instalacao ? " - {$p->cidade_instalacao}" : "") . "\n"
                           . "  Tendas: {$tendasRet}\n\n";

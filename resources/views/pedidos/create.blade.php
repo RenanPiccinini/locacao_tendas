@@ -190,6 +190,11 @@
                         <h3 class="font-bold text-gray-900 dark:text-white text-base">Local da Montagem & Detalhes</h3>
                     </div>
 
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Evento</label>
+                        <input type="text" name="evento" value="{{ old('evento') }}" placeholder="Ex: Aniversário, Casamento, Feira Agropecuária, Evento Corporativo, Festa Junina..." class="w-full bg-white dark:bg-[#02140e] border-gray-300 dark:border-[#083d2c] text-gray-900 dark:text-slate-100 focus:border-amber-400 focus:ring-amber-400 rounded-lg text-sm font-medium">
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-semibold text-gray-700 dark:text-emerald-200 mb-1">Endereço da Montagem *</label>

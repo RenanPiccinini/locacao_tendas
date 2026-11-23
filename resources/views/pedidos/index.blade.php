@@ -118,7 +118,7 @@
                             @endphp
                             <tr>
                                 <th class="px-6 py-4">ID</th>
-                                <th class="px-6 py-4">Cliente</th>
+                                <th class="px-6 py-4">Cliente / Evento</th>
                                 <th class="px-6 py-4">
                                     <a href="{{ route('pedidos.index', array_merge(request()->except('ordem', 'page'), ['ordem' => $proximaOrdem])) }}"
                                        class="inline-flex items-center gap-1 hover:text-amber-500 transition"
@@ -142,6 +142,12 @@
                                     <td class="px-6 py-4">
                                         <div class="font-medium text-gray-900 dark:text-white">{{ $pedido->cliente->nome }}</div>
                                         <div class="text-xs text-gray-400 dark:text-emerald-400/60">{{ $pedido->cliente->telefone }}</div>
+                                        @if($pedido->evento)
+                                            <div class="text-xs font-semibold text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
+                                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                                <span>{{ $pedido->evento }}</span>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-xs">

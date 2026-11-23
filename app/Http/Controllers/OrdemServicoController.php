@@ -64,8 +64,11 @@ class OrdemServicoController extends Controller
         }
 
         $linhaEvento = '';
+        if ($pedido->evento) {
+            $linhaEvento .= "🎪 *Evento:* {$pedido->evento}\n";
+        }
         if ($pedido->data_evento) {
-            $linhaEvento = "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
+            $linhaEvento .= "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
         }
 
         $msg = "📋 *ORDEM DE SERVIÇO: {$ordemServico->numero_os}*\n"

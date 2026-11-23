@@ -141,8 +141,9 @@
         
         $dataEmissaoExtenso = \Carbon\Carbon::parse($os->created_at ?? now())->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y');
         
-        $identificacao = $pedido->observacoes 
-            ?: ($pedido->cliente->nome . ' ' . ($pedido->data_evento ? $pedido->data_evento->format('d/m/Y') : $pedido->data_instalacao->format('d/m/Y')));
+        $identificacao = $pedido->evento 
+            ?: ($pedido->observacoes 
+                ?: ($pedido->cliente->nome . ' ' . ($pedido->data_evento ? $pedido->data_evento->format('d/m/Y') : $pedido->data_instalacao->format('d/m/Y'))));
 
         $solicitante = $pedido->nome_responsavel ?: $pedido->cliente->nome;
         $celularSolicitante = $pedido->telefone_responsavel ?: $pedido->cliente->telefone;
@@ -181,6 +182,9 @@
         <tr>
             <td style="padding: 6px 8px;">
                 <div style="margin-bottom: 4px;">{{ $dataEmissaoExtenso }}</div>
+                @if($pedido->evento)
+                    <div style="margin-bottom: 4px;"><strong>Evento:</strong> {{ $pedido->evento }}</div>
+                @endif
                 <div><strong>Identificação:</strong> {{ $identificacao }}</div>
             </td>
         </tr>
@@ -198,6 +202,11 @@
                     <span style="margin: 0 4px;">-</span>
                     <strong>Fantasia:</strong> {{ $pedido->cliente->nome_fantasia ?: $pedido->cliente->nome }}
                 </div>
+                @if($pedido->evento)
+                    <div style="margin-bottom: 4px;">
+                        <strong>Evento:</strong> {{ $pedido->evento }}
+                    </div>
+                @endif
                 <div>
                     <strong>Solicitante:</strong> {{ $solicitante }}
                     <span style="margin: 0 4px;">-</span>
@@ -234,6 +243,9 @@
             </td>
             <td class="periodo-col border-right" style="width: 33.34%;">
                 <strong>Data do Evento:</strong> {{ $pedido->data_evento ? $pedido->data_evento->format('d/m/Y') : $pedido->data_instalacao->format('d/m/Y') }} {{ $pedido->hora_instalacao ? substr($pedido->hora_instalacao, 0, 5) : '08:00' }}
+                @if($pedido->evento)
+                    <div style="margin-top: 2px;"><strong>Evento:</strong> {{ $pedido->evento }}</div>
+                @endif
             </td>
             <td class="periodo-col" style="width: 33.33%;">
                 <strong>Retorno:</strong> {{ $pedido->data_retirada->format('d/m/Y') }} {{ $pedido->hora_retirada ? substr($pedido->hora_retirada, 0, 5) : '08:00' }}

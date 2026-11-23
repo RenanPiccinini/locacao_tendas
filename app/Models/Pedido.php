@@ -15,6 +15,7 @@ class Pedido extends Model
     protected $fillable = [
         'cliente_id',
         'montador_id',
+        'evento',
         'data_instalacao',
         'hora_instalacao',
         'data_evento',

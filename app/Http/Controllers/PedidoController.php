@@ -149,6 +149,7 @@ class PedidoController extends Controller
         $validated = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'montador_id' => 'nullable|exists:users,id',
+            'evento' => 'nullable|string|max:255',
             'data_instalacao' => 'required|date',
             'hora_instalacao' => 'nullable',
             'data_evento' => 'nullable|date',
@@ -181,6 +182,7 @@ class PedidoController extends Controller
             $pedido = Pedido::create([
                 'cliente_id' => $validated['cliente_id'],
                 'montador_id' => $validated['montador_id'] ?? null,
+                'evento' => $validated['evento'] ?? null,
                 'data_instalacao' => $validated['data_instalacao'],
                 'hora_instalacao' => $validated['hora_instalacao'] ?? null,
                 'data_evento' => $validated['data_evento'] ?? null,
@@ -280,6 +282,7 @@ class PedidoController extends Controller
         $validated = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'montador_id' => 'nullable|exists:users,id',
+            'evento' => 'nullable|string|max:255',
             'data_instalacao' => 'required|date',
             'hora_instalacao' => 'nullable',
             'data_evento' => 'nullable|date',
@@ -645,8 +648,11 @@ class PedidoController extends Controller
         }
 
         $linhaEvento = '';
+        if ($pedido->evento) {
+            $linhaEvento .= "🎪 *Evento:* {$pedido->evento}\n";
+        }
         if ($pedido->data_evento) {
-            $linhaEvento = "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
+            $linhaEvento .= "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
         }
 
         $msg = "📋 *NOVO PEDIDO DE MONTAGEM AGENDADO! (#{$pedido->id})*\n\n"
@@ -696,8 +702,11 @@ class PedidoController extends Controller
         }
 
         $linhaEvento = '';
+        if ($pedido->evento) {
+            $linhaEvento .= "🎪 *Evento:* {$pedido->evento}\n";
+        }
         if ($pedido->data_evento) {
-            $linhaEvento = "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
+            $linhaEvento .= "🎉 *Data do Evento:* " . Carbon::parse($pedido->data_evento)->format('d/m/Y') . "\n";
         }
 
         $instrucao = match($os->tipo) {

@@ -123,6 +123,91 @@ class OrdemServicoModeloTest extends TestCase
         $this->assertStringContainsString('Observações:', $viewHtml);
     }
 
+    public function test_criar_pedido_com_evento_salva_no_banco_exibe_na_listagem_e_na_os(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $cliente = Cliente::create([
+            'nome' => 'PREFEITURA DO MUNICIPIO DE MIRASSOL',
+            'telefone' => '1732437080',
+            'endereco' => 'Praça Matriz, 100',
+        ]);
+
+        $tenda = Tenda::create([
+            'nome' => 'Tenda Piramidal 10x10',
+            'tamanho' => '10x10m',
+            'quantidade_total' => 5,
+            'quantidade_disponivel' => 5,
+            'valor_diaria' => 150,
+        ]);
+
+        // 1. Tela de criação tem o campo 'evento'
+        $resCreate = $this->actingAs($admin)->get(route('pedidos.create'));
+        $resCreate->assertStatus(200);
+        $resCreate->assertSee('name="evento"', false);
+
+        // 2. Salva novo pedido com campo evento preenchido
+        $resStore = $this->actingAs($admin)->post(route('pedidos.store'), [
+            'cliente_id' => $cliente->id,
+            'evento' => 'Festa das Nações de Mirassol',
+            'data_instalacao' => now()->format('Y-m-d'),
+            'hora_instalacao' => '08:00',
+            'data_retirada' => now()->addDays(2)->format('Y-m-d'),
+            'hora_retirada' => '18:00',
+            'endereco_instalacao' => 'Recinto Municipal',
+            'cidade_instalacao' => 'Mirassol',
+            'tendas_selecionadas' => [$tenda->id],
+            'quantidades' => [$tenda->id => 1],
+            'gerar_os_agora' => '1',
+        ]);
+
+        $resStore->assertSessionHas('success');
+        $pedido = Pedido::where('evento', 'Festa das Nações de Mirassol')->first();
+        $this->assertNotNull($pedido);
+        $this->assertEquals('Festa das Nações de Mirassol', $pedido->evento);
+
+        // 3. Verifica exibição na listagem de pedidos (pedidos.index)
+        $resIndex = $this->actingAs($admin)->get(route('pedidos.index'));
+        $resIndex->assertStatus(200);
+        $resIndex->assertSee('Cliente / Evento');
+        $resIndex->assertSee('PREFEITURA DO MUNICIPIO DE MIRASSOL');
+        $resIndex->assertSee('Festa das Nações de Mirassol');
+
+        // 4. Verifica exibição na tela de detalhes (pedidos.show)
+        $resShow = $this->actingAs($admin)->get(route('pedidos.show', $pedido));
+        $resShow->assertStatus(200);
+        $resShow->assertSee('Festa das Nações de Mirassol');
+
+        // 5. Verifica exibição na Ordem de Serviço (PDF OS)
+        $os = $pedido->ordensServico()->first();
+        $this->assertNotNull($os);
+
+        $viewHtml = view('pdf.ordem_servico', [
+            'os' => $os,
+            'pedido' => $pedido->load(['cliente', 'montador', 'tendas']),
+        ])->render();
+
+        $this->assertStringContainsString('Festa das Nações de Mirassol', $viewHtml);
+        $this->assertStringContainsString('<strong>Evento:</strong>', $viewHtml);
+
+        // 6. Atualização via edição do pedido
+        $resUpdate = $this->actingAs($admin)->put(route('pedidos.update', $pedido), [
+            'cliente_id' => $cliente->id,
+            'evento' => 'Exposição Agropecuária 2026',
+            'data_instalacao' => now()->format('Y-m-d'),
+            'data_retirada' => now()->addDays(2)->format('Y-m-d'),
+            'endereco_instalacao' => 'Recinto Municipal',
+            'tendas_selecionadas' => [$tenda->id],
+            'quantidades' => [$tenda->id => 1],
+        ]);
+
+        $resUpdate->assertSessionHas('success');
+        $this->assertEquals('Exposição Agropecuária 2026', $pedido->fresh()->evento);
+
+        // 7. Confirma que a nova descrição do evento reflete no index
+        $resIndexNovo = $this->actingAs($admin)->get(route('pedidos.index'));
+        $resIndexNovo->assertSee('Exposição Agropecuária 2026');
+    }
+
     public function test_geracao_automatica_de_os_nos_tres_momentos_e_retorno_ao_estoque(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);

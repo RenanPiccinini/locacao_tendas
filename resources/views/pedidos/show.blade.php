@@ -10,7 +10,7 @@
                         {{ $pedido->status_label }}
                     </span>
                 </div>
-                <p class="text-sm text-gray-500 dark:text-emerald-300/70 mt-1">Cliente: <strong class="text-gray-900 dark:text-white">{{ $pedido->cliente->nome }}</strong> | Montador: <strong class="text-gray-900 dark:text-white">{{ $pedido->montador ? $pedido->montador->name : 'Não designado' }}</strong></p>
+                <p class="text-sm text-gray-500 dark:text-emerald-300/70 mt-1">Cliente: <strong class="text-gray-900 dark:text-white">{{ $pedido->cliente->nome }}</strong>@if($pedido->evento) | Evento: <strong class="text-amber-600 dark:text-amber-400">{{ $pedido->evento }}</strong>@endif | Montador: <strong class="text-gray-900 dark:text-white">{{ $pedido->montador ? $pedido->montador->name : 'Não designado' }}</strong></p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
@@ -213,6 +213,12 @@
                             <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Nome:</span>
                             <span class="font-bold text-gray-900 dark:text-white text-right break-words">{{ $pedido->cliente->nome }}</span>
                         </div>
+                        @if($pedido->evento)
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Evento:</span>
+                                <span class="font-bold text-amber-600 dark:text-amber-400 text-right break-words">{{ $pedido->evento }}</span>
+                            </div>
+                        @endif
                         <div class="flex items-start justify-between gap-3">
                             <span class="text-gray-500 dark:text-emerald-300/70 shrink-0">Telefone / WhatsApp:</span>
                             <span class="font-semibold text-emerald-600 dark:text-amber-400 text-right break-words">{{ $pedido->cliente->telefone }}</span>
