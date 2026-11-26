@@ -39,9 +39,9 @@
                 @endif
 
                 @foreach($pedido->ordensServico as $osHeader)
-                    <a href="{{ route('os.pdf', $osHeader) }}" target="_blank" class="px-2.5 py-1.5 bg-white dark:bg-[#031d14] border border-gray-200 dark:border-[#083d2c] hover:bg-gray-50 dark:hover:bg-[#063325] text-gray-800 dark:text-emerald-100 text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1.5" title="{{ $osHeader->tipo_label }} (Status: {{ $osHeader->status_label }})">
+                    <a href="{{ route('os.pdf', $osHeader) }}" target="_blank" class="px-2.5 py-1.5 bg-white dark:bg-[#031d14] border border-gray-200 dark:border-[#083d2c] hover:bg-gray-50 dark:hover:bg-[#063325] text-gray-800 dark:text-emerald-100 text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1.5" title="O.S. do Pedido #{{ $pedido->id }} - {{ $osHeader->tipo_label }} (Status: {{ $osHeader->status_label }})">
                         <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span class="font-bold">{{ $osHeader->numero_os }}</span>
+                        <span class="font-bold">O.S. #{{ $pedido->id }}</span>
                         <span class="text-[10px] px-1.5 py-0.2 rounded font-bold {{ $osHeader->tipo_badge_color }}">{{ $osHeader->tipo_label }}</span>
                     </a>
                 @endforeach
@@ -138,19 +138,20 @@
                             <div class="p-4 rounded-xl border border-gray-200 dark:border-[#083d2c] bg-gray-50/70 dark:bg-[#021811] flex flex-col justify-between gap-3 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-600 transition">
                                 <div class="space-y-2">
                                     <div class="flex items-center justify-between gap-2">
-                                        <a href="{{ route('os.pdf', $os) }}" target="_blank" class="font-mono font-bold text-emerald-700 dark:text-amber-400 hover:underline text-sm flex items-center gap-1.5">
+                                        <a href="{{ route('os.pdf', $os) }}" target="_blank" class="font-mono font-bold text-emerald-700 dark:text-amber-400 hover:underline text-sm flex items-center gap-1.5" title="Visualizar O.S. do Pedido #{{ $pedido->id }}">
                                             <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                            {{ $os->numero_os }}
+                                            O.S. Pedido #{{ $pedido->id }}
                                         </a>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold {{ $os->status_badge_color }}">
                                             {{ $os->status_label }}
                                         </span>
                                     </div>
 
-                                    <div>
+                                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-emerald-300/70">
                                         <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold {{ $os->tipo_badge_color }}">
                                             {{ $os->tipo_label }}
                                         </span>
+                                        <span class="font-mono text-[11px] text-gray-400 dark:text-emerald-400/60">{{ $os->numero_os }}</span>
                                     </div>
 
                                     <div class="text-xs text-gray-500 dark:text-emerald-300/70 space-y-1 pt-1">

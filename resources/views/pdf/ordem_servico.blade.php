@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Ordem de Serviço - {{ $os->numero_os }}</title>
+    <title>Ordem de Serviço Nº {{ $pedido->id }}</title>
     <style>
         @page {
             margin: 12mm 15mm 12mm 15mm;
@@ -149,8 +149,7 @@
         $celularSolicitante = $pedido->telefone_responsavel ?: $pedido->cliente->telefone;
         $emailCliente = $pedido->cliente->email ?? '';
 
-        $numApenas = preg_replace('/^OS[A-Z]*-([0-9]{4})-0*/i', '', $os->numero_os);
-        $exibirNumero = $numApenas ?: ($os->id ?: $os->numero_os);
+        $exibirNumero = $pedido->id;
     @endphp
 
     <!-- Topo: Horário de Impressão e Nome do Sistema -->
@@ -172,11 +171,11 @@
         <div class="brand-sub">Venda e Locação</div>
     </div>
 
-    <!-- BOX 1: ORDEM DE SERVIÇO Nº -->
+    <!-- BOX 1: ORDEM DE SERVIÇO Nº (Exibe sempre o número do Pedido) -->
     <table class="os-box">
         <tr>
             <td class="box-title-center">
-                ORDEM DE SERVIÇO Nº {{ $exibirNumero }}
+                ORDEM DE SERVIÇO Nº {{ $pedido->id }}
             </td>
         </tr>
         <tr>

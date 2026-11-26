@@ -104,7 +104,7 @@ class OrdemServicoModeloTest extends TestCase
             'pedido' => $pedido->load(['cliente', 'montador', 'tendas']),
         ])->render();
 
-        $this->assertStringContainsString('ORDEM DE SERVIÇO Nº', $viewHtml);
+        $this->assertStringContainsString("ORDEM DE SERVIÇO Nº {$pedido->id}", $viewHtml);
         $this->assertStringContainsString('FINADOS TANABI 02/11/2026', $viewHtml);
         $this->assertStringContainsString('MUNICIPIO DE TANABI', $viewHtml);
         $this->assertStringContainsString('LUCAS', $viewHtml);

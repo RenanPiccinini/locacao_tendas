@@ -20,7 +20,7 @@ class OrdemServicoController extends Controller
             'pedido' => $ordemServico->pedido,
         ])->setPaper('a4', 'portrait');
 
-        $nomeArquivo = "{$ordemServico->numero_os}.pdf";
+        $nomeArquivo = "OS-Pedido-{$ordemServico->pedido_id}.pdf";
 
         return $pdf->stream($nomeArquivo);
     }
@@ -34,7 +34,7 @@ class OrdemServicoController extends Controller
             'pedido' => $ordemServico->pedido,
         ])->setPaper('a4', 'portrait');
 
-        $nomeArquivo = "{$ordemServico->numero_os}.pdf";
+        $nomeArquivo = "OS-Pedido-{$ordemServico->pedido_id}.pdf";
 
         return $pdf->download($nomeArquivo);
     }
